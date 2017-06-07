@@ -17,7 +17,7 @@ cat(int f, const char *name) {
 	char buf[BUFSIZ];
 	ssize_t n;
 
-	while ((n = read(fd, buf, sizeof(buf))) > 0)
+	while ((n = read(f, buf, sizeof(buf))) > 0)
 		if (write(1, buf, n) != n)
 			return (pwarn("write %s:", name));
 
@@ -49,7 +49,7 @@ main(int argc, char *argv[]) {
 
 		rval |= cat(f, *argv);
 
-		if (fd != -1 && close(fd) < 0)
+		if (f != -1 && close(f) < 0)
 			rval = pwarn("close %s:", *argv);
 	}
 
