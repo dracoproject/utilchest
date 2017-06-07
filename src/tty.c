@@ -15,5 +15,5 @@ main(void) {
 
 	puts(tty);
 
-	return (fshut(stdout, "stdout"));
+	return (fshut(stdout, "<stdout>"));
 }
