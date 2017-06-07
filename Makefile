@@ -12,7 +12,11 @@ HDR=\
 # SOURCE
 BIN=\
 	src/cat\
-	src/echo
+	src/echo\
+	src/false\
+	src/sync\
+	src/true\
+	src/tty
 
 LIBUTILSRC=\
 	lib/util/warn.c
