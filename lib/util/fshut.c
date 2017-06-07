@@ -2,18 +2,15 @@
  * See LICENSE file for copyright and license details.
  */
 #include <stdio.h>
-#include <unistd.h>
 
 #include "util.h"
 
 int
-main(void) {
-	char *tty;
+fshut(FILE *stream, const char *sname) {
+	int rval = 0;
 
-	if (!(tty = ttyname(STDIN_FILENO)))
-		return (pwarn("ttyname:"));
+	if (fclose(stream))
+		rval = pwarn("fclose %s:", sname);
 
-	puts(tty);
-
-	return (fshut(stdout, "stdout"));
+	return rval;
 }

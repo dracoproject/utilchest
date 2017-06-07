@@ -12,14 +12,17 @@ HDR=\
 # SOURCE
 BIN=\
 	src/cat\
+	src/domainname\
 	src/echo\
 	src/false\
+	src/hostname\
 	src/sync\
 	src/true\
 	src/tty
 
 LIBUTILSRC=\
-	lib/util/warn.c
+	lib/util/warn.c\
+	lib/util/fshut.c
 
 # LIB PATH
 LIBUTIL= lib/libutil.a

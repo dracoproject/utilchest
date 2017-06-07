@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "util.h"
+
 int
-main(int argc, char **argv) {
+main(int argc, char *argv[]) {
 	int nflag = 0;
 
 	if (*++argv && !strcmp(*argv, "-n"))
@@ -21,5 +23,5 @@ main(int argc, char **argv) {
 	if (!nflag)
 		putchar('\n');
 
-	return 0;
+	return (fshut(stdout, "<stdout>"));
 }
