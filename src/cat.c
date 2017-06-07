@@ -13,23 +13,23 @@ usage(void) {
 }
 
 static int
-cat(int fd, const char *name) {
+cat(int f, const char *name) {
 	char buf[BUFSIZ];
 	ssize_t n;
 
 	while ((n = read(fd, buf, sizeof(buf))) > 0)
 		if (write(1, buf, n) != n)
-			return pwarn("write %s:", name);
+			return (pwarn("write %s:", name));
 
 	if (n < 0)
-		return pwarn("read %s:", name);
+		return (pwarn("read %s:", name));
 
 	return 0;
 }
 
 int
 main(int argc, char *argv[]) {
-	int fd, rval = 0;
+	int f, rval = 0;
 
 	ARGBEGIN {
 	case 'u':
@@ -42,12 +42,12 @@ main(int argc, char *argv[]) {
 		cat(0, "<stdin>");
 
 	for (; *argv; argv++) {
-		if ((fd = open(*argv, O_RDONLY, 0)) < 0) {
+		if ((f = open(*argv, O_RDONLY, 0)) < 0) {
 			rval = pwarn("open %s:", *argv);
 			continue;
 		}
 
-		rval |= cat(fd, *argv);
+		rval |= cat(f, *argv);
 
 		if (fd != -1 && close(fd) < 0)
 			rval = pwarn("close %s:", *argv);
