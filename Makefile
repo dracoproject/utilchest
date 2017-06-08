@@ -11,7 +11,9 @@ HDR=\
 
 # SOURCE
 BIN=\
+	src/basename\
 	src/cat\
+	src/dirname\
 	src/domainname\
 	src/echo\
 	src/false\
