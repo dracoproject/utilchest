@@ -23,21 +23,25 @@ BIN=\
 	src/true\
 	src/tty
 
+# LIB SOURCE
+LIBFSSRC=\
+	lib/fs/cp.c
+
 LIBUTILSRC=\
-	lib/util/cp.c\
 	lib/util/fshut.c\
 	lib/util/warn.c
 
-
 # LIB PATH
+LIBFS= lib/libfs.a
 LIBUTIL= lib/libutil.a
 
 # LIB OBJS
+LIBFSOBJ= $(LIBFSSRC:.c=.o)
 LIBUTILOBJ= $(LIBUTILSRC:.c=.o)
 
 # ALL
-LIB= $(LIBUTIL)
-OBJ= $(BIN:=.o) $(LIBUTILOBJ)
+LIB= $(LIBUTIL) $(LIBFS)
+OBJ= $(BIN:=.o) $(LIBUTILOBJ) $(LIBFSOBJ)
 SRC= $(BIN:=.c)
 
 # VAR RULES
@@ -54,6 +58,10 @@ $(OBJ): $(HDR) config.mk
 	$(CC) $(CFLAGS) $(CPPFLAGS) -I $(INC) -o $@ -c $<
 
 # LIBRARIES RULES
+$(LIBFS): $(LIBFSOBJ)
+	$(AR) rc $@ $?
+	$(RANLIB) $@
+
 $(LIBUTIL): $(LIBUTILOBJ)
 	$(AR) rc $@ $?
 	$(RANLIB) $@
