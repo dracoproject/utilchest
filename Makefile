@@ -7,6 +7,7 @@ INC= inc
 
 HDR=\
 	inc/arg.h\
+	inc/fs.h\
 	inc/util.h
 
 # SOURCE
@@ -23,8 +24,10 @@ BIN=\
 	src/tty
 
 LIBUTILSRC=\
-	lib/util/warn.c\
-	lib/util/fshut.c
+	lib/util/cp.c\
+	lib/util/fshut.c\
+	lib/util/warn.c
+
 
 # LIB PATH
 LIBUTIL= lib/libutil.a
