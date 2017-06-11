@@ -25,7 +25,8 @@ BIN=\
 
 # LIB SOURCE
 LIBFSSRC=\
-	lib/fs/cp.c
+	lib/fs/cp.c\
+	lib/fs/fst.c
 
 LIBUTILSRC=\
 	lib/util/fshut.c\
