@@ -46,8 +46,7 @@ fst_read(FST_DIR *dir, int rtime) {
 		}
 
 		dir->path = buf;
-		dir->plen = snprintf(buf, sizeof(buf),
-		            "%s/%s", dir->dir, dir->name);
+		dir->plen = sprintf(buf, "%s/%s", dir->dir, dir->name);
 
 		if (statf(dir->path, &dir->info) < 0)
 			return -1;
