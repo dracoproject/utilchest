@@ -14,6 +14,7 @@ HDR=\
 BIN=\
 	src/basename\
 	src/cat\
+	src/cp\
 	src/dirname\
 	src/domainname\
 	src/echo\
