@@ -23,6 +23,7 @@ extern int fst_follow;
 /* cp.c */
 int copy_file(const char *, const char *, int);
 int copy_link(const char *, const char *, int);
+int copy_special(const char *, const char *, int);
 
 /* fst.c */
 int fst_open(const char *, FST_DIR *);

@@ -34,7 +34,7 @@ cp(const char *src, const char *dest, int rtime) {
 	case S_IFLNK:
 		return (copy_link(src, dest, perms));
 	default:
-		break; /* SPECIAL TODO */
+		return (copy_special(src, dest, perms));
 	}
 
 	return 0;
@@ -80,7 +80,8 @@ cp_r(const char *src, const char *dest, int rtime) {
 			rval |= copy_link(dir.path, buf, perms);
 			break;
 		default:
-			break; /* SPECIAL TODO */
+			rval |= copy_special(src, dest, perms);
+			break;
 		}
 	}
 

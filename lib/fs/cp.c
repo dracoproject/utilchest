@@ -16,6 +16,7 @@ int
 copy_file(const char *src, const char *dest, int perms) {
 	char *buf = NULL;
 	int sf, tf, rval = 0;
+	ssize_t rf = 0;
 	struct stat st;
 	struct timespec times[2];
 
@@ -38,13 +39,14 @@ copy_file(const char *src, const char *dest, int perms) {
 	if (!(buf = malloc(st.st_size * sizeof(char))))
 		perr(1, "malloc:");
 
-	if (read(sf, buf, st.st_size) < 0) {
-		rval = pwarn("read %s:", src);
-		goto clean;
-	}
+	while ((rf = read(sf, buf, st.st_size)) > 0)
+		if (write(tf, buf, rf) != rf) {
+			rval = pwarn("write %s:", dest);
+			goto clean;
+		}
 
-	if (write(tf, buf, st.st_size) < 0) {
-		rval = pwarn("write %s:", dest);
+	if (rf < 0) {
+		rval = pwarn("read %s:", src);
 		goto clean;
 	}
 
@@ -83,6 +85,9 @@ copy_link(const char *src, const char *dest, int perms) {
 	ssize_t rl;
 	struct stat st;
 
+	if (CP_F & perms)
+		unlink(dest);
+
 	if (lstat(src, &st) < 0)
 		return (pwarn("lstat %s:", src));
 
@@ -98,6 +103,22 @@ copy_link(const char *src, const char *dest, int perms) {
 
 	if ((CP_P & perms) && lchown(dest, st.st_uid, st.st_gid) < 0)
 		return (pwarn("lchown %s:", dest));
+
+	return 0;
+}
+
+int
+copy_special(const char *src, const char *dest, int perms) {
+	struct stat st;
+
+	if (CP_F & perms)
+		unlink(dest);
+
+	if (lstat(src, &st) < 0)
+		return (pwarn("lstat %s:", src));
+
+	if (mknod(dest, st.st_mode, st.st_dev) < 0)
+		return (pwarn("mknod %s:", dest));
 
 	return 0;
 }
