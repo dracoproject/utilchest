@@ -10,7 +10,7 @@
 
 static void
 usage(void) {
-	perr(1, "usage: %s [name]", argv0);
+	perr(1, "usage: %s [name]\n", argv0);
 }
 
 int
