@@ -24,7 +24,8 @@ BIN=\
 	src/sync\
 	src/true\
 	src/tty\
-	src/unlink
+	src/unlink\
+	src/yes
 
 # LIB SOURCE
 LIBFSSRC=\
