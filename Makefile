@@ -20,9 +20,11 @@ BIN=\
 	src/echo\
 	src/false\
 	src/hostname\
+	src/link\
 	src/sync\
 	src/true\
-	src/tty
+	src/tty\
+	src/unlink
 
 # LIB SOURCE
 LIBFSSRC=\
