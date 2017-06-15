@@ -4,7 +4,12 @@
 #include <stdio.h>
 #include "arg.h"
 
-int fshut(FILE *, const char *);
+/* fshut.c */
+int fshut(const char *, FILE *);
 
+/* put.c */
+void putstr(const char *, FILE *);
+
+/* warn.c */
 int pwarn(const char *, ...);
 void perr(int, const char *, ...);

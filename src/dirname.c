@@ -20,5 +20,5 @@ main(int argc, char *argv[]) {
 
 	puts(dirname(*argv));
 
-	return (fshut(stdout, "<stdout>"));
+	return (fshut("<stdout>", stdout));
 }

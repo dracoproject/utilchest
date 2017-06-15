@@ -22,5 +22,5 @@ main(int argc, char *argv[]) {
 		for (; *environ; environ++)
 			puts(*environ);
 
-	return (fshut(stdout, "<stdout>"));
+	return (fshut("<stdout>", stdout));
 }

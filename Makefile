@@ -37,6 +37,7 @@ LIBFSSRC=\
 
 LIBUTILSRC=\
 	lib/util/fshut.c\
+	lib/util/putstr.c\
 	lib/util/warn.c
 
 # LIB PATH

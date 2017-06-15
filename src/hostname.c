@@ -32,5 +32,5 @@ main(int argc, char *argv[]) {
 		puts(host);
 	}
 
-	return (fshut(stdout, "<stdout>"));
+	return (fshut("<stdout>", stdout));
 }

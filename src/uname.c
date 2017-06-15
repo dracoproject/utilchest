@@ -54,16 +54,16 @@ main(int argc, char *argv[]) {
 		perr(1, "uname:");
 
 	if (!print || (print & SYS))
-		printf("%s", sys.sysname);
+		putstr(sys.sysname, stdout);
 	if (print & NOD)
-		printf(" %s", sys.nodename);
+		putstr(sys.nodename, stdout);
 	if (print & REL)
-		printf(" %s", sys.release);
+		putstr(sys.release, stdout);
 	if (print & VER)
-		printf(" %s", sys.version);
+		putstr(sys.version, stdout);
 	if (print & MAC)
-		printf(" %s", sys.machine);
+		putstr(sys.machine, stdout);
 	putchar('\n');
 
-	return (fshut(stdout, "<stdout>"));
+	return (fshut("<stdout>", stdout));
 }
