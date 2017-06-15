@@ -21,10 +21,12 @@ BIN=\
 	src/false\
 	src/hostname\
 	src/link\
+	src/printenv\
 	src/rmdir\
 	src/sync\
 	src/true\
 	src/tty\
+	src/uname\
 	src/unlink\
 	src/yes
 
