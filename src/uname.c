@@ -7,11 +7,12 @@
 
 #include "util.h"
 
-#define MAC 10000
-#define NOD 01000
-#define REL 00100
-#define SYS 00010
-#define VER 00001
+#define MAC 0x01
+#define NOD 0x02
+#define REL 0x04
+#define SYS 0x08
+#define VER 0x10
+#define ALL (MAC|NOD|REL|SYS|VER)
 
 static void
 usage(void) {
@@ -25,7 +26,7 @@ main(int argc, char *argv[]) {
 
 	ARGBEGIN {
 	case 'a':
-		print = MAC|NOD|REL|SYS|VER;
+		print |= ALL;
 		break;
 	case 'm':
 		print |= MAC;
@@ -53,15 +54,15 @@ main(int argc, char *argv[]) {
 		perr(1, "uname:");
 
 	if (!print || (print & SYS))
-		printf("%s ", sys.sysname);
+		printf("%s", sys.sysname);
 	if (print & NOD)
-		printf("%s ", sys.nodename);
+		printf(" %s", sys.nodename);
 	if (print & REL)
-		printf("%s ", sys.release);
+		printf(" %s", sys.release);
 	if (print & VER)
-		printf("%s ", sys.version);
+		printf(" %s", sys.version);
 	if (print & MAC)
-		printf("%s ", sys.machine);
+		printf(" %s", sys.machine);
 	putchar('\n');
 
 	return (fshut(stdout, "<stdout>"));

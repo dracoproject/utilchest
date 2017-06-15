@@ -5,8 +5,8 @@
 
 #include <dirent.h>
 
-#define CP_F 01
-#define CP_P 10
+#define CP_F 0x1
+#define CP_P 0x2
 
 #define FST_FOLLOW(a) ((fst_follow == 'L') || ((fst_follow == 'H') && !(a)))
 #define ISDOT(a) ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
