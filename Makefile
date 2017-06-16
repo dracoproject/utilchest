@@ -76,8 +76,33 @@ $(LIBUTIL): $(LIBUTILOBJ)
 	$(RANLIB) $@
 
 # USER ACTIONS
+utilchest: $(LIB) $(SRC)
+	mkdir -p build
+	for f in $(SRC); do sed "s/^main(/$$(echo "$$(basename $${f%.c})" | sed s/-/_/g)_&/" < $$f > build/$$(basename $$f); done
+	echo '#include <libgen.h>'                                                                                                                              > build/$@.c
+	echo '#include <stdio.h>'                                                                                                                               >> build/$@.c
+	echo '#include <string.h>'                                                                                                                              >> build/$@.c
+	for f in $(SRC); do echo "int $$(echo "$$(basename $${f%.c})" | sed s/-/_/g)_main(int, char **);"; done                                                 >> build/$@.c
+	echo 'int main(int argc, char *argv[]) { char *s = basename(argv[0]);'                                                                                  >> build/$@.c
+	echo 'if(!strcmp(s,"utilchest")) { argc--; argv++; s = basename(argv[0]); } if(0) ;'                                                                    >> build/$@.c
+	for f in $(SRC); do echo "else if(!strcmp(s, \"$$(basename $${f%.c})\")) return $$(echo "$$(basename $${f%.c})" | sed s/-/_/g)_main(argc, argv);"; done >> build/$@.c
+	echo 'else { '                                                                                                                                          >> build/$@.c
+	for f in $(SRC); do echo "fputs(\"$$(basename $${f%.c}) \", stdout);"; done                                                                             >> build/$@.c
+	echo 'putchar(0xa); }; return 0; }'                                                                                                                     >> build/$@.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -I $(INC) -o $@ build/*.c $(LIB)
+	rm -rf build
+
+utilchest-install: utilchest
+	mkdir -p $(DESTDIR)/$(PREFIX)/bin
+	cp -f utilchest $(DESTDIR)/$(PREFIX)/bin
+	for f in $$(echo $(BIN) | sed 's/src\///g'); do ln -s utilchest $(DESTDIR)/$(PREFIX)/bin/$$f; done
+
+install: all
+	mkdir -p $(DESTDIR)/$(PREFIX)/bin
+	cp -f $(BIN) $(DESTDIR)/$(PREFIX)/bin
+
 clean:
-	rm -f $(BIN) $(OBJ) $(LIB)
+	rm -f $(BIN) $(OBJ) $(LIB) utilchest
 
 .PHONY:
 	all install clean
