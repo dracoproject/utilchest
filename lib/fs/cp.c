@@ -17,7 +17,7 @@ copy_file(const char *src, const char *dest, int opts) {
 	char *buf = NULL;
 	int sf = -1, tf = -1, rval = 0;
 	ssize_t rf = 0;
-	struct stat st;
+	struct stat st, st1;
 	struct timespec times[2];
 
 	if (CP_F & opts)
@@ -61,6 +61,16 @@ copy_file(const char *src, const char *dest, int opts) {
 	case S_IFREG:
 		if ((sf = open(src, O_RDONLY, 0)) < 0) {
 			rval = pwarn("open %s:", src);
+			goto clean;
+		}
+
+		if (fstat(sf, &st1) < 0) {
+			rval = pwarn("fstat %s:", src);
+			goto clean;
+		}
+
+		if (st.st_ino != st1.st_ino || st.st_dev != st1.st_dev) {
+			rval = pwarn("%s: changed between calls", src);
 			goto clean;
 		}
 
