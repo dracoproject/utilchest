@@ -16,34 +16,13 @@ static const char *usage = "[-afp] [-R [-H|-L|-P]] source ... dest";
 static int perms;
 
 static int
-cp(const char *src, const char *dest, int rtime) {
-	struct stat st;
-
-	if ((FTR_FOLLOW(rtime) ? stat : lstat)(src, &st) < 0)
-		return (pwarn("(l)stat %s:", src));
-
-	switch ((st.st_mode & S_IFMT)) {
-	case S_IFREG:
-		return (copy_file(src, dest, perms));
-	case S_IFDIR:
-		return (pwarn("%s is a directory.\n"));
-	case S_IFLNK:
-		return (copy_link(src, dest, perms));
-	default:
-		return (copy_special(src, dest, perms));
-	}
-
-	return 0;
-}
-
-static int
 cp_r(const char *src, const char *dest, int rtime) {
 	char buf[PATH_MAX];
 	FTR_DIR dir;
 	int rval = 0;
 
 	if (ftr_open(src, &dir) < 0) {
-		rval = (errno == ENOTDIR) ? cp(src, dest, 0) :
+		rval = (errno == ENOTDIR) ? copy_file(src, dest, perms) :
 		       pwarn("ftr_open %s:", src);
 		return rval;
 	}
@@ -62,23 +41,10 @@ cp_r(const char *src, const char *dest, int rtime) {
 
 		sprintf(buf, "%s/%s", dest, dir.name);
 
-		switch ((dir.info.st_mode & S_IFMT)) {
-		case S_IFREG:
-			rval |= copy_file(dir.path, buf, perms);
-			break;
-		case S_IFDIR:
-			if ((mkdir(buf, dir.info.st_mode) < 0) && (errno != EEXIST))
-				rval = pwarn("mkdir %s:", buf);
-
-			rval |= cp_r(dir.path, buf, 1);
-			break;
-		case S_IFLNK:
-			rval |= copy_link(dir.path, buf, perms);
-			break;
-		default:
-			rval |= copy_special(src, dest, perms);
-			break;
-		}
+		if (S_ISDIR(dir.info.st_mode))
+			rval |= cp_r(src, dest, 1);
+		else
+			rval |= copy_file(src, dest, perms);
 	}
 
 	return rval;
@@ -87,7 +53,7 @@ cp_r(const char *src, const char *dest, int rtime) {
 int
 main(int argc, char *argv[]) {
 	const char *sourcedir;
-	int rval = 0, (*copy)(const char *, const char *, int) = cp;
+	int rval = 0, (*copy)(const char *, const char *, int) = copy_file;
 	struct stat st;
 
 	ARGBEGIN {

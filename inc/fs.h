@@ -22,8 +22,6 @@ extern int ftr_follow;
 
 /* cp.c */
 int copy_file(const char *, const char *, int);
-int copy_link(const char *, const char *, int);
-int copy_special(const char *, const char *, int);
 
 /* ftr.c */
 int ftr_open(const char *, FTR_DIR *);
