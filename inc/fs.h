@@ -8,7 +8,7 @@
 #define CP_F 0x1
 #define CP_P 0x2
 
-#define FST_FOLLOW(a) ((fst_follow == 'L') || ((fst_follow == 'H') && !(a)))
+#define FTR_FOLLOW(a) ((ftr_follow == 'L') || ((ftr_follow == 'H') && !(a)))
 #define ISDOT(a) ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
 
 typedef struct {
@@ -16,15 +16,15 @@ typedef struct {
 	char *dir, *name, *path;
 	size_t dlen, nlen, plen;
 	struct stat info;
-} FST_DIR;
+} FTR_DIR;
 
-extern int fst_follow;
+extern int ftr_follow;
 
 /* cp.c */
 int copy_file(const char *, const char *, int);
 int copy_link(const char *, const char *, int);
 int copy_special(const char *, const char *, int);
 
-/* fst.c */
-int fst_open(const char *, FST_DIR *);
-int fst_read(FST_DIR *, int);
+/* ftr.c */
+int ftr_open(const char *, FTR_DIR *);
+int ftr_read(FTR_DIR *, int);

@@ -23,7 +23,7 @@ static int
 cp(const char *src, const char *dest, int rtime) {
 	struct stat st;
 
-	if ((FST_FOLLOW(rtime) ? stat : lstat)(src, &st) < 0)
+	if ((FTR_FOLLOW(rtime) ? stat : lstat)(src, &st) < 0)
 		return (pwarn("(l)stat %s:", src));
 
 	switch ((st.st_mode & S_IFMT)) {
@@ -43,25 +43,25 @@ cp(const char *src, const char *dest, int rtime) {
 static int
 cp_r(const char *src, const char *dest, int rtime) {
 	char buf[PATH_MAX];
-	FST_DIR dir;
+	FTR_DIR dir;
 	int rval = 0;
 
-	if (fst_open(src, &dir) < 0) {
+	if (ftr_open(src, &dir) < 0) {
 		rval = (errno == ENOTDIR) ? cp(src, dest, 0) :
-		       pwarn("fst_open %s:", src);
+		       pwarn("ftr_open %s:", src);
 		return rval;
 	}
 
 	if (!rtime)
 		(void)mkdir(dest, 0777);
 
-	while (fst_read(&dir, 0) != EOF) {
+	while (ftr_read(&dir, 0) != EOF) {
 		if (ISDOT(dir.name))
 			continue;
 
 		if ((strlen(dest) + dir.nlen + 2) >= sizeof(buf)) {
 			errno = ENAMETOOLONG;
-			return (pwarn("fst_read %s/%s:", dest, dir.name));
+			return (pwarn("ftr_read %s/%s:", dest, dir.name));
 		}
 
 		sprintf(buf, "%s/%s", dest, dir.name);
@@ -97,7 +97,7 @@ main(int argc, char *argv[]) {
 	ARGBEGIN {
 	case 'a':
 		copy = cp_r;
-		fst_follow = 'P';
+		ftr_follow = 'P';
 		perms |= CP_P;
 		break;
 	case 'f':
@@ -113,7 +113,7 @@ main(int argc, char *argv[]) {
 	case 'H':
 	case 'L':
 	case 'P':
-		fst_follow = ARGC();
+		ftr_follow = ARGC();
 		break;
 	default:
 		usage();

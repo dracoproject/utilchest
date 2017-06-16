@@ -12,10 +12,10 @@
 #include "fs.h"
 #include "util.h"
 
-int fst_follow = 'P';
+int ftr_follow = 'P';
 
 int
-fst_open(const char *p, FST_DIR *dir) {
+ftr_open(const char *p, FTR_DIR *dir) {
 	dir->dir= (char *)p;
 	dir->dlen= strlen(dir->dir);
 
@@ -26,12 +26,12 @@ fst_open(const char *p, FST_DIR *dir) {
 }
 
 int
-fst_read(FST_DIR *dir, int rtime) {
+ftr_read(FTR_DIR *dir, int rtime) {
 	char buf[PATH_MAX];
 	int (*statf)(const char *, struct stat *);
 	struct dirent *entry;
 
-	if (FST_FOLLOW(rtime))
+	if (FTR_FOLLOW(rtime))
 		statf = stat;
 	else
 		statf = lstat;

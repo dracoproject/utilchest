@@ -33,7 +33,7 @@ BIN=\
 # LIB SOURCE
 LIBFSSRC=\
 	lib/fs/cp.c\
-	lib/fs/fst.c
+	lib/fs/ftr.c
 
 LIBUTILSRC=\
 	lib/util/fshut.c\
