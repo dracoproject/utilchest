@@ -96,8 +96,8 @@ copy_file(const char *src, const char *dest, int opts) {
 			times[1] = st.st_mtim;
 
 			if ((utimensat(AT_FDCWD, dest, times, 0)) < 0) {
-					rval = pwarn("utimensat:");
-					goto clean;
+				rval = pwarn("utimensat:");
+				goto clean;
 			}
 
 			if ((fchown(tf, st.st_uid, st.st_gid)) < 0) {
