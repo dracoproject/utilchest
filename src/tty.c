@@ -7,8 +7,10 @@
 #include "util.h"
 
 int
-main(void) {
+main(int argc, char *argv[]) {
 	char *tty;
+
+	argv0 = *argv, argc--, argv++;
 
 	if (!(tty = ttyname(STDIN_FILENO)))
 		return (pwarn("ttyname:"));
