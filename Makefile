@@ -28,6 +28,7 @@ BIN=\
 	src/tty\
 	src/uname\
 	src/unlink\
+	src/whoami\
 	src/yes
 
 # LIB SOURCE
