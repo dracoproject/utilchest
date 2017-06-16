@@ -8,10 +8,7 @@
 
 #include "util.h"
 
-static void
-usage(void) {
-	perr(1, "usage: %s [name]\n", argv0);
-}
+static const char *usage = "[name]";
 
 int
 main(int argc, char *argv[]) {
@@ -20,7 +17,7 @@ main(int argc, char *argv[]) {
 	argv0 = *argv, argc--, argv++;
 
 	if (argc > 1)
-		usage();
+		wrong(usage);
 
 	if (argc == 1) {
 		if (sethostname(*argv, strlen(*argv)))

@@ -7,10 +7,7 @@
 
 #include "util.h"
 
-static void
-usage(void) {
-	perr(1, "usage: %s string [suffix]\n", argv0);
-}
+static const char *usage = "string [suffix]";
 
 int
 main(int argc, char *argv[]) {
@@ -20,7 +17,7 @@ main(int argc, char *argv[]) {
 	argv0 = *argv, argc--, argv++;
 
 	if (argc != 1 && argc != 2)
-		usage();
+		wrong(usage);
 
 	p = basename(*argv++);
 	if (*argv) {

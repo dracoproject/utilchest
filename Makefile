@@ -38,7 +38,8 @@ LIBFSSRC=\
 LIBUTILSRC=\
 	lib/util/fshut.c\
 	lib/util/putstr.c\
-	lib/util/warn.c
+	lib/util/warn.c\
+	lib/util/wrong.c
 
 # LIB PATH
 LIBFS= lib/libfs.a

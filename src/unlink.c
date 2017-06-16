@@ -5,17 +5,14 @@
 
 #include "util.h"
 
-static void
-usage(void) {
-	perr(1, "usage: %s file\n", argv0);
-}
+static const char *usage = "file";
 
 int
 main(int argc, char *argv[]) {
 	argv0 = *argv, argc--, argv++;
 
 	if (argc != 1)
-		usage();
+		wrong(usage);
 
 	if (unlink(*argv))
 		perr(1, "unlink %s:", *argv);

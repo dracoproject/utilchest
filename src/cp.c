@@ -12,12 +12,8 @@
 #include "fs.h"
 #include "util.h"
 
+static const char *usage = "[-afp] [-R [-H|-L|-P]] source ... dest";
 static int perms;
-
-static void
-usage(void) {
-	perr(1, "usage: %s [-afp] [-R [-H|-L|-P]] source ... dest\n", argv0);
-}
 
 static int
 cp(const char *src, const char *dest, int rtime) {
@@ -116,13 +112,13 @@ main(int argc, char *argv[]) {
 		ftr_follow = ARGC();
 		break;
 	default:
-		usage();
+		wrong(usage);
 	} ARGEND
 
 	switch (argc) {
 	case 0:
 	case 1:
-		usage();
+		wrong(usage);
 	case 2:
 		exit(copy(argv[0], argv[1], 0));
 	}
@@ -132,7 +128,7 @@ main(int argc, char *argv[]) {
 		perr(1, "stat %s:", sourcedir);
 
 	if (!S_ISDIR(st.st_mode))
-		usage();
+		wrong(usage);
 
 	for (; *argv != sourcedir; argc--, argv++)
 		rval |= copy(*argv, sourcedir, 0);

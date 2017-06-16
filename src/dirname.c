@@ -6,17 +6,14 @@
 
 #include "util.h"
 
-static void
-usage(void) {
-	perr(1, "usage: %s string\n", argv0);
-}
+static const char *usage = "string";
 
 int
 main(int argc, char *argv[]) {
 	argv0 = *argv, argc--, argv++;
 
 	if (argc != 1)
-		usage();
+		wrong(usage);
 
 	puts(dirname(*argv));
 

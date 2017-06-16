@@ -13,3 +13,6 @@ void putstr(const char *, FILE *);
 /* warn.c */
 int pwarn(const char *, ...);
 void perr(int, const char *, ...);
+
+/* wrong.c */
+void wrong(const char *);

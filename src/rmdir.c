@@ -6,10 +6,7 @@
 
 #include "util.h"
 
-static void
-usage(void) {
-	perr(1, "usage: %s [-p] dir...\n", argv0);
-}
+static const char *usage = "[-p] dir...";
 
 static int
 rmdir_path(const char *p) {
@@ -34,11 +31,11 @@ main(int argc, char *argv[]) {
 		rmdirf = rmdir_path;
 		break;
 	default:
-		usage();
+		wrong(usage);
 	} ARGEND
 
 	if (!argc)
-		usage();
+		wrong(usage);
 
 	for (; *argv; argv++)
 		if (rmdirf(*argv) < 0)

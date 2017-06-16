@@ -14,10 +14,7 @@
 #define VER 0x10
 #define ALL (MAC|NOD|REL|SYS|VER)
 
-static void
-usage(void) {
-	perr(1, "usage: %s [-amnrsv]\n", argv0);
-}
+static const char *usage = "[-amnrsv]";
 
 int
 main(int argc, char *argv[]) {
@@ -44,11 +41,11 @@ main(int argc, char *argv[]) {
 		print |= VER;
 		break;
 	default:
-		usage();
+		wrong(usage);
 	} ARGEND
 
 	if (argc)
-		usage();
+		wrong(usage);
 
 	if (uname(&sys) < 0)
 		perr(1, "uname:");

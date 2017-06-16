@@ -7,10 +7,7 @@
 
 #include "util.h"
 
-static void
-usage(void) {
-	perr(1, "usage: %s [-u] [file ...]\n", argv0);
-}
+static const char *usage = "[-u] [file ...]";
 
 static int
 cat(int f, const char *name) {
@@ -35,7 +32,7 @@ main(int argc, char *argv[]) {
 	case 'u':
 		break;
 	default:
-		usage();
+		wrong(usage);
 	} ARGEND
 
 	if (!argc)
