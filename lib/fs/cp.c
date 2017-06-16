@@ -64,7 +64,7 @@ copy_file(const char *src, const char *dest, int opts) {
 			goto clean;
 		}
 
-		if ((tf = open(src, O_WRONLY|O_CREAT|O_EXCL, 0)) < 0) {
+		if ((tf = open(dest, O_WRONLY|O_CREAT|O_EXCL, 0)) < 0) {
 			rval = pwarn("open %s:", dest);
 			goto clean;
 		}
