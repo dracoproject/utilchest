@@ -24,10 +24,10 @@ copy_file(const char *src, const char *dest, int opts) {
 	if (CP_F & opts)
 		unlink(dest);
 
-	if (lstat(src, &st) < 0)
+	if ((FTR_FOLLOW(CP_D & opts) ? stat : lstat)(src, &st) < 0)
 		return (pwarn("lstat %s:", src));
 
-	if (!(buf = malloc(st.st_size * sizeof(char))))
+	if (!(buf = malloc((st.st_size + 1) * sizeof(char))))
 		perr(1, "malloc:");
 
 	switch ((st.st_mode & S_IFMT)) {
@@ -37,7 +37,7 @@ copy_file(const char *src, const char *dest, int opts) {
 
 		break;
 	case S_IFLNK:
-		if ((rf = readlink(src, buf, st.st_mode) < 0)) {
+		if ((rf = readlink(src, buf, st.st_size)) < 0) {
 			rval = pwarn("readlink %s:", src);
 			goto clean;
 		}
@@ -162,7 +162,7 @@ copy_folder(const char *src, const char *dest, int opts) {
 
 			rval |= copy_folder(dir.path, buf, CP_D|opts);
 		} else
-			rval |= copy_file(dir.path, buf, opts);
+			rval |= copy_file(dir.path, buf, CP_D|opts);
 
 		free(buf);
 		buf = NULL;
