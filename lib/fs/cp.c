@@ -3,10 +3,12 @@
  */
 #include <sys/stat.h>
 
+#include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "fs.h"
@@ -31,7 +33,7 @@ copy_file(const char *src, const char *dest, int opts) {
 
 	switch ((st.st_mode & S_IFMT)) {
 	case S_IFDIR:
-		rval = pwarn("%s is a directory.\n");
+		rval = pwarn("%s is a directory.\n", src);
 		goto clean;
 
 		break;
@@ -127,6 +129,45 @@ clean:
 
 	if ((tf != -1) && (close(tf) < 0))
 		rval = pwarn("close %s:", dest);
+
+	return rval;
+}
+
+int
+copy_folder(const char *src, const char *dest, int opts) {
+	char *buf = NULL;
+	FTR_DIR dir;
+	int rval = 0;
+
+	if (ftr_open(src, &dir) < 0) {
+		rval = (errno == ENOTDIR) ? copy_file(src, dest, opts) :
+		       pwarn("ftr_open %s:", src);
+		return rval;
+	}
+
+	if (!(CP_D & opts))
+		(void)mkdir(dest, 0777);
+
+	while (ftr_read(&dir, 0) != EOF) {
+		if (ISDOT(dir.name))
+			continue;
+
+		if (!(buf = malloc(strlen(dest) + dir.nlen + 2)))
+			perr(1, "malloc:");
+
+		sprintf(buf, "%s/%s", dest, dir.name);
+
+		if (S_ISDIR(dir.info.st_mode)) {
+			if (mkdir(buf, dir.info.st_mode) < 0 && errno != EEXIST)
+				return (pwarn("mkdir %s:", buf));
+
+			rval |= copy_folder(dir.path, buf, CP_D|opts);
+		} else
+			rval |= copy_file(dir.path, buf, opts);
+
+		free(buf);
+		buf = NULL;
+	}
 
 	return rval;
 }

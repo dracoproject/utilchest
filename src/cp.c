@@ -13,64 +13,29 @@
 #include "util.h"
 
 static const char *usage = "[-afp] [-R [-H|-L|-P]] source ... dest";
-static int perms;
-
-static int
-cp_r(const char *src, const char *dest, int rtime) {
-	char buf[PATH_MAX];
-	FTR_DIR dir;
-	int rval = 0;
-
-	if (ftr_open(src, &dir) < 0) {
-		rval = (errno == ENOTDIR) ? copy_file(src, dest, perms) :
-		       pwarn("ftr_open %s:", src);
-		return rval;
-	}
-
-	if (!rtime)
-		(void)mkdir(dest, 0777);
-
-	while (ftr_read(&dir, 0) != EOF) {
-		if (ISDOT(dir.name))
-			continue;
-
-		if ((strlen(dest) + dir.nlen + 2) >= sizeof(buf)) {
-			errno = ENAMETOOLONG;
-			return (pwarn("ftr_read %s/%s:", dest, dir.name));
-		}
-
-		sprintf(buf, "%s/%s", dest, dir.name);
-
-		if (S_ISDIR(dir.info.st_mode))
-			rval |= cp_r(src, dest, 1);
-		else
-			rval |= copy_file(src, dest, perms);
-	}
-
-	return rval;
-}
 
 int
 main(int argc, char *argv[]) {
 	const char *sourcedir;
-	int rval = 0, (*copy)(const char *, const char *, int) = copy_file;
+	int (*cp)(const char *, const char *, int) = copy_file;
+	int rval = 0, opts = 0;
 	struct stat st;
 
 	ARGBEGIN {
 	case 'a':
-		copy = cp_r;
+		cp = copy_folder;
 		ftr_follow = 'P';
-		perms |= CP_P;
+		opts |= CP_P;
 		break;
 	case 'f':
-		perms |= CP_F;
+		opts |= CP_F;
 		break;
 	case 'p':
-		perms |= CP_P;
+		opts |= CP_P;
 		break;
 	case 'r':
 	case 'R':
-		copy = cp_r;
+		cp = copy_folder;
 		break;
 	case 'H':
 	case 'L':
@@ -86,7 +51,7 @@ main(int argc, char *argv[]) {
 	case 1:
 		wrong(usage);
 	case 2:
-		exit(copy(argv[0], argv[1], 0));
+		exit(cp(argv[0], argv[1], opts));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -97,7 +62,7 @@ main(int argc, char *argv[]) {
 		wrong(usage);
 
 	for (; *argv != sourcedir; argc--, argv++)
-		rval |= copy(*argv, sourcedir, 0);
+		rval |= cp(*argv, sourcedir, opts);
 
 	return rval;
 }

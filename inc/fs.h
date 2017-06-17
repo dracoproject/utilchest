@@ -5,8 +5,9 @@
 
 #include <dirent.h>
 
-#define CP_F 0x1
-#define CP_P 0x2
+#define CP_F  0x1 /* force copy */
+#define CP_P  0x2 /* preserve permissions */
+#define CP_D  0x4 /* depth args/traversal */
 
 #define FTR_FOLLOW(a) ((ftr_follow == 'L') || ((ftr_follow == 'H') && !(a)))
 #define ISDOT(a) ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
@@ -22,6 +23,7 @@ extern int ftr_follow;
 
 /* cp.c */
 int copy_file(const char *, const char *, int);
+int copy_folder(const char *, const char *, int);
 
 /* ftr.c */
 int ftr_open(const char *, FTR_DIR *);
