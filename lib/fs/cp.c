@@ -157,8 +157,11 @@ copy_folder(const char *src, const char *dest, int opts) {
 		sprintf(buf, "%s/%s", dest, dir.name);
 
 		if (S_ISDIR(dir.info.st_mode)) {
-			if (mkdir(buf, dir.info.st_mode) < 0 && errno != EEXIST)
+			if (mkdir(buf, dir.info.st_mode) < 0
+			    && errno != EEXIST) {
+				free(buf); buf = NULL;
 				return (pwarn("mkdir %s:", buf));
+			}
 
 			rval |= copy_folder(dir.path, buf, CP_D|opts);
 		} else
