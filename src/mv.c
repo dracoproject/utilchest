@@ -48,7 +48,7 @@ main(int argc, char *argv[]) {
 		perr(1, "stat %s:", sourcedir);
 
 	if (!S_ISDIR(sb.st_mode))
-		wrong(usage);
+		perr(1, "%s: not a directory\n", sourcedir);
 
 	for (; *argv != sourcedir; argv++)
 		rval |= move(*argv, sourcedir);

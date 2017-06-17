@@ -55,7 +55,7 @@ main(int argc, char *argv[]) {
 		perr(1, "stat %s:", sourcedir);
 
 	if (!S_ISDIR(st.st_mode))
-		wrong(usage);
+		perr(1, "%s: not a directory\n", sourcedir);
 
 	for (; *argv != sourcedir; argc--, argv++)
 		rval |= cp(*argv, sourcedir, opts);
