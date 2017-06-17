@@ -21,6 +21,7 @@ BIN=\
 	src/false\
 	src/hostname\
 	src/link\
+	src/mv\
 	src/printenv\
 	src/rmdir\
 	src/sync\
