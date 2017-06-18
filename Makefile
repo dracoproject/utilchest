@@ -39,6 +39,7 @@ LIBFSSRC=\
 	lib/fs/ftr.c
 
 LIBUTILSRC=\
+	lib/util/estrtonum.c\
 	lib/util/fshut.c\
 	lib/util/putstr.c\
 	lib/util/mode.c\
