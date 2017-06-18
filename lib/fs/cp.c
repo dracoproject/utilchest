@@ -32,10 +32,11 @@ copy_file(const char *src, const char *dest, int opts) {
 
 	switch ((st.st_mode & S_IFMT)) {
 	case S_IFDIR:
-		rval = pwarn("%s is a directory.\n", src);
-		goto clean;
+		errno = EISDIR;
+		rval = pwarn("%s:", src);
 
-		break;
+		goto clean;
+		/*NOTREACHED*/
 	case S_IFLNK:
 		if ((rf = readlink(src, buf, st.st_size)) < 0) {
 			rval = pwarn("readlink %s:", src);
@@ -44,7 +45,7 @@ copy_file(const char *src, const char *dest, int opts) {
 		buf[rf] = '\0';
 
 		if (st.st_size < rf) {
-			rval = pwarn("symlink increased in size\n");
+			rval = pwarn("%s: symlink increased in size\n", src);
 			goto clean;
 		}
 
