@@ -7,6 +7,8 @@
 
 #include "arg.h"
 
+#define SET_USAGE static const char *usage
+
 /* estrtonum.c */
 long long estrtonum(const char *, long long, long long);
 

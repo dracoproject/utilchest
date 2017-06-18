@@ -8,7 +8,7 @@
 
 #include "util.h"
 
-static const char *usage = "[-p] [-m mode] dir ...";
+SET_USAGE = "%s [-p] [-m mode] dir ...";
 
 static int
 mkdirp(const char *path, mode_t dir_mode, mode_t mode) {

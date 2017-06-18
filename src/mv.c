@@ -9,7 +9,8 @@
 #include "fs.h"
 #include "util.h"
 
-static const char *usage = "[-f] source ... dest";
+SET_USAGE = "%s [-f] source target\n"
+            "%s [-f] source target_dir";
 
 static int
 move(const char *src, const char *dest) {

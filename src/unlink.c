@@ -5,7 +5,7 @@
 
 #include "util.h"
 
-static const char *usage = "file";
+SET_USAGE = "%s file";
 
 int
 main(int argc, char *argv[]) {

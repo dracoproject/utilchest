@@ -7,7 +7,7 @@
 
 #include "util.h"
 
-static const char *usage = "[-u] [file ...]";
+SET_USAGE = "%s [-u] [file ...]";
 
 static int
 cat(int f, const char *name) {

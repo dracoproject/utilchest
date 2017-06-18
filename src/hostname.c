@@ -8,7 +8,7 @@
 
 #include "util.h"
 
-static const char *usage = "[name]";
+SET_USAGE = "%s [name]";
 
 int
 main(int argc, char *argv[]) {

@@ -5,7 +5,7 @@
 
 #include "util.h"
 
-static const char *usage = "source target";
+SET_USAGE = "%s source target";
 
 int
 main(int argc, char *argv[]) {

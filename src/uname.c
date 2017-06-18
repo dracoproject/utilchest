@@ -14,7 +14,7 @@
 #define VER 0x10
 #define ALL (MAC|NOD|REL|SYS|VER)
 
-static const char *usage = "[-amnrsv]";
+SET_USAGE = "%s [-amnrsv]";
 
 int
 main(int argc, char *argv[]) {

@@ -8,7 +8,8 @@
 #include "fs.h"
 #include "util.h"
 
-static const char *usage = "[-afp] [-R [-H|-L|-P]] source ... dest";
+SET_USAGE = "%s [-afp] [-R [-H|-L|-P]] source target\n"
+            "%s [-afp] [-R [-H|-L|-P]] source ... target_dir";
 
 int
 main(int argc, char *argv[]) {

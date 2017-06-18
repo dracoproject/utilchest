@@ -8,6 +8,18 @@
 
 void
 wrong(const char *s) {
-	fprintf(stdout, "usage: %s %s\n", argv0, s);
+	fputs("usage: ", stderr);
+
+	for (; *s; s++) {
+		if (*s == '\n' && ++s)
+			fputs("\n       ", stderr);
+
+		if (*s == '%' && *++s == 's' && ++s)
+			fputs(argv0, stderr);
+
+		fputc(*s, stderr);
+	}
+	fputc('\n', stderr);
+
 	exit(1);
 }

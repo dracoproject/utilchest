@@ -6,7 +6,7 @@
 
 #include "util.h"
 
-static const char *usage = "[-p] dir...";
+SET_USAGE = "%s [-p] dir ...";
 
 static int
 rmdir_path(const char *p) {

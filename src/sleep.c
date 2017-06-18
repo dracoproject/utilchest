@@ -6,7 +6,7 @@
 
 #include "util.h"
 
-static const char *usage = "time";
+SET_USAGE = "%s time";
 
 int
 main(int argc, char *argv[]) {
