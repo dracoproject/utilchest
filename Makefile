@@ -14,6 +14,8 @@ HDR=\
 BIN=\
 	src/basename\
 	src/cat\
+	src/chgrp\
+	src/chown\
 	src/cp\
 	src/dirname\
 	src/domainname\
@@ -36,6 +38,7 @@ BIN=\
 
 # LIB SOURCE
 LIBFSSRC=\
+	lib/fs/chown.c\
 	lib/fs/cp.c\
 	lib/fs/ftr.c
 

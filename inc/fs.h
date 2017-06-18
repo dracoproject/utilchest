@@ -21,6 +21,10 @@ typedef struct {
 
 extern int ftr_follow;
 
+/* chown.c */
+int chown_file(const char *, uid_t, gid_t, int);
+int chown_folder(const char *, uid_t, gid_t, int);
+
 /* cp.c */
 int copy_file(const char *, const char *, int);
 int copy_folder(const char *, const char *, int);
