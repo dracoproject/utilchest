@@ -7,6 +7,9 @@
 
 #include "arg.h"
 
+/* estrtonum.c */
+long long estrtonum(const char *, long long, long long);
+
 /* fshut.c */
 int fshut(const char *, FILE *);
 
