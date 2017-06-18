@@ -25,6 +25,7 @@ BIN=\
 	src/mv\
 	src/printenv\
 	src/rmdir\
+	src/sleep\
 	src/sync\
 	src/true\
 	src/tty\
