@@ -18,17 +18,15 @@ main(int argc, char *argv[]) {
 	char *owner, *group;
 	gid_t gid = -1;
 	int (*chownf)(const char *, uid_t, gid_t, int) = chown_file;
-	int hflag = 0, rval = 0;
+	int rval = 0;
 	struct group *grp;
 	struct passwd *pwd;
 	uid_t uid = -1;
 
 	ARGBEGIN {
 	case 'h':
-		hflag = 1;
 		ftr_follow = 'H';
 		break;
-	case 'r':
 	case 'R':
 		chownf = chown_folder;
 		break;
@@ -43,10 +41,6 @@ main(int argc, char *argv[]) {
 
 	if (argc < 2)
 		wrong(usage);
-
-	if ((chownf == chown_folder) && hflag)
-		perr(1,
-		     "the -R and -h options may not be specified together\n");
 
 	owner = argv[0];
 	if ((group = strchr(owner, ':')))

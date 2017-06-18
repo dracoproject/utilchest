@@ -15,12 +15,11 @@ int
 main(int argc, char *argv[]) {
 	gid_t gid = -1;
 	int (*chownf)(const char *, uid_t, gid_t, int) = chown_file;
-	int hflag = 0, rval = 0;
+	int rval = 0;
 	struct group *grp;
 
 	ARGBEGIN {
 	case 'h':
-		hflag = 1;
 		ftr_follow = 'H';
 		break;
 	case 'R':
@@ -37,10 +36,6 @@ main(int argc, char *argv[]) {
 
 	if (argc < 2)
 		wrong(usage);
-
-	if ((chownf == chown_folder) && hflag)
-		perr(1,
-		     "the -R and -h options may not be specified together\n");
 
 	errno = 0;
 	if ((grp = getgrnam(argv[0])))
