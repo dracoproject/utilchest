@@ -15,6 +15,9 @@ static void
 vprint(const char *fmt, va_list ap) {
 	int sverrno = errno;
 
+	if (argv0)
+		fprintf(stderr, "%s: ", argv0);
+
 	vfprintf(stderr, fmt, ap);
 	if (*fmt && fmt[strlen(fmt)-1] == ':')
 		fprintf(stderr, " %s\n", strerror(sverrno));
