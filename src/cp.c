@@ -9,7 +9,7 @@
 #include "util.h"
 
 SET_USAGE = "%s [-afp] [-R [-H|-L|-P]] source target\n"
-            "%s [-afp] [-R [-H|-L|-P]] source ... target_dir";
+            "%s [-afp] [-R [-H|-L|-P]] source ... dir";
 
 int
 main(int argc, char *argv[]) {
