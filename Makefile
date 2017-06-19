@@ -27,6 +27,7 @@ BIN=\
 	src/mkdir\
 	src/mv\
 	src/printenv\
+	src/pwd\
 	src/rmdir\
 	src/sleep\
 	src/sync\
