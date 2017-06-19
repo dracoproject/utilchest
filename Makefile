@@ -23,6 +23,7 @@ BIN=\
 	src/false\
 	src/hostname\
 	src/link\
+	src/ln\
 	src/mkdir\
 	src/mv\
 	src/printenv\
