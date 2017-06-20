@@ -10,9 +10,9 @@
 #include "fs.h"
 #include "util.h"
 
-#define LN_F 0x1 /* force */
-#define LN_L 0x2 /* follow symlink */
-#define LN_S 0x4 /* create symlink */
+#define FORCE  0x1 /* force */
+#define FOLLOW 0x2 /* follow symlink */
+#define SYMLNK 0x4 /* create symlink */
 
 SET_USAGE = "%s [-f] [-L|-P|-s] source [target]\n"
             "%s [-f] [-L|-P|-s] source ... dir";
@@ -21,15 +21,15 @@ static int
 linkit(const char *src, const char *dest, int opts) {
 	int rval = 0;
 
-	if (opts & LN_F)
+	if (opts & FORCE)
 		unlink(dest);
 
-	if (opts & LN_S) {
+	if (opts & SYMLNK) {
 		if (symlink(src, dest))
 			rval = pwarn("symlink %s -> %s:", src, dest);
 	} else {
 		if (linkat(AT_FDCWD, src, AT_FDCWD, dest,
-		   (opts & LN_L) ? AT_SYMLINK_FOLLOW : 0))
+		   (opts & FOLLOW) ? AT_SYMLINK_FOLLOW : 0))
 			rval = pwarn("linkat %s:", src, dest);
 	}
 
@@ -45,16 +45,16 @@ main(int argc, char *argv[]) {
 
 	ARGBEGIN {
 	case 'f':
-		opts |= LN_F;
+		opts |= FORCE;
 		break;
 	case 's':
-		opts |= LN_S;
+		opts |= SYMLNK;
 		break;
 	case 'L':
-		opts |= LN_L;
+		opts |= FOLLOW;
 		break;
 	case 'P':
-		opts |= ~LN_L;
+		opts |= ~FOLLOW;
 		break;
 	default:
 		wrong(usage);

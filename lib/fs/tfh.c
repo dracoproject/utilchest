@@ -16,7 +16,7 @@
 int tfh_follow = 'P';
 
 int
-tfh_open(const char *p, FTR_DIR *dir) {
+tfh_open(const char *p, TFH_DIR *dir) {
 	dir->dir= (char *)p;
 	dir->dlen= strlen(dir->dir);
 	dir->path= NULL;
@@ -28,7 +28,7 @@ tfh_open(const char *p, FTR_DIR *dir) {
 }
 
 int
-tfh_read(FTR_DIR *dir, int rtime) {
+tfh_read(TFH_DIR *dir, int rtime) {
 	int (*statf)(const char *, struct stat *);
 	struct dirent *entry;
 

@@ -30,7 +30,7 @@ chown_file(const char *s, uid_t uid, gid_t gid, int depth) {
 
 int
 chown_folder(const char *s, uid_t uid, gid_t gid, int depth) {
-	FTR_DIR dir;
+	TFH_DIR dir;
 	int rval = 0;
 
 	if (tfh_open(s, &dir) < 0) {

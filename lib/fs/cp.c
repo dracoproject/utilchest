@@ -21,10 +21,10 @@ copy_file(const char *src, const char *dest, int opts) {
 	struct stat st, st1;
 	struct timespec times[2];
 
-	if (CP_T & opts)
+	if (CP_FFLAG & opts)
 		unlink(dest);
 
-	if ((TFH_FOLLOW(CP_T & opts) ? stat : lstat)(src, &st) < 0)
+	if ((TFH_FOLLOW(CP_FTIME & opts) ? stat : lstat)(src, &st) < 0)
 		return (pwarn("lstat %s:", src));
 
 	if (!(buf = malloc((st.st_size + 1) * sizeof(char))))
@@ -54,7 +54,8 @@ copy_file(const char *src, const char *dest, int opts) {
 			goto clean;
 		}
 
-		if ((CP_P & opts) && lchown(dest, st.st_uid, st.st_gid) < 0) {
+		if ((CP_PFLAG & opts)
+		    && lchown(dest, st.st_uid, st.st_gid) < 0) {
 			rval = pwarn("lchown %s:", dest);
 			goto clean;
 		}
@@ -93,7 +94,7 @@ copy_file(const char *src, const char *dest, int opts) {
 		}
 
 		fchmod(tf, st.st_mode);
-		if (CP_P & opts) {
+		if (CP_PFLAG & opts) {
 			times[0] = st.st_atim;
 			times[1] = st.st_mtim;
 
@@ -136,7 +137,7 @@ clean:
 int
 copy_folder(const char *src, const char *dest, int opts) {
 	char *buf = NULL;
-	FTR_DIR dir;
+	TFH_DIR dir;
 	int rval = 0;
 
 	if (tfh_open(src, &dir) < 0) {
@@ -145,7 +146,7 @@ copy_folder(const char *src, const char *dest, int opts) {
 		return rval;
 	}
 
-	if (!(CP_T & opts))
+	if (!(CP_FTIME & opts))
 		(void)mkdir(dest, 0777);
 
 	while (tfh_read(&dir, 0) != EOF) {
@@ -164,9 +165,9 @@ copy_folder(const char *src, const char *dest, int opts) {
 				return (pwarn("mkdir %s:", buf));
 			}
 
-			rval |= copy_folder(dir.path, buf, opts|CP_T);
+			rval |= copy_folder(dir.path, buf, opts|CP_FTIME);
 		} else
-			rval |= copy_file(dir.path, buf, opts|CP_T);
+			rval |= copy_file(dir.path, buf, opts|CP_FTIME);
 
 		free(buf);
 		buf = NULL;

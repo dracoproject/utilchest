@@ -22,13 +22,13 @@ main(int argc, char *argv[]) {
 	case 'a':
 		cp = copy_folder;
 		tfh_follow = 'P';
-		opts |= CP_P;
+		opts |= CP_PFLAG;
 		break;
 	case 'f':
-		opts |= CP_F;
+		opts |= CP_FFLAG;
 		break;
 	case 'p':
-		opts |= CP_P;
+		opts |= CP_PFLAG;
 		break;
 	case 'r':
 	case 'R':
