@@ -20,5 +20,5 @@ for (argv0 = *argv, argc--, argv++;\
 (_brk = 1, (argv[0][1] != '\0') ? (&argv[0][1]) : (argc--, argv++, argv[0])))
 
 #define EARGF(x) \
-((argv[0][1] == '\0' && !argv[1]) ? ((x), exit(1), (char *)0) :\
+((argv[0][1] == '\0' && !argv[1]) ? ((x), abort(), (char *)0) :\
 (_brk = 1, (argv[0][1] != '\0') ? (&argv[0][1]) : (argc--, argv++, argv[0])))
