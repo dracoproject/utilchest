@@ -7,7 +7,7 @@
 
 #define CP_F  0x1 /* force copy */
 #define CP_P  0x2 /* preserve permissions */
-#define CP_D  0x4 /* depth args/traversal */
+#define CP_T  0x4 /* first time running? */
 
 #define TFH_FOLLOW(a) ((tfh_follow == 'L') || ((tfh_follow == 'H') && !(a)))
 #define ISDOT(a) ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))

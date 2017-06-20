@@ -21,10 +21,10 @@ copy_file(const char *src, const char *dest, int opts) {
 	struct stat st, st1;
 	struct timespec times[2];
 
-	if (CP_F & opts)
+	if (CP_T & opts)
 		unlink(dest);
 
-	if ((TFH_FOLLOW(CP_D & opts) ? stat : lstat)(src, &st) < 0)
+	if ((TFH_FOLLOW(CP_T & opts) ? stat : lstat)(src, &st) < 0)
 		return (pwarn("lstat %s:", src));
 
 	if (!(buf = malloc((st.st_size + 1) * sizeof(char))))
@@ -145,7 +145,7 @@ copy_folder(const char *src, const char *dest, int opts) {
 		return rval;
 	}
 
-	if (!(CP_D & opts))
+	if (!(CP_T & opts))
 		(void)mkdir(dest, 0777);
 
 	while (tfh_read(&dir, 0) != EOF) {
@@ -164,9 +164,9 @@ copy_folder(const char *src, const char *dest, int opts) {
 				return (pwarn("mkdir %s:", buf));
 			}
 
-			rval |= copy_folder(dir.path, buf, CP_D|opts);
+			rval |= copy_folder(dir.path, buf, opts|CP_T);
 		} else
-			rval |= copy_file(dir.path, buf, CP_D|opts);
+			rval |= copy_file(dir.path, buf, opts|CP_T);
 
 		free(buf);
 		buf = NULL;
