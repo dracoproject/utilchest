@@ -26,6 +26,7 @@ BIN=\
 	src/ln\
 	src/mkdir\
 	src/mv\
+	src/nice\
 	src/printenv\
 	src/pwd\
 	src/rmdir\
