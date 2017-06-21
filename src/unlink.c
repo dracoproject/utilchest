@@ -14,7 +14,7 @@ main(int argc, char *argv[]) {
 	if (argc != 1)
 		wrong(usage);
 
-	if (unlink(*argv))
+	if (unlink(*argv) < 0)
 		perr(1, "unlink %s:", *argv);
 
 	return 0;
