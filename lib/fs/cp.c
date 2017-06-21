@@ -137,8 +137,8 @@ clean:
 int
 copy_folder(const char *src, const char *dest, int opts) {
 	char *buf = NULL;
-	TFH_DIR dir;
 	int rval = 0;
+	TFH_DIR dir;
 
 	if (tfh_open(src, &dir) < 0) {
 		rval = (errno == ENOTDIR) ? copy_file(src, dest, opts) :
@@ -149,7 +149,7 @@ copy_folder(const char *src, const char *dest, int opts) {
 	if (!(CP_FTIME & opts))
 		(void)mkdir(dest, 0777);
 
-	while (tfh_read(&dir, 0) != EOF) {
+	while (tfh_read(&dir, (opts & CP_FTIME)) != EOF) {
 		if (ISDOT(dir.name))
 			continue;
 
