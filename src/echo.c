@@ -13,12 +13,8 @@ main(int argc, char *argv[]) {
 	if (*++argv && !strcmp(*argv, "-n"))
 		nflag++, argv++;
 
-	for (argc -= 1; *argv; argc--, argv++) {
-		fputs(*argv, stdout);
-
-		if (argc - 1)
-			putchar(' ');
-	}
+	for (argc -= 1; *argv; argc--, argv++)
+		putstr(*argv, stdout);
 
 	if (!nflag)
 		putchar('\n');
