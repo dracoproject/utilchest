@@ -48,7 +48,7 @@ main(int argc, char *argv[]) {
 	case 1:
 		wrong(usage);
 	case 2:
-		exit(cp(argv[0], argv[1], opts));
+		exit(cp(argv[0], pcat(argv[0], argv[1], 0), opts));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -59,7 +59,7 @@ main(int argc, char *argv[]) {
 		wrong(usage);
 
 	for (; *argv != sourcedir; argc--, argv++)
-		rval |= cp(*argv, sourcedir, opts);
+		rval |= cp(*argv, pcat(*argv, sourcedir, 1), opts);
 
 	return rval;
 }

@@ -44,6 +44,7 @@ BIN=\
 LIBFSSRC=\
 	lib/fs/chown.c\
 	lib/fs/cp.c\
+	lib/fs/pcat.c\
 	lib/fs/tfh.c
 
 LIBUTILSRC=\

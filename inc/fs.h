@@ -29,6 +29,9 @@ int chown_folder(const char *, uid_t, gid_t, int);
 int copy_file(const char *, const char *, int);
 int copy_folder(const char *, const char *, int);
 
+/* pcat.c */
+char * pcat(const char *, const char *, int);
+
 /* tfh.c */
 int tfh_open(const char *, TFH_DIR *);
 int tfh_read(TFH_DIR *, int);

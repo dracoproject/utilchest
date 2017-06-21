@@ -41,7 +41,7 @@ main(int argc, char *argv[]) {
 	case 1:
 		wrong(usage);
 	case 2:
-		exit(move(argv[0], argv[1]));
+		exit(move(argv[0], pcat(argv[0], argv[1], 0)));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -52,7 +52,7 @@ main(int argc, char *argv[]) {
 		perr(1, "%s: not a directory\n", sourcedir);
 
 	for (; *argv != sourcedir; argv++)
-		rval |= move(*argv, sourcedir);
+		rval |= move(*argv, pcat(*argv, sourcedir, 1));
 
 	return rval;
 }
