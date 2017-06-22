@@ -21,6 +21,7 @@ BIN=\
 	src/domainname\
 	src/echo\
 	src/false\
+	src/head\
 	src/hostname\
 	src/link\
 	src/ln\
