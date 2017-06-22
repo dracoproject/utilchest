@@ -3,6 +3,7 @@
  */
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "util.h"
@@ -39,7 +40,10 @@ main(int argc, char *argv[]) {
 		cat(0, "<stdin>");
 
 	for (; *argv; argv++) {
-		if ((f = open(*argv, O_RDONLY, 0)) < 0) {
+		if (!strcmp(*argv, "-")) {
+			*argv = "<stdin>";
+			f = 0;
+		} else if ((f = open(*argv, O_RDONLY, 0)) < 0) {
 			rval = pwarn("open %s:", *argv);
 			continue;
 		}
