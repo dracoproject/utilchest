@@ -40,15 +40,15 @@ rm_file(const char *f, int opts) {
 static int
 rm_folder(const char *f, int opts) {
 	int rval = 0;
-	TFH_DIR dir;
+	FS_DIR dir;
 
-	if (tfh_open(f, &dir) < 0) {
+	if (open_dir(f, &dir) < 0) {
 		rval = (errno == ENOTDIR) ? rm_file(f, opts) :
-		       pwarn("tfh_open %s:", f);
+		       pwarn("open_dir %s:", f);
 		return rval;
 	}
 
-	while (tfh_read(&dir, (opts & FTIME)) != EOF) {
+	while (read_dir(&dir, (opts & FTIME)) != EOF) {
 		if (ISDOT(dir.name))
 			continue;
 

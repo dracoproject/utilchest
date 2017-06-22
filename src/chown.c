@@ -25,7 +25,7 @@ main(int argc, char *argv[]) {
 
 	ARGBEGIN {
 	case 'h':
-		tfh_follow = 'H';
+		fs_follow = 'H';
 		break;
 	case 'R':
 		chownf = chown_folder;
@@ -33,7 +33,7 @@ main(int argc, char *argv[]) {
 	case 'H':
 	case 'L':
 	case 'P':
-		tfh_follow = ARGC();
+		fs_follow = ARGC();
 		break;
 	default:
 		wrong(usage);

@@ -21,7 +21,7 @@ main(int argc, char *argv[]) {
 	ARGBEGIN {
 	case 'a':
 		cp = copy_folder;
-		tfh_follow = 'P';
+		fs_follow = 'P';
 		opts |= CP_PFLAG;
 		break;
 	case 'f':
@@ -37,7 +37,7 @@ main(int argc, char *argv[]) {
 	case 'H':
 	case 'L':
 	case 'P':
-		tfh_follow = ARGC();
+		fs_follow = ARGC();
 		break;
 	default:
 		wrong(usage);

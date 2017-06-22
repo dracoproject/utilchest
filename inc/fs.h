@@ -9,7 +9,7 @@
 #define CP_PFLAG 0x2 /* preserve permissions */
 #define CP_FTIME 0x4 /* first time running? */
 
-#define TFH_FOLLOW(a) ((tfh_follow == 'L') || ((tfh_follow == 'H') && !(a)))
+#define FS_FOLLOW(a) ((fs_follow == 'L') || ((fs_follow == 'H') && !(a)))
 #define ISDOT(a) ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
 
 typedef struct {
@@ -17,9 +17,9 @@ typedef struct {
 	char *dir, *name, *path;
 	size_t dlen, nlen, plen;
 	struct stat info;
-} TFH_DIR;
+} FS_DIR;
 
-extern int tfh_follow;
+extern int fs_follow;
 
 /* chown.c */
 int chown_file(const char *, uid_t, gid_t, int);
@@ -29,9 +29,9 @@ int chown_folder(const char *, uid_t, gid_t, int);
 int copy_file(const char *, const char *, int);
 int copy_folder(const char *, const char *, int);
 
+/* dir.c */
+int open_dir(const char *, FS_DIR *);
+int read_dir(FS_DIR *, int);
+
 /* pcat.c */
 char * pcat(const char *, const char *, int);
-
-/* tfh.c */
-int tfh_open(const char *, TFH_DIR *);
-int tfh_read(TFH_DIR *, int);

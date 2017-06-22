@@ -24,7 +24,7 @@ copy_file(const char *src, const char *dest, int opts) {
 	if (CP_FFLAG & opts)
 		unlink(dest);
 
-	if ((TFH_FOLLOW(CP_FTIME & opts) ? stat : lstat)(src, &st) < 0)
+	if ((FS_FOLLOW(CP_FTIME & opts) ? stat : lstat)(src, &st) < 0)
 		return (pwarn("lstat %s:", src));
 
 	if (!(buf = malloc((st.st_size + 1) * sizeof(char))))
@@ -138,18 +138,18 @@ int
 copy_folder(const char *src, const char *dest, int opts) {
 	char *buf = NULL;
 	int rval = 0;
-	TFH_DIR dir;
+	FS_DIR dir;
 
-	if (tfh_open(src, &dir) < 0) {
+	if (open_dir(src, &dir) < 0) {
 		rval = (errno == ENOTDIR) ? copy_file(src, dest, opts) :
-		       pwarn("tfh_open %s:", src);
+		       pwarn("open_dir %s:", src);
 		return rval;
 	}
 
 	if (!(CP_FTIME & opts))
 		(void)mkdir(dest, 0777);
 
-	while (tfh_read(&dir, (opts & CP_FTIME)) != EOF) {
+	while (read_dir(&dir, (opts & CP_FTIME)) != EOF) {
 		if (ISDOT(dir.name))
 			continue;
 

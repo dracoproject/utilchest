@@ -14,7 +14,7 @@ chown_file(const char *s, uid_t uid, gid_t gid, int depth) {
 	int (*chownf)(const char *, uid_t, gid_t);
 	struct stat st;
 
-	if ((TFH_FOLLOW(depth) ? stat : lstat)(s, &st) < 0)
+	if ((FS_FOLLOW(depth) ? stat : lstat)(s, &st) < 0)
 		return (pwarn("(l)stat %s:", s));
 
 	if (!S_ISLNK(st.st_mode))
@@ -30,15 +30,15 @@ chown_file(const char *s, uid_t uid, gid_t gid, int depth) {
 
 int
 chown_folder(const char *s, uid_t uid, gid_t gid, int depth) {
-	TFH_DIR dir;
+	FS_DIR dir;
 	int rval = 0;
 
-	if (tfh_open(s, &dir) < 0) {
+	if (open_dir(s, &dir) < 0) {
 		rval = (errno == ENOTDIR) ? chown_file(s, uid, gid, depth) :
-		       pwarn("tfh_open:", s);
+		       pwarn("open_dir:", s);
 	}
 
-	while (tfh_read(&dir, depth) != EOF) {
+	while (read_dir(&dir, depth) != EOF) {
 		if (ISDOT(dir.name))
 			continue;
 

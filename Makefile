@@ -45,8 +45,8 @@ BIN=\
 LIBFSSRC=\
 	lib/fs/chown.c\
 	lib/fs/cp.c\
-	lib/fs/pcat.c\
-	lib/fs/tfh.c
+	lib/fs/dir.c\
+	lib/fs/pcat.c
 
 LIBUTILSRC=\
 	lib/util/estrtonum.c\
