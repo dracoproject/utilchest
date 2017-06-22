@@ -42,7 +42,7 @@ main(int argc, char *argv[]) {
 	for (; *argv; argv++) {
 		if (!strcmp(*argv, "-")) {
 			*argv = "<stdin>";
-			f = 0;
+			f = STDIN_FILENO;
 		} else if ((f = open(*argv, O_RDONLY, 0)) < 0) {
 			rval = pwarn("open %s:", *argv);
 			continue;
