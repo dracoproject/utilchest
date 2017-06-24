@@ -13,11 +13,11 @@ SET_USAGE = "%s [-n number] [file ...]";
 static void
 head(const char *fname, FILE *f, size_t n) {
 	char *buf = NULL;
-	size_t p = 0, sz = 0;
+	size_t i = 0, bsize = 0;
  	ssize_t len;
 
-	for (; p < n; p++) {
-		if ((len = getline(&buf, &sz, f)) < 0)
+	for (; i < n; i++) {
+		if ((len = getline(&buf, &bsize, f)) < 0)
 			break;
 
 		fwrite(buf, sizeof(char), len, stdout);
