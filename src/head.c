@@ -33,7 +33,7 @@ head(const char *fname, FILE *f, size_t n) {
 int
 main(int argc, char *argv[]) {
 	FILE *fp;
-	int first = 0, rval = 0;
+	int first = 1, rval = 0;
 	size_t n = 10;
 
 	ARGBEGIN {
@@ -47,7 +47,7 @@ main(int argc, char *argv[]) {
 	if (!argc)
 		head("<stdin>", stdin, n);
 
-	for (; *argv; argc--, argv++) {
+	for (; *argv; argv++) {
 		if (!strcmp(*argv, "-")) {
 			*argv = "<stdin>";
 			fp = stdin;
@@ -56,8 +56,10 @@ main(int argc, char *argv[]) {
 			continue;
 		}
 
-		if (argc > 1)
-			printf("%s==> %s <==\n", first++ ? "\n" : "", *argv);
+		if (argc > 1) {
+			printf("%s==> %s <==\n", first ? "" : "\n", *argv);
+			first = 0;
+		}
 
 		head(*argv, fp, n);
 
