@@ -13,9 +13,11 @@
 #include "fs.h"
 #include "util.h"
 
+#define SIZE(a, b) (strlen((a)) + strlen((b)) + 2)
+
 int
 copy_file(const char *src, const char *dest, int opts) {
-	char *buf = NULL;
+	char buf[BUFSIZ], pb[PATH_MAX];
 	int sf = -1, tf = -1, rval = 0;
 	ssize_t rf = 0;
 	struct stat st, st1;
@@ -27,45 +29,29 @@ copy_file(const char *src, const char *dest, int opts) {
 	if ((FS_FOLLOW(CP_FTIME & opts) ? stat : lstat)(src, &st) < 0)
 		return (pwarn("lstat %s:", src));
 
-	if (!(buf = malloc((st.st_size + 1) * sizeof(char))))
-		perr(1, "malloc:");
-
 	switch ((st.st_mode & S_IFMT)) {
 	case S_IFDIR:
 		errno = EISDIR;
-		rval = pwarn("%s:", src);
-
-		goto clean;
-		/*NOTREACHED*/
+		return (pwarn("%s:", src));
 	case S_IFLNK:
-		if ((rf = readlink(src, buf, st.st_size)) < 0) {
-			rval = pwarn("readlink %s:", src);
-			goto clean;
-		}
-		buf[rf] = '\0';
+		if ((rf = readlink(src, pb, sizeof(pb)-1)) < 0)
+			return (pwarn("readlink %s:", src));
+		pb[rf] = '\0';
 
-		if (st.st_size < rf) {
-			rval = pwarn("%s: symlink increased in size\n", src);
-			goto clean;
-		}
+		if (st.st_size < rf)
+			return (pwarn("%s: symlink increased in size\n", src));
 
-		if (symlink(buf, dest) < 0) {
-			rval = pwarn("symlink %s:", dest);
-			goto clean;
-		}
+		if (symlink(pb, dest) < 0)
+			return (pwarn("symlink %s:", dest));
 
 		if ((CP_PFLAG & opts)
-		    && lchown(dest, st.st_uid, st.st_gid) < 0) {
-			rval = pwarn("lchown %s:", dest);
-			goto clean;
-		}
+		    && lchown(dest, st.st_uid, st.st_gid) < 0)
+			return (pwarn("lchown %s:", dest));
 
 		break;
 	case S_IFREG:
-		if ((sf = open(src, O_RDONLY, 0)) < 0) {
-			rval = pwarn("open %s:", src);
-			goto clean;
-		}
+		if ((sf = open(src, O_RDONLY, 0)) < 0)
+			return (pwarn("open %s:", src));
 
 		if (fstat(sf, &st1) < 0) {
 			rval = pwarn("fstat %s:", src);
@@ -82,7 +68,7 @@ copy_file(const char *src, const char *dest, int opts) {
 			goto clean;
 		}
 
-		while ((rf = read(sf, buf, st.st_size)) > 0)
+		while ((rf = read(sf, buf, sizeof(buf))) > 0)
 			if (write(tf, buf, rf) != rf) {
 				rval = pwarn("write %s:", dest);
 				goto clean;
@@ -108,35 +94,27 @@ copy_file(const char *src, const char *dest, int opts) {
 				goto clean;
 			}
 		}
+clean:
+		if ((sf != -1) && (close(sf) < 0))
+			rval = pwarn("close %s:", src);
+
+		if ((tf != -1) && (close(tf) < 0))
+			rval = pwarn("close %s:", dest);
 
 		break;
 	default:
-		if (mknod(dest, st.st_mode, st.st_dev) < 0) {
-			rval = pwarn("mknod %s:", dest);
-			goto clean;
-		}
+		if (mknod(dest, st.st_mode, st.st_dev) < 0)
+			return (pwarn("mknod %s:", dest));
 
 		break;
 	}
-
-clean:
-	if (buf != NULL) {
-		free(buf);
-		buf = NULL;
-	}
-
-	if ((sf != -1) && (close(sf) < 0))
-		rval = pwarn("close %s:", src);
-
-	if ((tf != -1) && (close(tf) < 0))
-		rval = pwarn("close %s:", dest);
 
 	return rval;
 }
 
 int
 copy_folder(const char *src, const char *dest, int opts) {
-	char *buf = NULL;
+	char buf[PATH_MAX];
 	int rval = 0;
 	FS_DIR dir;
 
@@ -153,24 +131,21 @@ copy_folder(const char *src, const char *dest, int opts) {
 		if (ISDOT(dir.name))
 			continue;
 
-		if (!(buf = malloc(strlen(dest) + dir.nlen + 2)))
-			perr(1, "malloc:");
+		if (SIZE(dest, dir.name) >= sizeof(buf)) {
+			errno = ENAMETOOLONG;
+			return (pwarn("sprintf %s/%s:", dest, dir.name));
+		}
 
 		sprintf(buf, "%s/%s", dest, dir.name);
 
 		if (S_ISDIR(dir.info.st_mode)) {
 			if (mkdir(buf, dir.info.st_mode) < 0
-			    && errno != EEXIST) {
-				free(buf); buf = NULL;
+			    && errno != EEXIST)
 				return (pwarn("mkdir %s:", buf));
-			}
 
 			rval |= copy_folder(dir.path, buf, opts|CP_FTIME);
 		} else
 			rval |= copy_file(dir.path, buf, opts|CP_FTIME);
-
-		free(buf);
-		buf = NULL;
 	}
 
 	return rval;
