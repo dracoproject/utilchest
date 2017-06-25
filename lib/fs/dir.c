@@ -38,12 +38,10 @@ read_dir(FS_DIR *dir, int rtime) {
 		statf = lstat;
 
 	if ((entry = readdir(dir->dirp))) {
-		if (dir->path)
-			free(dir->path);
-
 		dir->name = entry->d_name;
 		dir->nlen = strlen(dir->name);
 
+		free(dir->path);
 		if (!(dir->path = malloc(dir->dlen + dir->nlen + 2)))
 			perr(1, "malloc:");
 
