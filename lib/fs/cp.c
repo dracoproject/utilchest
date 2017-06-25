@@ -5,6 +5,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -69,7 +70,7 @@ copy_file(const char *src, const char *dest, int opts) {
 			goto clean;
 		}
 
-		while ((rf = read(sf, buf, sizeof(buf))) > 0)
+		while ((rf = read(sf, buf, sizeof(buf))))
 			if (write(tf, buf, rf) != rf) {
 				rval = pwarn("write %s:", dest);
 				goto clean;
