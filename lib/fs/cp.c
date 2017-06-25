@@ -17,7 +17,7 @@
 
 int
 copy_file(const char *src, const char *dest, int opts) {
-	char buf[BUFSIZ], pb[PATH_MAX];
+	char buf[BUFSIZ], path[PATH_MAX];
 	int sf = -1, tf = -1, rval = 0;
 	ssize_t rf = 0;
 	struct stat st, st1;
@@ -33,15 +33,16 @@ copy_file(const char *src, const char *dest, int opts) {
 	case S_IFDIR:
 		errno = EISDIR;
 		return (pwarn("%s:", src));
+		/*NOTREACHED*/
 	case S_IFLNK:
-		if ((rf = readlink(src, pb, sizeof(pb)-1)) < 0)
+		if ((rf = readlink(src, path, sizeof(path)-1)) < 0)
 			return (pwarn("readlink %s:", src));
-		pb[rf] = '\0';
+		path[rf] = '\0';
 
 		if (st.st_size < rf)
 			return (pwarn("%s: symlink increased in size\n", src));
 
-		if (symlink(pb, dest) < 0)
+		if (symlink(path, dest) < 0)
 			return (pwarn("symlink %s:", dest));
 
 		if ((CP_PFLAG & opts)
