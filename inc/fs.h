@@ -7,7 +7,6 @@
 
 #define CP_FFLAG 0x1 /* force copy */
 #define CP_PFLAG 0x2 /* preserve permissions */
-#define CP_FTIME 0x4 /* first time running? */
 
 #define FS_FOLLOW(a) ((fs_follow == 'L') || ((fs_follow == 'H') && !(a)))
 #define ISDOT(a) ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
@@ -26,8 +25,8 @@ int chown_file(const char *, uid_t, gid_t, int);
 int chown_folder(const char *, uid_t, gid_t, int);
 
 /* cp.c */
-int copy_file(const char *, const char *, int);
-int copy_folder(const char *, const char *, int);
+int copy_file(const char *, const char *, int, int);
+int copy_folder(const char *, const char *, int, int);
 
 /* dir.c */
 int open_dir(const char *, FS_DIR *);

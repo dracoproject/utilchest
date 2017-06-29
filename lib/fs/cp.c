@@ -17,7 +17,7 @@
 #define SIZE(a, b) (strlen((a)) + strlen((b)) + 2)
 
 int
-copy_file(const char *src, const char *dest, int opts) {
+copy_file(const char *src, const char *dest, int depth, int opts) {
 	char buf[BUFSIZ], path[PATH_MAX];
 	int sf = -1, tf = -1, rval = 0;
 	ssize_t rf = 0;
@@ -27,7 +27,7 @@ copy_file(const char *src, const char *dest, int opts) {
 	if (CP_FFLAG & opts)
 		unlink(dest);
 
-	if ((FS_FOLLOW(CP_FTIME & opts) ? stat : lstat)(src, &st) < 0)
+	if ((FS_FOLLOW(depth) ? stat : lstat)(src, &st) < 0)
 		return (pwarn("lstat %s:", src));
 
 	switch ((st.st_mode & S_IFMT)) {
@@ -115,21 +115,21 @@ clean:
 }
 
 int
-copy_folder(const char *src, const char *dest, int opts) {
+copy_folder(const char *src, const char *dest, int depth, int opts) {
 	char buf[PATH_MAX];
 	int rval = 0;
 	FS_DIR dir;
 
 	if (open_dir(src, &dir) < 0) {
-		rval = (errno == ENOTDIR) ? copy_file(src, dest, opts) :
+		rval = (errno == ENOTDIR) ? copy_file(src, dest, depth, opts) :
 		       pwarn("open_dir %s:", src);
 		return rval;
 	}
 
-	if (!(CP_FTIME & opts))
+	if (!depth)
 		(void)mkdir(dest, 0777);
 
-	while (read_dir(&dir, (opts & CP_FTIME)) != EOF) {
+	while (read_dir(&dir, depth) != EOF) {
 		if (ISDOT(dir.name))
 			continue;
 
@@ -145,9 +145,9 @@ copy_folder(const char *src, const char *dest, int opts) {
 			    && errno != EEXIST)
 				return (pwarn("mkdir %s:", buf));
 
-			rval |= copy_folder(dir.path, buf, opts|CP_FTIME);
+			rval |= copy_folder(dir.path, buf, depth+1, opts);
 		} else
-			rval |= copy_file(dir.path, buf, opts|CP_FTIME);
+			rval |= copy_file(dir.path, buf, depth, opts);
 	}
 
 	return rval;
