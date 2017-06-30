@@ -522,8 +522,7 @@ ls_folder(const char *s, int depth, int more) {
 int
 main(int argc, char *argv[]) {
 	char *temp;
-	int i, kflag = 0, rval = 0;
-	struct stat st;
+	int kflag = 0, rval = 0;
 	struct winsize w;
 
 	if (!(ioctl(fileno(stdout), TIOCGWINSZ, &w)) && w.ws_col > 0)
