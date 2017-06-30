@@ -70,7 +70,7 @@ copy_file(const char *src, const char *dest, int depth, int opts) {
 			goto clean;
 		}
 
-		while ((rf = read(sf, buf, sizeof(buf))))
+		while ((rf = read(sf, buf, sizeof(buf))) > 0)
 			if (write(tf, buf, rf) != rf) {
 				rval = pwarn("write %s:", dest);
 				goto clean;
