@@ -8,6 +8,7 @@ INC= inc
 HDR=\
 	inc/arg.h\
 	inc/fs.h\
+	inc/utf.h\
 	inc/util.h
 
 # SOURCE
@@ -25,6 +26,7 @@ BIN=\
 	src/hostname\
 	src/link\
 	src/ln\
+	src/ls\
 	src/mkdir\
 	src/mv\
 	src/nice\
@@ -48,6 +50,13 @@ LIBFSSRC=\
 	lib/fs/dir.c\
 	lib/fs/pcat.c
 
+LIBUTFSRC=\
+	lib/utf/chartorune.c\
+	lib/utf/iscntrlrune.c\
+	lib/utf/isprintrune.c\
+	lib/utf/isvalidrune.c\
+	lib/utf/runetype.c
+
 LIBUTILSRC=\
 	lib/util/estrtonum.c\
 	lib/util/fshut.c\
@@ -58,15 +67,17 @@ LIBUTILSRC=\
 
 # LIB PATH
 LIBFS= lib/libfs.a
+LIBUTF= lib/libutf.a
 LIBUTIL= lib/libutil.a
 
 # LIB OBJS
 LIBFSOBJ= $(LIBFSSRC:.c=.o)
+LIBUTFOBJ= $(LIBUTFSRC:.c=.o)
 LIBUTILOBJ= $(LIBUTILSRC:.c=.o)
 
 # ALL
-LIB= $(LIBUTIL) $(LIBFS)
-OBJ= $(BIN:=.o) $(LIBUTILOBJ) $(LIBFSOBJ)
+LIB= $(LIBUTIL) $(LIBFS) $(LIBUTF)
+OBJ= $(BIN:=.o) $(LIBUTILOBJ) $(LIBFSOBJ) $(LIBUTFOBJ)
 SRC= $(BIN:=.c)
 
 # VAR RULES
@@ -84,6 +95,10 @@ $(OBJ): $(HDR) config.mk
 
 # LIBRARIES RULES
 $(LIBFS): $(LIBFSOBJ)
+	$(AR) rc $@ $?
+	$(RANLIB) $@
+
+$(LIBUTF): $(LIBUTFOBJ)
 	$(AR) rc $@ $?
 	$(RANLIB) $@
 
