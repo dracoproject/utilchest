@@ -78,7 +78,7 @@ SET_USAGE = "%s [-1AaCcFfiklmnpqrSstux] [file ...]";
 /* MAKE STRUCTURES */
 
 static int
-mkcolumn(struct entry *ents, struct esmax *max, struct columns *sco) {
+mkcolumn(struct columns *sco, struct entry *ents, struct esmax *max) {
 	int twidth = 0;
 
 	sco->colwidth = max->len;
@@ -306,7 +306,7 @@ printacol(struct entry *ents, struct esmax *max) {
 	size_t i = 0;
 	struct columns sco;
 
-	if ((mkcolumn(ents, max, &sco)))
+	if ((mkcolumn(&sco, ents, max)))
 		return;
 
 	for (; i < max->total; col++, i++) {
@@ -329,7 +329,7 @@ printcol(struct entry *ents, struct esmax *max) {
 	int base, num, numrows;
 	struct columns sco;
 
-	if ((mkcolumn(ents, max, &sco)))
+	if ((mkcolumn(&sco, ents, max)))
 		return;
 
 	num = max->total;
@@ -494,7 +494,7 @@ ls_folder(const char *s, int depth, int more) {
 	mkesmax(pmax, *ents, size);
 	printfcn(ents, pmax);
 
-	if (recurse == 'R') {
+	if (recurse == 'R')
 		for (i = 0; i < size; i++) {
 			if (ISDOT(ents[i].name))
 				continue;
@@ -502,7 +502,6 @@ ls_folder(const char *s, int depth, int more) {
 				continue;
 			ls_folder(ents[i].path, depth+1, more);
 		}
-	}
 
 	for (i = 0; i < size; i++) {
 		free(ents[i].path);
