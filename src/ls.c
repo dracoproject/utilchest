@@ -519,7 +519,7 @@ ls_folder(const char *s, int depth, int more) {
 static int
 ls(int argc, char **argv) {
 	char **dents = NULL;
-	int fs = 0, ds = 0, i = 0, rval = 0;
+	int fs = 0, ds = 0, i = 0, more = 0, rval = 0;
 	struct entry *fents = NULL;
 	struct esmax max = {0}, *pmax = &max;
 	struct stat st;
@@ -568,8 +568,9 @@ ls(int argc, char **argv) {
 	free(fents);
 
 printdir:
+	more = argc > 1;
 	for (i = 0; i < ds; i++)
-		ls_folder(dents[i], 0, 1);
+		ls_folder(dents[i], 0, more);
 
 	free(dents);
 
@@ -660,6 +661,10 @@ main(int argc, char *argv[]) {
 	if ((printfcn != printscol) && (temp = getenv("COLUMNS")))
 		termwidth = estrtonum(temp, 0, UINT_MAX);
 
+	if (!argc)
+		argc++, *argv = ".";
+
 	rval = ls(argc, argv);
+
 	return (rval | fshut("<stdout>", stdout));
 }
