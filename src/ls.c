@@ -76,7 +76,6 @@ SET_USAGE = "%s [-1AaCcFfiklmnpqrSstux] [file ...]";
 
 
 /* MAKE STRUCTURES */
-
 static int
 mkcolumn(struct columns *sco, struct entry *ents, struct esmax *max) {
 	int twidth = 0;
@@ -104,40 +103,40 @@ mkcolumn(struct columns *sco, struct entry *ents, struct esmax *max) {
 }
 
 static void
-mkentry(struct entry *ent, char *path, struct stat info) {
+mkentry(struct entry *ent, char *path, int bname, struct stat *info) {
 	char user[32], group[32];
 	struct group  *gr;
 	struct passwd *pw;
 
-	ent->info = info;
+	ent->info = *info;
 	ent->path = path;
-	ent->name = basename(ent->path);
+	ent->name = bname ? basename(ent->path) : ent->path;
 	ent->len  = strlen(ent->name);
 
 	switch (times) {
 	case 'c':
-		ent->tm = info.st_ctim;
+		ent->tm = info->st_ctim;
 		break;
 	case 'u':
-		ent->tm = info.st_atim;
+		ent->tm = info->st_atim;
 		break;
 	default:
-		ent->tm = info.st_mtim;
+		ent->tm = info->st_mtim;
 		break;
 	}
 
 	if (printfcn != printlong)
 		return;
 
-	if (!nflag && (pw = getpwuid(info.st_uid)))
+	if (!nflag && (pw = getpwuid(info->st_uid)))
 		snprintf(user, sizeof(user), "%s", pw->pw_name);
 	else
-		snprintf(user, sizeof(user), "%d", info.st_uid);
+		snprintf(user, sizeof(user), "%d", info->st_uid);
 
-	if (!nflag && (gr = getgrgid(info.st_gid)))
+	if (!nflag && (gr = getgrgid(info->st_gid)))
 		snprintf(group, sizeof(group), "%s", gr->gr_name);
 	else
-		snprintf(group, sizeof(group), "%d", info.st_gid);
+		snprintf(group, sizeof(group), "%d", info->st_gid);
 
 	if (!(ent->group = strdup(group)))
 		perr(1, "strdup:");
@@ -150,24 +149,24 @@ mkentry(struct entry *ent, char *path, struct stat info) {
 }
 
 static void
-mkesmax(struct esmax *max, struct entry ent, size_t total) {
+mkesmax(struct esmax *max, struct entry *ent, size_t total) {
 	char buf[21];
 
 	if (total)
 		goto make;
 
 	/* default */
-	max->len   = BIG(ent.len, max->len);
-	max->ino   = BIG(ent.info.st_ino, max->ino);
-	max->block = BIG(ent.info.st_blocks, max->block);
+	max->len   = BIG(ent->len, max->len);
+	max->ino   = BIG(ent->info.st_ino, max->ino);
+	max->block = BIG(ent->info.st_blocks, max->block);
 
 	/* long */
-	max->s_uid = BIG(ent.ulen, max->s_uid);
-	max->s_gid = BIG(ent.glen, max->s_gid);
-	max->nlink = BIG(ent.info.st_nlink, max->nlink);
-	max->size  = BIG(ent.info.st_size, max->size);
+	max->s_uid = BIG(ent->ulen, max->s_uid);
+	max->s_gid = BIG(ent->glen, max->s_gid);
+	max->nlink = BIG(ent->info.st_nlink, max->nlink);
+	max->size  = BIG(ent->info.st_size, max->size);
 
-	max->btotal += ent.info.st_blocks;
+	max->btotal += ent->info.st_blocks;
 
 	return;
 
@@ -373,10 +372,10 @@ printlong(struct entry *ents, struct esmax *max) {
 		       p->st_nlink, max->s_uid, ep->user, max->s_gid, ep->group);
 
 		if (S_ISBLK(p->st_mode) || S_ISCHR(p->st_mode))
-			printf("%3d %3d ",
+			printf("%3d, %3d ",
 			       major(p->st_rdev), minor(p->st_rdev));
 		else
-			printf("%*lld ",
+			printf("%*s%*lld ", 8 - max->s_size, "",
 			       max->s_size, (long long)p->st_size);
 
 		printtime(ep->tm);
@@ -459,7 +458,6 @@ ls_folder(const char *s, int depth, int more) {
 	struct entry *ents = NULL;
 	struct esmax max = {0}, *pmax = &max;
 
-	/* TODO: PRINT FILE */
 	if (open_dir(s, &dir) < 0)
 		return (pwarn("ls_folder %s:", s));
 
@@ -478,8 +476,8 @@ ls_folder(const char *s, int depth, int more) {
 		if (!(ents = REALLOC(ents, ++size)))
 			perr(1, "realloc:");
 
-		mkentry(&ents[size - 1], dir.path, dir.info);
-		mkesmax(pmax, ents[size - 1], 0);
+		mkentry(&ents[size - 1], dir.path, 1, &dir.info);
+		mkesmax(pmax, &ents[size - 1], 0);
 
 		dir.path = NULL; /* Avoid free */
 	}
@@ -491,7 +489,7 @@ ls_folder(const char *s, int depth, int more) {
 		printf("total %lu\n",
 		       howmany((long unsigned)pmax->btotal, blocksize));
 
-	mkesmax(pmax, *ents, size);
+	mkesmax(pmax, NULL, size);
 	printfcn(ents, pmax);
 
 	if (recurse == 'R')
@@ -516,6 +514,66 @@ ls_folder(const char *s, int depth, int more) {
 	free(ents);
 
 	return 0;
+}
+
+static int
+ls(int argc, char **argv) {
+	char **dents = NULL;
+	int fs = 0, ds = 0, i = 0, rval = 0;
+	struct entry *fents = NULL;
+	struct esmax max = {0}, *pmax = &max;
+	struct stat st;
+
+	for (; i < argc; i++) {
+		if ((FS_FOLLOW(0) ? stat : lstat)(argv[i], &st) < 0) {
+			rval = pwarn("(l)stat %s:", argv[i]);
+			continue;
+		}
+
+		if (recurse != 'd' && S_ISDIR(st.st_mode)) {
+			if (!(dents = realloc(dents, ++ds * sizeof(char*))))
+				perr(1, "realloc:");
+
+			dents[ds - 1] = argv[i];
+			continue;
+		}
+
+		if (!(fents = REALLOC(fents, ++fs)))
+			perr(1, "realloc:");
+
+		mkentry(&fents[fs - 1], argv[i], 0, &st);
+		mkesmax(pmax, &fents[fs - 1], 0);
+	}
+
+	if (!fs)
+		goto printdir;
+
+	first = 0;
+	if ((fs != 1) && (sort != 'f'))
+		qsort(fents, fs, sizeof(*fents), cmp);
+
+	if (sflag || iflag || (printfcn == printlong))
+		printf("total %lu\n",
+		       howmany((long unsigned)max.btotal, blocksize));
+
+	mkesmax(pmax, NULL, fs);
+	printfcn(fents, pmax);
+
+	if (printfcn == printlong)
+		for (i = 0; i < fs; i++) {
+			free(fents[i].user);
+			free(fents[i].group);
+		}
+
+	free(fents);
+
+printdir:
+	for (i = 0; i < ds; i++)
+		ls_folder(dents[i], 0, 1);
+
+	free(dents);
+
+	return rval;
 }
 
 int
@@ -602,16 +660,6 @@ main(int argc, char *argv[]) {
 	if ((printfcn != printscol) && (temp = getenv("COLUMNS")))
 		termwidth = estrtonum(temp, 0, UINT_MAX);
 
-	switch (argc) {
-	case 0:
-		exit(ls_folder(".", 0, 0));
-	case 1:
-		exit(ls_folder(argv[0], 0, 0));
-	}
-
-	/* TODO: PRINT FILES BEFORE FOLDERS */
-	for (; *argv; argc--, argv++)
-		rval |= ls_folder(*argv, 0, 1);
-
-	return rval;
+	rval = ls(argc, argv);
+	return (rval | fshut("<stdout>", stdout));
 }
