@@ -9,21 +9,18 @@
 #include "fs.h"
 #include "util.h"
 
-#define FFLAG 0x1 /* Ignore some errors */
-#define FTIME 0x2 /* First time running? */
-
 SET_USAGE = "%s [-f] [-Rr] file ...";
 
 static int
-rm_file(const char *f, int opts) {
+rm_file(const char *f, int depth, int silent) {
 	int rval = 0;
 	struct stat st;
 
 	if (lstat(f, &st) < 0) {
-		if (!(opts & FFLAG) || errno != ENOENT)
+		if (!silent || errno != ENOENT)
 			pwarn("lstat %s:", f);
 
-		return (!(opts & FFLAG));
+		return (!silent);
 	}
 
 	if (S_ISDIR(st.st_mode))
@@ -38,24 +35,24 @@ rm_file(const char *f, int opts) {
 }
 
 static int
-rm_folder(const char *f, int opts) {
+rm_folder(const char *f, int depth, int silent) {
 	int rval = 0;
 	FS_DIR dir;
 
 	if (open_dir(f, &dir) < 0) {
-		rval = (errno == ENOTDIR) ? rm_file(f, opts) :
+		rval = (errno == ENOTDIR) ? rm_file(f, depth, silent) :
 		       pwarn("open_dir %s:", f);
 		return rval;
 	}
 
-	while (read_dir(&dir, (opts & FTIME)) != EOF) {
+	while (read_dir(&dir, depth) != EOF) {
 		if (ISDOT(dir.name))
 			continue;
 
 		if (S_ISDIR(dir.info.st_mode))
-			rval |= rm_folder(dir.path, opts|FTIME);
+			rval |= rm_folder(dir.path, depth+1, silent);
 		else
-			rval |= rm_file(dir.path, opts|FTIME);
+			rval |= rm_file(dir.path, depth+1, silent);
 	}
 
 	if (rmdir(f) < 0)
@@ -66,12 +63,12 @@ rm_folder(const char *f, int opts) {
 
 int
 main(int argc, char *argv[]) {
-	int (*rm)(const char *, int) = rm_file;
-	int opts = 0, rval = 0;
+	int (*rm)(const char *, int, int) = rm_file;
+	int silent = 0, rval = 0;
 
 	ARGBEGIN {
 	case 'f':
-		opts |= FFLAG;
+		silent = 1;
 		break;
 	case 'r':
 	case 'R':
@@ -81,14 +78,14 @@ main(int argc, char *argv[]) {
 		wrong(usage);
 	} ARGEND
 
-	if (!argc && !(opts & FFLAG))
+	if (!argc && !silent)
 		wrong(usage);
 
 	for (; *argv; argv++) {
 		if (ISDOT(*argv))
 			continue;
 
-		rval |= rm(*argv, opts);
+		rval |= rm(*argv, 0, silent);
 	}
 
 	return rval;
