@@ -482,6 +482,9 @@ ls_folder(const char *s, int depth, int more) {
 		dir.path = NULL; /* Avoid free */
 	}
 
+	if (!size)
+		goto printed;
+
 	if ((size != 1) && (sort != 'f'))
 		qsort(ents, size, sizeof(*ents), cmp);
 
@@ -492,6 +495,7 @@ ls_folder(const char *s, int depth, int more) {
 	mkesmax(pmax, NULL, size);
 	printfcn(ents, pmax);
 
+printed:
 	if (recurse == 'R')
 		for (i = 0; i < size; i++) {
 			if (ISDOT(ents[i].name))
