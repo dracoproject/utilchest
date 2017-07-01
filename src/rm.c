@@ -52,7 +52,7 @@ rm_folder(const char *f, int depth, int silent) {
 		if (S_ISDIR(dir.info.st_mode))
 			rval |= rm_folder(dir.path, depth+1, silent);
 		else
-			rval |= rm_file(dir.path, depth+1, silent);
+			rval |= rm_file(dir.path, depth, silent);
 	}
 
 	if (rmdir(f) < 0)
