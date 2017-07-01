@@ -452,14 +452,14 @@ cmp(const void *va, const void *vb) {
 }
 
 static int
-ls_folder(const char *s, int depth, int more) {
+ls_folder(const char *s, int more, int depth) {
 	FS_DIR dir;
 	size_t i = 0, size = 0;
 	struct entry *ents = NULL;
 	struct esmax max = {0}, *pmax = &max;
 
 	if (open_dir(s, &dir) < 0)
-		return (pwarn("ls_folder %s:", s));
+		return (pwarn("open_dir %s:", s));
 
 	if ((recurse == 'R') || more) {
 		printf(first ? "%s:\n" : "\n%s:\n", s);
@@ -502,7 +502,7 @@ printed:
 				continue;
 			if (!S_ISDIR(ents[i].info.st_mode))
 				continue;
-			ls_folder(ents[i].path, depth+1, more);
+			ls_folder(ents[i].path, more, depth+1);
 		}
 
 	for (i = 0; i < size; i++) {
@@ -574,7 +574,7 @@ ls(int argc, char **argv) {
 printdir:
 	more = argc > 1;
 	for (i = 0; i < ds; i++)
-		ls_folder(dents[i], 0, more);
+		ls_folder(dents[i], more, 0);
 
 	free(dents);
 

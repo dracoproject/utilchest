@@ -17,7 +17,7 @@
 #define SIZE(a, b) (strlen((a)) + strlen((b)) + 2)
 
 int
-copy_file(const char *src, const char *dest, int depth, int opts) {
+copy_file(const char *src, const char *dest, int opts, int depth) {
 	char buf[BUFSIZ], path[PATH_MAX];
 	int sf = -1, tf = -1, rval = 0;
 	ssize_t rf = 0;
@@ -115,13 +115,13 @@ clean:
 }
 
 int
-copy_folder(const char *src, const char *dest, int depth, int opts) {
+copy_folder(const char *src, const char *dest, int opts, int depth) {
 	char buf[PATH_MAX];
 	int rval = 0;
 	FS_DIR dir;
 
 	if (open_dir(src, &dir) < 0) {
-		rval = (errno == ENOTDIR) ? copy_file(src, dest, depth, opts) :
+		rval = (errno == ENOTDIR) ? copy_file(src, dest, opts, depth) :
 		       pwarn("open_dir %s:", src);
 		return rval;
 	}
@@ -145,9 +145,9 @@ copy_folder(const char *src, const char *dest, int depth, int opts) {
 			    && errno != EEXIST)
 				return (pwarn("mkdir %s:", buf));
 
-			rval |= copy_folder(dir.path, buf, depth+1, opts);
+			rval |= copy_folder(dir.path, buf, opts, depth+1);
 		} else
-			rval |= copy_file(dir.path, buf, depth, opts);
+			rval |= copy_file(dir.path, buf, opts, depth);
 	}
 
 	return rval;

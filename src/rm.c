@@ -12,7 +12,7 @@
 SET_USAGE = "%s [-f] [-Rr] file ...";
 
 static int
-rm_file(const char *f, int depth, int silent) {
+rm_file(const char *f, int silent, int depth) {
 	int rval = 0;
 	struct stat st;
 
@@ -35,7 +35,7 @@ rm_file(const char *f, int depth, int silent) {
 }
 
 static int
-rm_folder(const char *f, int depth, int silent) {
+rm_folder(const char *f, int silent, int depth) {
 	int rval = 0;
 	FS_DIR dir;
 
@@ -50,9 +50,9 @@ rm_folder(const char *f, int depth, int silent) {
 			continue;
 
 		if (S_ISDIR(dir.info.st_mode))
-			rval |= rm_folder(dir.path, depth+1, silent);
+			rval |= rm_folder(dir.path, silent, depth);
 		else
-			rval |= rm_file(dir.path, depth, silent);
+			rval |= rm_file(dir.path, silent, depth);
 	}
 
 	if (rmdir(f) < 0)
@@ -85,7 +85,7 @@ main(int argc, char *argv[]) {
 		if (ISDOT(*argv))
 			continue;
 
-		rval |= rm(*argv, 0, silent);
+		rval |= rm(*argv, silent, 0);
 	}
 
 	return rval;
