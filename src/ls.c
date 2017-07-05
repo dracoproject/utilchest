@@ -1,9 +1,10 @@
 /* This file is part of the UtilChest from Draco Project
  * See LICENSE file for copyright and license details.
  */
-#include <sys/stat.h>
-#include <sys/param.h>
 #include <sys/ioctl.h>
+#include <sys/param.h>
+#include <sys/stat.h>
+#include <sys/sysmacros.h>
 
 #include <grp.h>
 #include <libgen.h>
@@ -91,7 +92,7 @@ mkcolumn(struct columns *sco, struct entry *ents, struct esmax *max) {
 	sco->colwidth += 1;
 	twidth = termwidth + 1;
 
-	if ((twidth < 2) * sco->colwidth) {
+	if (twidth < (2 * sco->colwidth)) {
 		printscol(ents, max);
 		return 1;
 	}
@@ -152,8 +153,25 @@ static void
 mkesmax(struct esmax *max, struct entry *ent, size_t total) {
 	char buf[21];
 
-	if (total)
-		goto make;
+	if (total) {
+		max->total = total;
+
+		max->s_block =
+		snprintf(buf, sizeof(buf), "%llu",
+		        (unsigned long long)max->block);
+
+		max->s_ino =
+		snprintf(buf, sizeof(buf), "%llu",
+		         (unsigned long long)max->ino);
+
+		max->s_nlink =
+		snprintf(buf, sizeof(buf), "%lu", (unsigned long)max->nlink);
+
+		max->s_size =
+		snprintf(buf, sizeof(buf), "%lld", (long long)max->size);
+
+		return;
+	}
 
 	/* default */
 	max->len   = BIG(ent->len, max->len);
@@ -167,23 +185,6 @@ mkesmax(struct esmax *max, struct entry *ent, size_t total) {
 	max->size  = BIG(ent->info.st_size, max->size);
 
 	max->btotal += ent->info.st_blocks;
-
-	return;
-
-make:
-	max->total = total;
-
-	max->s_block =
-	snprintf(buf, sizeof(buf), "%llu", (unsigned long long)max->block);
-
-	max->s_ino =
-	snprintf(buf, sizeof(buf), "%llu", (unsigned long long)max->ino);
-
-	max->s_nlink =
-	snprintf(buf, sizeof(buf), "%lu", (unsigned long)max->nlink);
-
-	max->s_size =
-	snprintf(buf, sizeof(buf), "%lld", (long long)max->size);
 }
 
 /* PRINT */
@@ -452,17 +453,17 @@ cmp(const void *va, const void *vb) {
 }
 
 static int
-ls_folder(const char *s, int more, int depth) {
+ls_folder(struct entry *ent, int more, int depth) {
 	FS_DIR dir;
 	size_t i = 0, size = 0;
 	struct entry *ents = NULL;
 	struct esmax max = {0}, *pmax = &max;
 
-	if (open_dir(s, &dir) < 0)
-		return (pwarn("open_dir %s:", s));
+	if (open_dir(ent->path, &dir) < 0)
+		return (pwarn("open_dir %s:", ent->path));
 
 	if ((recurse == 'R') || more) {
-		printf(first ? "%s:\n" : "\n%s:\n", s);
+		printf(first ? "%s:\n" : "\n%s:\n", ent->path);
 		first = 0;
 	}
 
@@ -502,7 +503,7 @@ printed:
 				continue;
 			if (!S_ISDIR(ents[i].info.st_mode))
 				continue;
-			ls_folder(ents[i].path, more, depth+1);
+			ls_folder(&ents[i], more, depth+1);
 		}
 
 	for (i = 0; i < size; i++) {
@@ -522,9 +523,8 @@ printed:
 
 static int
 ls(int argc, char **argv) {
-	char **dents = NULL;
-	int fs = 0, ds = 0, i = 0, more = 0, rval = 0;
-	struct entry *fents = NULL;
+	int fs = 0, ds = 0, i = 0, rval = 0;
+	struct entry *fents = NULL, *dents = NULL;
 	struct esmax max = {0}, *pmax = &max;
 	struct stat st;
 
@@ -535,27 +535,29 @@ ls(int argc, char **argv) {
 		}
 
 		if (recurse != 'd' && S_ISDIR(st.st_mode)) {
-			if (!(dents = realloc(dents, ++ds * sizeof(char*))))
+			if (!(dents = REALLOC(dents, ++ds)))
 				perr(1, "realloc:");
 
-			dents[ds - 1] = argv[i];
-			continue;
+			mkentry(&dents[ds - 1], argv[i], 0, &st);
+		} else {
+			if (!(fents = REALLOC(fents, ++fs)))
+				perr(1, "realloc:");
+
+			mkentry(&fents[fs - 1], argv[i], 0, &st);
+			mkesmax(pmax, &fents[fs - 1], 0);
 		}
-
-		if (!(fents = REALLOC(fents, ++fs)))
-			perr(1, "realloc:");
-
-		mkentry(&fents[fs - 1], argv[i], 0, &st);
-		mkesmax(pmax, &fents[fs - 1], 0);
 	}
+
+	if ((ds > 1) && (sort != 'f'))
+		qsort(dents, ds, sizeof(*dents), cmp);
+
+	if ((fs > 1) && (sort != 'f'))
+		qsort(fents, fs, sizeof(*fents), cmp);
 
 	if (!fs)
 		goto printdir;
 
 	first = 0;
-	if ((fs != 1) && (sort != 'f'))
-		qsort(fents, fs, sizeof(*fents), cmp);
-
 	if (sflag || iflag || (printfcn == printlong))
 		printf("total %lu\n",
 		       howmany((long unsigned)max.btotal, blocksize));
@@ -563,20 +565,18 @@ ls(int argc, char **argv) {
 	mkesmax(pmax, NULL, fs);
 	printfcn(fents, pmax);
 
+printdir:
+	for (i = 0; i < ds; i++)
+		ls_folder(&dents[i], (argc > 1), 0);
+
 	if (printfcn == printlong)
 		for (i = 0; i < fs; i++) {
 			free(fents[i].user);
 			free(fents[i].group);
 		}
 
-	free(fents);
-
-printdir:
-	more = argc > 1;
-	for (i = 0; i < ds; i++)
-		ls_folder(dents[i], more, 0);
-
 	free(dents);
+	free(fents);
 
 	return rval;
 }
