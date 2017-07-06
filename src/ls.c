@@ -4,7 +4,7 @@
 #include <sys/ioctl.h>
 #include <sys/param.h>
 #include <sys/stat.h>
-#include <sys/sysmacros.h>
+#include <sys/types.h>
 
 #include <grp.h>
 #include <libgen.h>
@@ -65,11 +65,9 @@ static int times = 0;
 static int termwidth = 80;
 static long blocksize = 512;
 
-static void printacol(struct entry *, struct esmax *);
 static void printcol(struct entry *, struct esmax *);
 static void printlong(struct entry *, struct esmax *);
 static void printscol(struct entry *, struct esmax *);
-static void printstream(struct entry *, struct esmax *);
 
 static void (*printfcn)(struct entry *, struct esmax *) = printcol;
 
@@ -162,7 +160,7 @@ mkesmax(struct esmax *max, struct entry *ent, size_t total) {
 
 		max->s_ino =
 		snprintf(buf, sizeof(buf), "%llu",
-		         (unsigned long long)max->ino);
+		        (unsigned long long)max->ino);
 
 		max->s_nlink =
 		snprintf(buf, sizeof(buf), "%lu", (unsigned long)max->nlink);
@@ -369,8 +367,8 @@ printlong(struct entry *ents, struct esmax *max) {
 			       howmany((long long)p->st_blocks, blocksize));
 
 		printmode(p);
-		printf("%*ld %-*s %-*s ", max->s_nlink,
-		       p->st_nlink, max->s_uid, ep->user, max->s_gid, ep->group);
+		printf("%*lu %-*s %-*s ", max->s_nlink, p->st_nlink,
+		       max->s_uid, ep->user, max->s_gid, ep->group);
 
 		if (S_ISBLK(p->st_mode) || S_ISCHR(p->st_mode))
 			printf("%3d, %3d ",
