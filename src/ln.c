@@ -18,7 +18,8 @@ SET_USAGE = "%s [-f] [-L|-P|-s] source [target]\n"
             "%s [-f] [-L|-P|-s] source ... dir";
 
 static int
-linkit(const char *src, const char *dest, int opts) {
+linkit(const char *src, const char *dest, int opts)
+{
 	int rval = 0;
 
 	if (opts & FORCE)
@@ -38,7 +39,8 @@ linkit(const char *src, const char *dest, int opts) {
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	const char *sourcedir;
 	int opts = 0, rval = 0;
 	struct stat st;

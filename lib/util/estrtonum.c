@@ -7,7 +7,8 @@
 #include "util.h"
 
 long long
-estrtonum(const char *str, long long min, long long max) {
+estrtonum(const char *str, long long min, long long max)
+{
 	char *end;
 	long long ll;
 

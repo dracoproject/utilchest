@@ -12,7 +12,8 @@ SET_USAGE = "%s [-afp] [-R [-H|-L|-P]] source target\n"
             "%s [-afp] [-R [-H|-L|-P]] source ... dir";
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	const char *sourcedir;
 	int (*cp)(const char *, const char *, int, int) = copy_file;
 	int rval = 0, opts = 0;

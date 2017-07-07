@@ -9,7 +9,8 @@
 SET_USAGE = "%s [-p] dir ...";
 
 static int
-rmdir_path(const char *p) {
+rmdir_path(const char *p)
+{
 	char *d;
 
 	if (rmdir(p) < 0)
@@ -23,7 +24,8 @@ rmdir_path(const char *p) {
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	int rval = 0, (*rmdirf)(const char *) = rmdir;
 
 	ARGBEGIN {

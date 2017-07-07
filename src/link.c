@@ -8,7 +8,8 @@
 SET_USAGE = "%s source target";
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	argv0 = *argv, argc--, argv++;
 
 	if (argc != 2)

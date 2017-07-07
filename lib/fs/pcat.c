@@ -13,7 +13,8 @@
 #define SIZE(a, b) (strlen((a)) + strlen((b)) + 2)
 
 char *
-pcat(const char *f1, const char *f2, int isdir) {
+pcat(const char *f1, const char *f2, int isdir)
+{
 	static char buf[PATH_MAX];
 	struct stat st;
 

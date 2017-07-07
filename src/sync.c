@@ -4,7 +4,8 @@
 #include <unistd.h>
 
 int
-main(void) {
+main(void)
+{
 	sync();
 	return 0;
 }

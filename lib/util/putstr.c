@@ -4,7 +4,8 @@
 #include <stdio.h>
 
 void
-putstr(const char *str, FILE *stream) {
+putstr(const char *str, FILE *stream)
+{
 	static int rt = 0;
 
 	if (rt++)

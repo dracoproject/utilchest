@@ -12,7 +12,8 @@
 SET_USAGE = "%s [-h] [-R [-H|-L|-P]] group file ...";
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	gid_t gid = -1;
 	int (*chownf)(const char *, uid_t, gid_t, int) = chown_file;
 	int rval = 0;

@@ -13,7 +13,8 @@ SET_USAGE = "%s [-f] source target\n"
             "%s [-f] source ... dir";
 
 static int
-move(const char *src, const char *dest) {
+move(const char *src, const char *dest)
+{
 	if (!rename(src, dest))
 		return 0;
 
@@ -24,7 +25,8 @@ move(const char *src, const char *dest) {
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	const char *sourcedir;
 	int rval = 0;
 	struct stat sb;

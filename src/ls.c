@@ -75,7 +75,8 @@ SET_USAGE = "%s [-1AaCcFfiklmnpqrSstux] [file ...]";
 
 /* MAKE STRUCTURES */
 static int
-mkcolumn(LS_COL *sco, LS_ENT *ents, LS_MAX *max) {
+mkcolumn(LS_COL *sco, LS_ENT *ents, LS_MAX *max)
+{
 	int twidth = 0;
 
 	sco->colwidth = max->len;
@@ -101,7 +102,8 @@ mkcolumn(LS_COL *sco, LS_ENT *ents, LS_MAX *max) {
 }
 
 static void
-mkentry(LS_ENT *ent, char *path, int bname, struct stat *info) {
+mkentry(LS_ENT *ent, char *path, int bname, struct stat *info)
+{
 	char user[32], group[32];
 	struct group  *gr;
 	struct passwd *pw;
@@ -147,7 +149,8 @@ mkentry(LS_ENT *ent, char *path, int bname, struct stat *info) {
 }
 
 static void
-mkesmax(LS_MAX *max, LS_ENT *ent, size_t total) {
+mkesmax(LS_MAX *max, LS_ENT *ent, size_t total)
+{
 	char buf[21];
 
 	if (total) {
@@ -186,7 +189,8 @@ mkesmax(LS_MAX *max, LS_ENT *ent, size_t total) {
 
 /* PRINT */
 static int
-printtype(mode_t mode) {
+printtype(mode_t mode)
+{
 	switch (mode & S_IFMT) {
 	case S_IFDIR:
 		putchar('/');
@@ -211,7 +215,8 @@ printtype(mode_t mode) {
 }
 
 static void
-printmode(struct stat *p) {
+printmode(struct stat *p)
+{
 	char mode[]  = "?---------";
 
 	switch (p->st_mode & S_IFMT) {
@@ -251,7 +256,8 @@ printmode(struct stat *p) {
 }
 
 static int
-printname(LS_ENT *ent, int inofield, int sizefield) {
+printname(LS_ENT *ent, int inofield, int sizefield)
+{
 	const char *ch;
 	int chcnt = 0, len = 0;
 	Rune rune;
@@ -280,7 +286,8 @@ printname(LS_ENT *ent, int inofield, int sizefield) {
 }
 
 static void
-printtime(struct timespec t) {
+printtime(struct timespec t)
+{
 	char *fmt, buf[DATELEN];
 	struct tm *tm;
 
@@ -299,7 +306,8 @@ printtime(struct timespec t) {
 
 /* PRINT FUNCTIONS */
 static void
-printacol(LS_ENT *ents, LS_MAX *max) {
+printacol(LS_ENT *ents, LS_MAX *max)
+{
 	int chcnt = 0, col = 0;
 	size_t i = 0;
 	LS_COL sco;
@@ -322,7 +330,8 @@ printacol(LS_ENT *ents, LS_MAX *max) {
 }
 
 static void
-printcol(LS_ENT *ents, LS_MAX *max) {
+printcol(LS_ENT *ents, LS_MAX *max)
+{
 	int chcnt = 0, col = 0, row = 0;
 	int base, num, numrows;
 	LS_COL sco;
@@ -348,7 +357,8 @@ printcol(LS_ENT *ents, LS_MAX *max) {
 }
 
 static void
-printlong(LS_ENT *ents, LS_MAX *max) {
+printlong(LS_ENT *ents, LS_MAX *max)
+{
 	char buf[BUFSIZ];
 	LS_ENT *ep;
 	size_t i = 0;
@@ -394,7 +404,8 @@ printlong(LS_ENT *ents, LS_MAX *max) {
 }
 
 static void
-printscol(LS_ENT *ents, LS_MAX *max) {
+printscol(LS_ENT *ents, LS_MAX *max)
+{
 	size_t i = 0;
 
 	for (; i < max->total; i++) {
@@ -404,7 +415,8 @@ printscol(LS_ENT *ents, LS_MAX *max) {
 }
 
 static void
-printstream(LS_ENT *ents, LS_MAX *max) {
+printstream(LS_ENT *ents, LS_MAX *max)
+{
 	int chcnt = 0, width = 0;
 	size_t i = 0;
 
@@ -430,7 +442,8 @@ printstream(LS_ENT *ents, LS_MAX *max) {
 
 /* MAIN FUNCTIONS */
 static int
-cmp(const void *va, const void *vb) {
+cmp(const void *va, const void *vb)
+{
 	int cmp;
 	const LS_ENT *a = va, *b = vb;
 
@@ -451,7 +464,8 @@ cmp(const void *va, const void *vb) {
 }
 
 static int
-ls_folder(LS_ENT *ent, int more, int depth) {
+ls_folder(LS_ENT *ent, int more, int depth)
+{
 	FS_DIR dir;
 	size_t i = 0, size = 0;
 	LS_ENT *ents = NULL;
@@ -521,7 +535,8 @@ nothing_top:
 }
 
 static int
-ls(int argc, char **argv) {
+ls(int argc, char **argv)
+{
 	int fs = 0, ds = 0, i = 0, rval = 0;
 	LS_ENT *fents = NULL, *dents = NULL;
 	LS_MAX max = {0}, *pmax = &max;
@@ -582,7 +597,8 @@ printdir:
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	char *temp;
 	int kflag = 0, rval = 0;
 	struct winsize w;

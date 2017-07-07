@@ -10,7 +10,8 @@
 SET_USAGE = "%s string [suffix]";
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	char *p;
 	ssize_t off;
 

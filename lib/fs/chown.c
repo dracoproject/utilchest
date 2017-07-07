@@ -10,7 +10,8 @@
 #include "util.h"
 
 int
-chown_file(const char *s, uid_t uid, gid_t gid, int depth) {
+chown_file(const char *s, uid_t uid, gid_t gid, int depth)
+{
 	int (*chownf)(const char *, uid_t, gid_t);
 	struct stat st;
 
@@ -29,13 +30,15 @@ chown_file(const char *s, uid_t uid, gid_t gid, int depth) {
 }
 
 int
-chown_folder(const char *s, uid_t uid, gid_t gid, int depth) {
+chown_folder(const char *s, uid_t uid, gid_t gid, int depth)
+{
 	FS_DIR dir;
 	int rval = 0;
 
 	if (open_dir(s, &dir) < 0) {
 		rval = (errno == ENOTDIR) ? chown_file(s, uid, gid, depth) :
 		       pwarn("open_dir:", s);
+		return rval;
 	}
 
 	while (read_dir(&dir, depth) != EOF) {

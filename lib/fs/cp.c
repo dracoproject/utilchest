@@ -17,7 +17,8 @@
 #define SIZE(a, b) (strlen((a)) + strlen((b)) + 2)
 
 int
-copy_file(const char *src, const char *dest, int opts, int depth) {
+copy_file(const char *src, const char *dest, int opts, int depth)
+{
 	char buf[BUFSIZ], path[PATH_MAX];
 	int sf = -1, tf = -1, rval = 0;
 	ssize_t rf = 0;
@@ -70,11 +71,12 @@ copy_file(const char *src, const char *dest, int opts, int depth) {
 			goto clean;
 		}
 
-		while ((rf = read(sf, buf, sizeof(buf))) > 0)
+		while ((rf = read(sf, buf, sizeof(buf))) > 0) {
 			if (write(tf, buf, rf) != rf) {
 				rval = pwarn("write %s:", dest);
 				goto clean;
 			}
+		}
 
 		if (rf < 0) {
 			rval = pwarn("read %s:", src);
@@ -115,7 +117,8 @@ clean:
 }
 
 int
-copy_folder(const char *src, const char *dest, int opts, int depth) {
+copy_folder(const char *src, const char *dest, int opts, int depth)
+{
 	char buf[PATH_MAX];
 	int rval = 0;
 	FS_DIR dir;

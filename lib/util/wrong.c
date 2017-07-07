@@ -7,7 +7,8 @@
 #include "util.h"
 
 void
-wrong(const char *s) {
+wrong(const char *s)
+{
 	fputs("usage: ", stderr);
 
 	for (; *s; s++) {

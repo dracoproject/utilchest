@@ -16,7 +16,8 @@
 int fs_follow = 'P';
 
 int
-open_dir(const char *p, FS_DIR *dir) {
+open_dir(const char *p, FS_DIR *dir)
+{
 	dir->dir= (char *)p;
 	dir->dlen= strlen(dir->dir);
 	dir->path= NULL;
@@ -28,7 +29,8 @@ open_dir(const char *p, FS_DIR *dir) {
 }
 
 int
-read_dir(FS_DIR *dir, int rtime) {
+read_dir(FS_DIR *dir, int rtime)
+{
 	int (*statf)(const char *, struct stat *);
 	struct dirent *entry;
 

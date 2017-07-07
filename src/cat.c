@@ -11,7 +11,8 @@
 SET_USAGE = "%s [-u] [file ...]";
 
 static int
-cat(int f, const char *name) {
+cat(int f, const char *name)
+{
 	char buf[BUFSIZ];
 	ssize_t n;
 
@@ -26,7 +27,8 @@ cat(int f, const char *name) {
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	int f, rval = 0;
 
 	ARGBEGIN {

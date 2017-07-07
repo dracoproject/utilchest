@@ -12,7 +12,8 @@
 SET_USAGE = "%s [-f] [-Rr] file ...";
 
 static int
-rm_file(const char *f, int silent, int depth) {
+rm_file(const char *f, int silent, int depth)
+{
 	int rval = 0;
 	struct stat st;
 
@@ -35,7 +36,8 @@ rm_file(const char *f, int silent, int depth) {
 }
 
 static int
-rm_folder(const char *f, int silent, int depth) {
+rm_folder(const char *f, int silent, int depth)
+{
 	int rval = 0;
 	FS_DIR dir;
 
@@ -62,7 +64,8 @@ rm_folder(const char *f, int silent, int depth) {
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	int (*rm)(const char *, int, int) = rm_file;
 	int silent = 0, rval = 0;
 

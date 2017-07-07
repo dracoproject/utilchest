@@ -7,7 +7,8 @@
 #include "util.h"
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	extern char **environ;
 	const char *s;
 
@@ -18,9 +19,10 @@ main(int argc, char *argv[]) {
 			return (pwarn("getenv %s:", *argv));
 
 		puts(s);
-	} else
+	} else {
 		for (; *environ; environ++)
 			puts(*environ);
+	}
 
 	return (fshut("<stdout>", stdout));
 }

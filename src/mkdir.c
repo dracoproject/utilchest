@@ -11,7 +11,8 @@
 SET_USAGE = "%s [-p] [-m mode] dir ...";
 
 static int
-mkdirp(const char *path, mode_t dir_mode, mode_t mode) {
+mkdirp(const char *path, mode_t dir_mode, mode_t mode)
+{
 	char *p = (char *)path, c = 0;
 
 	do {
@@ -31,7 +32,8 @@ mkdirp(const char *path, mode_t dir_mode, mode_t mode) {
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	int pflag = 0, rval = 0;
 	mode_t mode = 0777 & ~umask(0), dir_mode = mode|S_IWUSR|S_IXUSR;
 

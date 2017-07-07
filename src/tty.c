@@ -7,7 +7,8 @@
 #include "util.h"
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	char *tty;
 
 	argv0 = *argv, argc--, argv++;

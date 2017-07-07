@@ -6,7 +6,8 @@
 #include "util.h"
 
 int
-fshut(const char *sname, FILE *stream) {
+fshut(const char *sname, FILE *stream)
+{
 	int rval = 0;
 
 	if (fclose(stream))

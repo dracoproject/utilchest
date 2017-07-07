@@ -12,7 +12,8 @@
 SET_USAGE = "%s [-L|-P]";
 
 static char *
-getcwd_logical(void) {
+getcwd_logical(void)
+{
 	char *pwd;
 	struct stat s_pwd, s_dot;
 
@@ -29,7 +30,8 @@ getcwd_logical(void) {
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	const char *cwd;
 	int logical = 1;
 

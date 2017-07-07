@@ -8,7 +8,8 @@
 #include "util.h"
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	struct passwd *pw;
 
 	argv0 = *argv, argc--, argv++;

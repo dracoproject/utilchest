@@ -7,7 +7,8 @@
 #include "util.h"
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	int nflag = 0;
 
 	if (*++argv && !strcmp(*argv, "-n"))

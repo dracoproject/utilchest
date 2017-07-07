@@ -9,7 +9,8 @@
 SET_USAGE = "%s time";
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	unsigned int secs;
 
 	argv0 = *argv, argc--, argv++;

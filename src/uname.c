@@ -17,7 +17,8 @@
 SET_USAGE = "%s [-amnrsv]";
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	int print = 0;
 	struct utsname sys;
 

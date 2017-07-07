@@ -11,7 +11,8 @@
 SET_USAGE = "%s [-n number] [file ...]";
 
 static void
-head(const char *fname, FILE *f, size_t n) {
+head(const char *fname, FILE *f, size_t n)
+{
 	char *buf = NULL;
 	size_t i = 0, bsize = 0;
  	ssize_t len;
@@ -31,7 +32,8 @@ head(const char *fname, FILE *f, size_t n) {
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	FILE *fp;
 	int first = 1, rval = 0;
 	size_t n = 10;

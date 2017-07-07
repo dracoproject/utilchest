@@ -20,7 +20,8 @@
 SET_USAGE = "%s [-n increment] utility [argument ...]";
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	int prio = 10;
 
 	ARGBEGIN {

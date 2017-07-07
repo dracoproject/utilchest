@@ -8,7 +8,8 @@
 SET_USAGE = "%s file";
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	argv0 = *argv, argc--, argv++;
 
 	if (argc != 1)

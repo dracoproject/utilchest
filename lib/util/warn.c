@@ -12,7 +12,8 @@
 char *argv0;
 
 static void
-vprint(const char *fmt, va_list ap) {
+vprint(const char *fmt, va_list ap)
+{
 	int sverrno = errno;
 
 	if (argv0)
@@ -24,7 +25,8 @@ vprint(const char *fmt, va_list ap) {
 }
 
 int
-pwarn(const char *fmt, ...) {
+pwarn(const char *fmt, ...)
+{
 	va_list ap;
 
 	va_start(ap, fmt);
@@ -35,7 +37,8 @@ pwarn(const char *fmt, ...) {
 }
 
 void
-perr(int status, const char *fmt, ...) {
+perr(int status, const char *fmt, ...)
+{
 	va_list ap;
 
 	va_start(ap, fmt);

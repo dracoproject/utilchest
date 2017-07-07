@@ -11,7 +11,8 @@
 SET_USAGE = "%s [name]";
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	char domain[HOST_NAME_MAX+1];
 
 	argv0 = *argv, argc--, argv++;
