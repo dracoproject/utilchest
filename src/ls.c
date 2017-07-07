@@ -102,7 +102,7 @@ mkcolumn(LS_COL *sco, LS_ENT *ents, LS_MAX *max)
 }
 
 static void
-mkentry(LS_ENT *ent, char *path, int bname, struct stat *info)
+mkent(LS_ENT *ent, char *path, int bname, struct stat *info)
 {
 	char user[32], group[32];
 	struct group  *gr;
@@ -149,7 +149,7 @@ mkentry(LS_ENT *ent, char *path, int bname, struct stat *info)
 }
 
 static void
-mkesmax(LS_MAX *max, LS_ENT *ent, size_t total)
+mkmax(LS_MAX *max, LS_ENT *ent, size_t total)
 {
 	char buf[21];
 
@@ -489,8 +489,8 @@ ls_folder(LS_ENT *ent, int more, int depth)
 		if (!(ents = REALLOC(ents, ++size)))
 			perr(1, "realloc:");
 
-		mkentry(&ents[size - 1], dir.path, 1, &dir.info);
-		mkesmax(pmax, &ents[size - 1], 0);
+		mkent(&ents[size - 1], dir.path, 1, &dir.info);
+		mkmax(pmax, &ents[size - 1], 0);
 
 		dir.path = NULL; /* Avoid free */
 	}
@@ -505,7 +505,7 @@ ls_folder(LS_ENT *ent, int more, int depth)
 		printf("total %lu\n",
 		       howmany((long unsigned)pmax->btotal, blocksize));
 
-	mkesmax(pmax, NULL, size);
+	mkmax(pmax, NULL, size);
 	printfcn(ents, pmax);
 
 nothing_top:
@@ -552,13 +552,13 @@ ls(int argc, char **argv)
 			if (!(dents = REALLOC(dents, ++ds)))
 				perr(1, "realloc:");
 
-			mkentry(&dents[ds - 1], argv[i], 0, &st);
+			mkent(&dents[ds - 1], argv[i], 0, &st);
 		} else {
 			if (!(fents = REALLOC(fents, ++fs)))
 				perr(1, "realloc:");
 
-			mkentry(&fents[fs - 1], argv[i], 0, &st);
-			mkesmax(pmax, &fents[fs - 1], 0);
+			mkent(&fents[fs - 1], argv[i], 0, &st);
+			mkmax(pmax, &fents[fs - 1], 0);
 		}
 	}
 
@@ -576,7 +576,7 @@ ls(int argc, char **argv)
 		printf("total %lu\n",
 		       howmany((long unsigned)max.btotal, blocksize));
 
-	mkesmax(pmax, NULL, fs);
+	mkmax(pmax, NULL, fs);
 	printfcn(fents, pmax);
 
 printdir:
