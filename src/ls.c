@@ -25,17 +25,16 @@
 #define SECSPERDAY (24 * 60 * 60)
 #define SIXMONTHS  (180 * SECSPERDAY)
 
-#define BIG(a, b) (a > b) ? a : b
 #define REALLOC(a, b) realloc((a), (b) * (sizeof(*(a))))
 
-struct entry {
+typedef struct {
 	char *name, *path, *user, *group;
 	size_t len, ulen, glen;
 	struct stat info;
 	struct timespec tm;
-};
+} LS_ENT;
 
-struct esmax {
+typedef struct {
 	int s_block, s_gid, s_nlink;
 	int s_ino, s_size, s_uid, len;
 	blkcnt_t block;
@@ -43,11 +42,11 @@ struct esmax {
 	nlink_t nlink;
 	off_t size;
 	size_t btotal, total;
-};
+} LS_MAX;
 
-struct columns {
+typedef struct {
 	int colwidth, numcols;
-};
+} LS_COL;
 
 static int iflag = 0;
 static int nflag = 0;
@@ -65,18 +64,18 @@ static int times = 0;
 static int termwidth = 80;
 static long blocksize = 512;
 
-static void printcol(struct entry *, struct esmax *);
-static void printlong(struct entry *, struct esmax *);
-static void printscol(struct entry *, struct esmax *);
+static void printcol(LS_ENT *, LS_MAX *);
+static void printlong(LS_ENT *, LS_MAX *);
+static void printscol(LS_ENT *, LS_MAX *);
 
-static void (*printfcn)(struct entry *, struct esmax *) = printcol;
+static void (*printfcn)(LS_ENT *, LS_MAX *) = printcol;
 
 SET_USAGE = "%s [-1AaCcFfiklmnpqrSstux] [file ...]";
 
 
 /* MAKE STRUCTURES */
 static int
-mkcolumn(struct columns *sco, struct entry *ents, struct esmax *max) {
+mkcolumn(LS_COL *sco, LS_ENT *ents, LS_MAX *max) {
 	int twidth = 0;
 
 	sco->colwidth = max->len;
@@ -102,7 +101,7 @@ mkcolumn(struct columns *sco, struct entry *ents, struct esmax *max) {
 }
 
 static void
-mkentry(struct entry *ent, char *path, int bname, struct stat *info) {
+mkentry(LS_ENT *ent, char *path, int bname, struct stat *info) {
 	char user[32], group[32];
 	struct group  *gr;
 	struct passwd *pw;
@@ -148,7 +147,7 @@ mkentry(struct entry *ent, char *path, int bname, struct stat *info) {
 }
 
 static void
-mkesmax(struct esmax *max, struct entry *ent, size_t total) {
+mkesmax(LS_MAX *max, LS_ENT *ent, size_t total) {
 	char buf[21];
 
 	if (total) {
@@ -172,15 +171,15 @@ mkesmax(struct esmax *max, struct entry *ent, size_t total) {
 	}
 
 	/* default */
-	max->len   = BIG(ent->len, max->len);
-	max->ino   = BIG(ent->info.st_ino, max->ino);
-	max->block = BIG(ent->info.st_blocks, max->block);
+	max->len   = MAX(ent->len, max->len);
+	max->ino   = MAX(ent->info.st_ino, max->ino);
+	max->block = MAX(ent->info.st_blocks, max->block);
 
 	/* long */
-	max->s_uid = BIG(ent->ulen, max->s_uid);
-	max->s_gid = BIG(ent->glen, max->s_gid);
-	max->nlink = BIG(ent->info.st_nlink, max->nlink);
-	max->size  = BIG(ent->info.st_size, max->size);
+	max->s_gid = MAX(ent->glen, max->s_gid);
+	max->s_uid = MAX(ent->ulen, max->s_uid);
+	max->size  = MAX(ent->info.st_size, max->size);
+	max->nlink = MAX(ent->info.st_nlink, max->nlink);
 
 	max->btotal += ent->info.st_blocks;
 }
@@ -252,7 +251,7 @@ printmode(struct stat *p) {
 }
 
 static int
-printname(struct entry *ent, int inofield, int sizefield) {
+printname(LS_ENT *ent, int inofield, int sizefield) {
 	const char *ch;
 	int chcnt = 0, len = 0;
 	Rune rune;
@@ -267,6 +266,7 @@ printname(struct entry *ent, int inofield, int sizefield) {
 
 	for (ch = ent->name; *ch; ch += len) {
 		len = chartorune(&rune, ch);
+
 		if (!qflag || isprintrune(rune))
 			chcnt += fwrite(ch, sizeof(char), len, stdout);
 		else
@@ -299,10 +299,10 @@ printtime(struct timespec t) {
 
 /* PRINT FUNCTIONS */
 static void
-printacol(struct entry *ents, struct esmax *max) {
+printacol(LS_ENT *ents, LS_MAX *max) {
 	int chcnt = 0, col = 0;
 	size_t i = 0;
-	struct columns sco;
+	LS_COL sco;
 
 	if ((mkcolumn(&sco, ents, max)))
 		return;
@@ -322,10 +322,10 @@ printacol(struct entry *ents, struct esmax *max) {
 }
 
 static void
-printcol(struct entry *ents, struct esmax *max) {
+printcol(LS_ENT *ents, LS_MAX *max) {
 	int chcnt = 0, col = 0, row = 0;
 	int base, num, numrows;
-	struct columns sco;
+	LS_COL sco;
 
 	if ((mkcolumn(&sco, ents, max)))
 		return;
@@ -348,11 +348,11 @@ printcol(struct entry *ents, struct esmax *max) {
 }
 
 static void
-printlong(struct entry *ents, struct esmax *max) {
+printlong(LS_ENT *ents, LS_MAX *max) {
 	char buf[BUFSIZ];
+	LS_ENT *ep;
 	size_t i = 0;
 	ssize_t len;
-	struct entry *ep;
 	struct stat *p;
 
 	for (; i < max->total; i++) {
@@ -394,7 +394,7 @@ printlong(struct entry *ents, struct esmax *max) {
 }
 
 static void
-printscol(struct entry *ents, struct esmax *max) {
+printscol(LS_ENT *ents, LS_MAX *max) {
 	size_t i = 0;
 
 	for (; i < max->total; i++) {
@@ -404,7 +404,7 @@ printscol(struct entry *ents, struct esmax *max) {
 }
 
 static void
-printstream(struct entry *ents, struct esmax *max) {
+printstream(LS_ENT *ents, LS_MAX *max) {
 	int chcnt = 0, width = 0;
 	size_t i = 0;
 
@@ -432,7 +432,7 @@ printstream(struct entry *ents, struct esmax *max) {
 static int
 cmp(const void *va, const void *vb) {
 	int cmp;
-	const struct entry *a = va, *b = vb;
+	const LS_ENT *a = va, *b = vb;
 
 	switch (sort) {
 	case 'S':
@@ -451,11 +451,11 @@ cmp(const void *va, const void *vb) {
 }
 
 static int
-ls_folder(struct entry *ent, int more, int depth) {
+ls_folder(LS_ENT *ent, int more, int depth) {
 	FS_DIR dir;
 	size_t i = 0, size = 0;
-	struct entry *ents = NULL;
-	struct esmax max = {0}, *pmax = &max;
+	LS_ENT *ents = NULL;
+	LS_MAX max = {0}, *pmax = &max;
 
 	if (open_dir(ent->path, &dir) < 0)
 		return (pwarn("open_dir %s:", ent->path));
@@ -482,7 +482,7 @@ ls_folder(struct entry *ent, int more, int depth) {
 	}
 
 	if (!size)
-		goto printed;
+		goto nothing_top;
 
 	if ((size != 1) && (sort != 'f'))
 		qsort(ents, size, sizeof(*ents), cmp);
@@ -494,8 +494,8 @@ ls_folder(struct entry *ent, int more, int depth) {
 	mkesmax(pmax, NULL, size);
 	printfcn(ents, pmax);
 
-printed:
-	if (recurse == 'R')
+nothing_top:
+	if (recurse == 'R') {
 		for (i = 0; i < size; i++) {
 			if (ISDOT(ents[i].name))
 				continue;
@@ -503,6 +503,7 @@ printed:
 				continue;
 			ls_folder(&ents[i], more, depth+1);
 		}
+	}
 
 	for (i = 0; i < size; i++) {
 		free(ents[i].path);
@@ -522,8 +523,8 @@ printed:
 static int
 ls(int argc, char **argv) {
 	int fs = 0, ds = 0, i = 0, rval = 0;
-	struct entry *fents = NULL, *dents = NULL;
-	struct esmax max = {0}, *pmax = &max;
+	LS_ENT *fents = NULL, *dents = NULL;
+	LS_MAX max = {0}, *pmax = &max;
 	struct stat st;
 
 	for (; i < argc; i++) {
@@ -567,11 +568,12 @@ printdir:
 	for (i = 0; i < ds; i++)
 		ls_folder(&dents[i], (argc > 1), 0);
 
-	if (printfcn == printlong)
+	if (printfcn == printlong) {
 		for (i = 0; i < fs; i++) {
 			free(fents[i].user);
 			free(fents[i].group);
 		}
+	}
 
 	free(dents);
 	free(fents);
