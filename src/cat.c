@@ -50,7 +50,7 @@ main(int argc, char *argv[]) {
 
 		rval |= cat(f, *argv);
 
-		if (f != -1 && close(f) < 0)
+		if (f != STDIN_FILENO && close(f) < 0)
 			rval = pwarn("close %s:", *argv);
 	}
 
