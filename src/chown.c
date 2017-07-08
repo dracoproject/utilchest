@@ -10,8 +10,8 @@
 #include "fs.h"
 #include "util.h"
 
-SET_USAGE = "%s [-R [-H|-L|-P]] owner[:group] file ...\n"
-            "%s [-R [-H|-L|-P]] :group file ...";
+SET_USAGE = "%s [-h] [-R [-H|-L|-P]] owner[:group] file ...\n"
+            "%s [-h] [-R [-H|-L|-P]] :group file ...";
 
 int
 main(int argc, char *argv[])
@@ -25,6 +25,9 @@ main(int argc, char *argv[])
 	uid_t uid = -1;
 
 	ARGBEGIN {
+	case 'h':
+		fs_follow = 'P';
+		break;
 	case 'R':
 		chownf = chown_folder;
 		break;
