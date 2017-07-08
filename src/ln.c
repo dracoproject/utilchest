@@ -20,17 +20,19 @@ SET_USAGE = "%s [-f] [-L|-P|-s] source [target]\n"
 static int
 linkit(const char *src, const char *dest, int opts)
 {
-	int rval = 0;
+	int flags = 0, rval = 0;
 
 	if (opts & FORCE)
 		unlink(dest);
 
+	if (opts & FOLLOW)
+		flags |= AT_SYMLINK_FOLLOW;
+
 	if (opts & SYMLNK) {
-		if (symlink(src, dest))
+		if (symlink(src, dest) < 0)
 			rval = pwarn("symlink %s -> %s:", src, dest);
 	} else {
-		if (linkat(AT_FDCWD, src, AT_FDCWD, dest,
-		   (opts & FOLLOW) ? AT_SYMLINK_FOLLOW : 0))
+		if (linkat(AT_FDCWD, src, AT_FDCWD, dest, flags) < 0)
 			rval = pwarn("linkat %s:", src, dest);
 	}
 
