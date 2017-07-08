@@ -20,9 +20,6 @@ main(int argc, char *argv[])
 	struct group *grp;
 
 	ARGBEGIN {
-	case 'h':
-		fs_follow = 'H';
-		break;
 	case 'R':
 		chownf = chown_folder;
 		break;

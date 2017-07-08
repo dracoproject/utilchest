@@ -25,9 +25,6 @@ main(int argc, char *argv[])
 	uid_t uid = -1;
 
 	ARGBEGIN {
-	case 'h':
-		fs_follow = 'H';
-		break;
 	case 'R':
 		chownf = chown_folder;
 		break;
