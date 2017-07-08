@@ -29,7 +29,7 @@ int copy_file(const char *, const char *, int, int);
 int copy_folder(const char *, const char *, int, int);
 
 /* dir.c */
-int open_dir(const char *, FS_DIR *);
+int open_dir(FS_DIR *, const char *);
 int read_dir(FS_DIR *, int);
 
 /* pcat.c */

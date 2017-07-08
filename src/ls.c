@@ -471,7 +471,7 @@ ls_folder(LS_ENT *ent, int more, int depth)
 	LS_ENT *ents = NULL;
 	LS_MAX max = {0}, *pmax = &max;
 
-	if (open_dir(ent->path, &dir) < 0)
+	if (open_dir(&dir, ent->path) < 0)
 		return (pwarn("open_dir %s:", ent->path));
 
 	if ((recurse == 'R') || more) {

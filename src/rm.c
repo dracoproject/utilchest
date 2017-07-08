@@ -41,7 +41,7 @@ rm_folder(const char *f, int silent, int depth)
 	int rval = 0;
 	FS_DIR dir;
 
-	if (open_dir(f, &dir) < 0) {
+	if (open_dir(&dir, f) < 0) {
 		rval = (errno == ENOTDIR) ? rm_file(f, depth, silent) :
 		       pwarn("open_dir %s:", f);
 		return rval;

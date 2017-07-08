@@ -123,7 +123,7 @@ copy_folder(const char *src, const char *dest, int opts, int depth)
 	int rval = 0;
 	FS_DIR dir;
 
-	if (open_dir(src, &dir) < 0) {
+	if (open_dir(&dir, src) < 0) {
 		rval = (errno == ENOTDIR) ? copy_file(src, dest, opts, depth) :
 		       pwarn("open_dir %s:", src);
 		return rval;

@@ -16,7 +16,7 @@
 int fs_follow = 'P';
 
 int
-open_dir(const char *p, FS_DIR *dir)
+open_dir(FS_DIR *dir, const char *p)
 {
 	dir->dir= (char *)p;
 	dir->dlen= strlen(dir->dir);
