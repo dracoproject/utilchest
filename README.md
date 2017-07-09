@@ -5,6 +5,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0aedf3fa498a436584eaea9b425d7db3)](https://www.codacy.com/app/Katsuke00/utilchest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dracoproject/utilchest&amp;utm_campaign=Badge_Grade)
 
 It's a collection of Unix utilities written to be simple and small
+(With HUGE inspiration in the suckless {s, u}base)
 
 #### Building
 ```
@@ -17,3 +18,8 @@ It's a collection of Unix utilities written to be simple and small
 	$ make utilchest
 	# make utilchest-install
 ```
+
+#### Similar Software
+[Suckless Base](http://core.suckless.org/sbase) and [Unportable Base](http://core.suckless.org/ubase)
+[ToyBox](http://landley.net/toybox/about.html)
+[Heirloom Toolchest](http://heirloom.sourceforge.net/tools.html)
