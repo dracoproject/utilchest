@@ -3,6 +3,7 @@
  */
 #include <sys/stat.h>
 
+#include <errno.h>
 #include <stdlib.h>
 
 #include "util.h"
@@ -12,8 +13,8 @@
 mode_t
 strtomode(const char *str, mode_t mode)
 {
-	char *end;
-	mode_t octal;
+	char *end, op;
+	mode_t octal, clear, who = 0, perm = 0;
 
 	octal = (mode_t)strtoul(str, &end, 8);
 	if (*end == '\0') {
@@ -26,5 +27,117 @@ strtomode(const char *str, mode_t mode)
 		return  ((octal | mode) & ~umask(0));
 	}
 
-	return 0755;
+who:
+	switch (*str) {
+	case 'a':
+		who |= S_IRWXU|S_ISUID|S_IRWXG|S_ISGID|S_IRWXO;
+		break;
+	case 'u':
+		who |= S_IRWXU|S_ISUID;
+		break;
+	case 'g':
+		who |= S_IRWXG|S_ISGID;
+		break;
+	case 'o':
+		who |= S_IRWXO;
+		break;
+	default:
+		goto op;
+	}
+
+	str++;
+	goto who;
+
+op:
+	clear = who ? who : ALLPERMS;
+	who   = who ? who : ~umask(0);
+
+	switch (*str) {
+	case '+':
+	case '-':
+	case '=':
+		op = *str++;
+		break;
+	default:
+		errno = EINVAL;
+		perr(1, "strtomode %c:", *str);
+	}
+
+copy:
+	switch (*str) {
+	case 'u':
+		if (mode & S_IRUSR)
+			perm |= S_IRUSR|S_IRGRP|S_IROTH;
+		if (mode & S_IWUSR)
+			perm |= S_IWUSR|S_IWGRP|S_IWOTH;
+		if (mode & S_IXUSR)
+			perm |= S_IXUSR|S_IXGRP|S_IXOTH;
+		break;
+	case 'g':
+		if (mode & S_IRGRP)
+			perm |= S_IRUSR|S_IRGRP|S_IROTH;
+		if (mode & S_IWGRP)
+			perm |= S_IWUSR|S_IWGRP|S_IWOTH;
+		if (mode & S_IXGRP)
+			perm |= S_IXUSR|S_IXGRP|S_IXOTH;
+		break;
+	case 'o':
+		if (mode & S_IROTH)
+			perm |= S_IRUSR|S_IRGRP|S_IROTH;
+		if (mode & S_IWOTH)
+			perm |= S_IWUSR|S_IWGRP|S_IWOTH;
+		if (mode & S_IXOTH)
+			perm |= S_IXUSR|S_IXGRP|S_IXOTH;
+		break;
+	default:
+		goto perm;
+	}
+
+	str++;
+	goto copy;
+
+perm:
+	switch (*str) {
+	case 'r':
+		perm |= S_IRUSR|S_IRGRP|S_IROTH;
+		break;
+	case 's':
+		perm |= S_ISUID|S_ISGID;
+		break;
+	case 't':
+		perm |= S_ISVTX;
+		break;
+	case 'w':
+		perm |= S_IWUSR|S_IWGRP|S_IWOTH;
+		break;
+	case 'x':
+		perm |= S_IXUSR|S_IXGRP|S_IXOTH;
+		break;
+	case 'X':
+		if (S_ISDIR(mode) || mode & (S_IXUSR|S_IXGRP|S_IXOTH))
+			perm |= S_IXUSR|S_IXGRP|S_IXOTH;
+		break;
+	default:
+		goto apply;
+	}
+
+	str++;
+	goto perm;
+
+apply:
+	switch (op) {
+	case '=':
+		mode &= ~clear;
+	case '+':
+		mode |= (perm & who);
+		break;
+	case '-':
+		mode &= ~(perm & who);
+		break;
+	}
+
+	if (*str == ',' && str++)
+		goto who;
+
+	return mode;
 }
