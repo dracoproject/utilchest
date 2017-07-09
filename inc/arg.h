@@ -5,10 +5,14 @@ extern char *argv0;
 
 #define ARGBEGIN \
 for (argv0 = *argv, argc--, argv++;\
-     argv[0] && argv[0][0] == '-' && argv[0][1]; argc--, argv++) {\
+     *argv && (*argv)[0] == '-' && (*argv)[1]; argc--, argv++) {\
 	char _argc, _brk;\
-	for (_brk = 0, argv[0]++; argv[0][0] && !_brk; argv[0]++) {\
-		_argc = argv[0][0];\
+	if ((*argv)[1] == '-' && (*argv)[2] == '\0') {\
+		argc -= 1, argv += 1;\
+		break;\
+	}\
+	for (_brk = 0, argv[0]++; (*argv)[0] && !_brk; argv[0]++) {\
+		_argc = (*argv)[0];\
 		switch (_argc)
 
 #define ARGEND } }
