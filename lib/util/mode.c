@@ -128,6 +128,7 @@ apply:
 	switch (op) {
 	case '=':
 		mode &= ~clear;
+		/* fallthrough */
 	case '+':
 		mode |= (perm & who);
 		break;
