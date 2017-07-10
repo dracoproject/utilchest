@@ -15,7 +15,6 @@
 #include <time.h>
 #include <unistd.h>
 
-
 #include "fs.h"
 #include "utf.h"
 #include "util.h"
@@ -63,8 +62,8 @@ static int Rdflag = 0;
 static int Sftflag = 0;
 
 static int first = 1;
-static int termwidth = 80;
-static long blocksize = 512; 
+static long blocksize = 512;
+static unsigned int termwidth = 80;
 
 static void printc(LS_ENT *, LS_MAX *);
 static void (*printfcn)(LS_ENT *, LS_MAX *) = printc;
@@ -684,6 +683,9 @@ main(int argc, char *argv[])
 
 		blocksize /= 512;
 	}
+
+	if (printfcn != print1 && (temp = getenv("COLUMNS")))
+		termwidth = estrtonum(temp, 0, UINT_MAX);
 
 	if (!argc)
 		argc++, *argv = ".";
