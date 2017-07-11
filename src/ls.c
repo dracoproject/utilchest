@@ -199,7 +199,7 @@ mkmax(LS_MAX *max, LS_ENT *ent, size_t total)
 	max->btotal += ent->info.st_blocks;
 }
 
-/* print type/name */
+/* internal print functions */
 static int
 ptype(mode_t mode)
 {
@@ -332,7 +332,7 @@ ptime(struct timespec t)
 	printf("%s ", buf);
 }
 
-/* print functions */
+/* external print functions */
 static void
 print1(LS_ENT *ents, LS_MAX *max)
 {
