@@ -4,8 +4,39 @@
 [![Coverity Badge](https://scan.coverity.com/projects/12911/badge.svg)](https://scan.coverity.com/projects/dracoproject-utilchest)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0aedf3fa498a436584eaea9b425d7db3)](https://www.codacy.com/app/Katsuke00/utilchest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dracoproject/utilchest&amp;utm_campaign=Badge_Grade)
 
-It's a collection of Unix utilities written to be simple and small  
-(With HUGE inspiration in the suckless {s,u}base)
+It's a collection of Unix utilities written to be simple and small
+
+#### Binaries
+* basename
+* cat
+* chgrp
+* chmod
+* chown
+* cp
+* dirname
+* domainname
+* echo
+* false
+* head
+* hostname
+* link
+* ln
+* ls
+* mkdir
+* mv
+* nice
+* printenv
+* pwd
+* rm
+* rmdir
+* sleep
+* sync
+* true
+* tty
+* uname
+* unlink
+* whoami
+* yes
 
 #### Building
 ```
