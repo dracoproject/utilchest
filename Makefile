@@ -19,6 +19,7 @@ BIN=\
 	src/chmod\
 	src/chown\
 	src/cp\
+	src/date\
 	src/dirname\
 	src/domainname\
 	src/echo\
