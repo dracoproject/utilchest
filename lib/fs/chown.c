@@ -37,7 +37,7 @@ chown_folder(const char *s, uid_t uid, gid_t gid, int depth)
 
 	if (open_dir(&dir, s) < 0) {
 		rval = (errno == ENOTDIR) ? chown_file(s, uid, gid, depth) :
-		       pwarn("open_dir:", s);
+		       pwarn("open_dir %s:", s);
 		return rval;
 	}
 
