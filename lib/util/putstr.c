@@ -3,6 +3,8 @@
  */
 #include <stdio.h>
 
+#include "util.h"
+
 void
 putstr(const char *str, FILE *stream)
 {
