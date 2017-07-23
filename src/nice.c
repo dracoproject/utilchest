@@ -3,6 +3,7 @@
  */
 #include <sys/resource.h>
 
+#include <err.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -39,13 +40,11 @@ main(int argc, char *argv[])
 	prio += getpriority(PRIO_PROCESS, 0);
 
 	if (errno)
-		perr(1, "getpriority:");
+		err(1, "getpriority");
 
 	if (setpriority(PRIO_PROCESS, 0, prio) < 0)
-		perr(1, "setpriority:");
+		err(1, "setpriority");
 
 	execvp(*argv, argv);
-	pwarn("execvp %s:", argv[0]);
-
-	_exit(126 + (errno == ENOENT));
+	err(126 + (errno == ENOENT), "execvp %s", argv[0]);
 }

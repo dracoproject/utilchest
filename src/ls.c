@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <err.h>
 #include <grp.h>
 #include <libgen.h>
 #include <pwd.h>
@@ -156,10 +157,10 @@ mkent(LS_ENT *ent, char *path, int cut, struct stat *st)
 		snprintf(group, sizeof(group), "%d", st->st_gid);
 
 	if (!(ent->group = strdup(group)))
-		perr(1, "strdup:");
+		err(1, "strdup");
 
 	if (!(ent->user = strdup(user)))
-		perr(1, "strdup:");
+		err(1, "strdup");
 
 	ent->ulen = strlen(user);
 	ent->glen = strlen(group);
@@ -373,7 +374,7 @@ print1(LS_ENT *ents, LS_MAX *max)
 
 		if (S_ISLNK(st->st_mode)) {
 			if ((len = readlink(ep->path, buf, sizeof(buf) - 1)) < 0)
-				perr(1, "readlink %s:", ep->name);
+				err(1, "readlink %s", ep->name);
 			buf[len] = '\0';
 
 			printf(" -> %s", buf);
@@ -477,8 +478,10 @@ ls_folder(LS_ENT *ent, int more, int depth)
 	LS_ENT *ents = NULL;
 	LS_MAX max = {0};
 
-	if (open_dir(&dir, ent->path) < 0)
-		return (pwarn("open_dir %s:", ent->path));
+	if (open_dir(&dir, ent->path) < 0) {
+		warn("open_dir %s", ent->path);
+		return 1;
+	}
 
 	if (Rdflag == 'R' || more) {
 		printf(first ? "%s:\n" : "\n%s:\n", ent->path);
@@ -493,7 +496,7 @@ ls_folder(LS_ENT *ent, int more, int depth)
 			continue;
 
 		if (!(ents = REALLOC(ents, ++size)))
-			perr(1, "realloc:");
+			err(1, "realloc");
 
 		mkent(&ents[size - 1], dir.path, 1, &dir.info);
 		mkmax(&max, &ents[size - 1], 0);
@@ -550,17 +553,18 @@ ls(int argc, char **argv)
 
 	for (; i < argc; i++) {
 		if ((FS_FOLLOW(0) ? stat : lstat)(argv[i], &st) < 0) {
-			rval = pwarn("(l)stat %s:", argv[i]);
+			warn("(l)stat %s", argv[i]);
+			rval = 1;
 			continue;
 		}
 
 		if (Rdflag != 'd' && S_ISDIR(st.st_mode)) {
 			if (!(dents = REALLOC(dents, ++ds)))
-				perr(1, "realloc:");
+				err(1, "realloc");
 			mkent(&dents[ds - 1], argv[i], 0, &st);
 		} else {
 			if (!(fents = REALLOC(fents, ++fs)))
-				perr(1, "realloc:");
+				err(1, "realloc");
 			mkent(&fents[fs - 1], argv[i], 0, &st);
 			mkmax(&max, &fents[fs - 1], 0);
 		}

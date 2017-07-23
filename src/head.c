@@ -1,6 +1,7 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
+#include <err.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +29,7 @@ head(const char *fname, FILE *f, size_t n)
 	buf = NULL;
 
 	if (ferror(f))
-		perr(1, "getline %s:", fname);
+		err(1, "getline %s", fname);
 }
 
 int
@@ -54,7 +55,8 @@ main(int argc, char *argv[])
 			*argv = "<stdin>";
 			fp = stdin;
 		} else if (!(fp = fopen(*argv, "r"))) {
-			rval = pwarn("fopen %s:", *argv);
+			warn("fopen %s", *argv);
+			rval = 1;
 			continue;
 		}
 

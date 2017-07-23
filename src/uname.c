@@ -3,6 +3,7 @@
  */
 #include <sys/utsname.h>
 
+#include <err.h>
 #include <stdio.h>
 
 #include "util.h"
@@ -49,7 +50,7 @@ main(int argc, char *argv[])
 		wrong(usage);
 
 	if (uname(&sys) < 0)
-		perr(1, "uname:");
+		err(1, "uname");
 
 	if (!print || (print & SYS))
 		putstr(sys.sysname, stdout);

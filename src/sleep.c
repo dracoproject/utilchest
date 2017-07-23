@@ -13,7 +13,7 @@ main(int argc, char *argv[])
 {
 	unsigned int secs;
 
-	argv0 = *argv, argc--, argv++;
+	argc--, argv++;
 
 	if (argc != 1)
 		wrong(usage);

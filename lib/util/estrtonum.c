@@ -1,6 +1,7 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
+#include <err.h>
 #include <errno.h>
 #include <stdlib.h>
 
@@ -22,7 +23,7 @@ estrtonum(const char *str, long long min, long long max)
 		errno = ERANGE;
 
 	if (errno)
-		perr(1, "strtol %s:", str);
+		err(1, "strtol %s", str);
 
 	return ll;
 }

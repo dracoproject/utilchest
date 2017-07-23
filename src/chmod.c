@@ -3,6 +3,7 @@
  */
 #include <sys/stat.h>
 
+#include <err.h>
 #include <errno.h>
 #include <stdio.h>
 
@@ -18,12 +19,16 @@ chmod_file(const char *s, const char *ms, int depth)
 	mode_t mode;
 	struct stat st;
 
-	if ((FS_FOLLOW(depth) ? stat : lstat)(s, &st) < 0)
-		return (pwarn("(l)stat %s:", s));
+	if ((FS_FOLLOW(depth) ? stat : lstat)(s, &st) < 0) {
+		warn("(l)stat %s", s);
+		return 1;
+	}
 
 	mode = strtomode(ms, st.st_mode);
-	if (chmod(s, mode) < 0)
-		return (pwarn("fchmodat %s:", s));
+	if (chmod(s, mode) < 0) {
+		warn("fchmodat %s", s);
+		return 1;
+	}
 
 	return 0;
 }
@@ -35,8 +40,13 @@ chmod_folder(const char *s, const char *ms, int depth)
 	int rval = 0;
 
 	if (open_dir(&dir, s) < 0) {
-		rval = (errno == ENOTDIR) ? chmod_file(s, ms, depth) :
-		       pwarn("open_dir %s:", s);
+		rval = (errno == ENOTDIR);
+
+		if (rval)
+			rval = chmod_file(s, ms, depth);
+		else
+			warn("open_dir %s", s);
+
 		return rval;
 	}
 
@@ -59,8 +69,8 @@ main(int argc, char *argv[])
 	int (*chmodf)(const char *, const char *, int) = chmod_file;
 	int i, rval = 0;
 
-	argv0 = *argv, argc--, argv++;
-	for (; *argv && (*argv)[0] == '-' && (*argv)[1]; argc--, argv++) {
+	for (argc--, argv++;
+	     *argv && (*argv)[0] == '-' && (*argv)[1]; argc--, argv++) {
 		for (i = 1; (*argv)[i]; i++) {
 			switch ((*argv)[i]) {
 			case 'R':

@@ -3,13 +3,14 @@
  */
 #include <sys/stat.h>
 
+#include <err.h>
 #include <stdlib.h>
 
 #include "fs.h"
 #include "util.h"
 
-SET_USAGE = "%s [-afp] [-R [-H|-L|-P]] source target\n"
-            "%s [-afp] [-R [-H|-L|-P]] source ... dir";
+SET_USAGE = "%s [-fp] [-R [-H|-L|-P]] source target\n"
+            "%s [-fp] [-R [-H|-L|-P]] source ... dir";
 
 int
 main(int argc, char *argv[])
@@ -20,11 +21,6 @@ main(int argc, char *argv[])
 	struct stat st;
 
 	ARGBEGIN {
-	case 'a':
-		cp = copy_folder;
-		fs_follow = 'P';
-		opts |= CP_PFLAG;
-		break;
 	case 'f':
 		opts |= CP_FFLAG;
 		break;
@@ -54,7 +50,7 @@ main(int argc, char *argv[])
 
 	sourcedir = argv[argc - 1];
 	if (stat(sourcedir, &st) < 0)
-		perr(1, "stat %s:", sourcedir);
+		err(1, "stat %s", sourcedir);
 
 	if (!S_ISDIR(st.st_mode))
 		wrong(usage);

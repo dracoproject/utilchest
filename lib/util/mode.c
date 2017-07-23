@@ -3,6 +3,7 @@
  */
 #include <sys/stat.h>
 
+#include <err.h>
 #include <errno.h>
 #include <stdlib.h>
 
@@ -60,7 +61,7 @@ op:
 		break;
 	default:
 		errno = EINVAL;
-		perr(1, "strtomode %c:", *str);
+		err(1, "strtomode %c", *str);
 	}
 
 copy:

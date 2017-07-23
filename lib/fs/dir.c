@@ -3,6 +3,7 @@
  */
 #include <sys/stat.h>
 
+#include <err.h>
 #include <errno.h>
 #include <dirent.h>
 #include <limits.h>
@@ -11,7 +12,6 @@
 #include <string.h>
 
 #include "fs.h"
-#include "util.h"
 
 int fs_follow = 'P';
 
@@ -45,7 +45,7 @@ read_dir(FS_DIR *dir, int rtime)
 
 		free(dir->path);
 		if (!(dir->path = malloc(dir->dlen + dir->nlen + 2)))
-			perr(1, "malloc:");
+			err(1, "malloc");
 
 		dir->plen = sprintf(dir->path, "%s/%s", dir->dir, dir->name);
 

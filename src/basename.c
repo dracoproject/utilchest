@@ -15,7 +15,7 @@ main(int argc, char *argv[])
 	char *p;
 	ssize_t off;
 
-	argv0 = *argv, argc--, argv++;
+	argc--, argv++;
 
 	if (argc != 1 && argc != 2)
 		wrong(usage);

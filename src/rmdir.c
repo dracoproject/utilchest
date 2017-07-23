@@ -1,6 +1,7 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
+#include <err.h>
 #include <libgen.h>
 #include <unistd.h>
 
@@ -39,9 +40,12 @@ main(int argc, char *argv[])
 	if (!argc)
 		wrong(usage);
 
-	for (; *argv; argv++)
-		if (rmdirf(*argv) < 0)
-			rval |= pwarn("rmdir %s:", *argv);
+	for (; *argv; argv++) {
+		if (rmdirf(*argv) < 0) {
+			warn("rmdir %s", *argv);
+			rval = 1;
+		}
+	}
 
 	return rval;
 }

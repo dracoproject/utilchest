@@ -3,6 +3,7 @@
  */
 #include <sys/stat.h>
 
+#include <err.h>
 #include <errno.h>
 #include <stdlib.h>
 
@@ -20,8 +21,10 @@ move(const char *src, const char *dest)
 
 	if (errno == EXDEV)
 		return (copy_folder(src, dest, 0, CP_PFLAG));
+	else
+		warn("rename %s -> %s", src, dest);
 
-	return (pwarn("rename %s/%s:", src, dest));
+	return 1;
 }
 
 int
@@ -48,10 +51,10 @@ main(int argc, char *argv[])
 
 	sourcedir = argv[argc - 1];
 	if (stat(sourcedir, &sb) < 0)
-		perr(1, "stat %s:", sourcedir);
+		err(1, "stat %s", sourcedir);
 
 	if (!S_ISDIR(sb.st_mode))
-		perr(1, "%s: not a directory\n", sourcedir);
+		wrong(usage);
 
 	for (; *argv != sourcedir; argv++)
 		rval |= move(*argv, pcat(*argv, sourcedir, 1));

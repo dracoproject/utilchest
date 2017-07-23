@@ -8,7 +8,6 @@
 #include <string.h>
 
 #include "fs.h"
-#include "util.h"
 
 #define SIZE(a, b) (strlen((a)) + strlen((b)) + 2)
 

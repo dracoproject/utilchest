@@ -64,7 +64,6 @@ LIBUTILSRC=\
 	lib/util/fshut.c\
 	lib/util/putstr.c\
 	lib/util/mode.c\
-	lib/util/warn.c\
 	lib/util/wrong.c
 
 # LIB PATH

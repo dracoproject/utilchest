@@ -1,10 +1,8 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
-extern char *argv0;
-
 #define ARGBEGIN \
-for (argv0 = *argv, argc--, argv++;\
+for (argc--, argv++;\
      *argv && (*argv)[0] == '-' && (*argv)[1]; argc--, argv++) {\
 	char _argc, _brk;\
 	if ((*argv)[1] == '-' && (*argv)[2] == '\0') {\

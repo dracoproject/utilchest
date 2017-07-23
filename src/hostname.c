@@ -1,6 +1,7 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
+#include <err.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,17 +16,17 @@ main(int argc, char *argv[])
 {
 	char host[HOST_NAME_MAX+1];
 
-	argv0 = *argv, argc--, argv++;
+	argc--, argv++;
 
 	if (argc > 1)
 		wrong(usage);
 
 	if (argc == 1) {
 		if (sethostname(*argv, strlen(*argv)))
-			perr(1, "sethostname:");
+			err(1, "sethostname");
 	} else {
 		if (gethostname(host, sizeof(host)))
-			perr(1, "gethostname:");
+			err(1, "gethostname");
 
 		puts(host);
 	}

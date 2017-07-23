@@ -1,6 +1,7 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
+#include <err.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
@@ -17,11 +18,15 @@ cat(int f, const char *name)
 	ssize_t n;
 
 	while ((n = read(f, buf, sizeof(buf))) > 0)
-		if (write(1, buf, n) != n)
-			return (pwarn("write %s:", name));
+		if (write(1, buf, n) != n) {
+			warn("write %s", name);
+			return 1;
+		}
 
-	if (n < 0)
-		return (pwarn("read %s:", name));
+	if (n < 0) {
+		warn("read %s", name);
+		return 1;
+	}
 
 	return 0;
 }
@@ -46,14 +51,17 @@ main(int argc, char *argv[])
 			*argv = "<stdin>";
 			f = STDIN_FILENO;
 		} else if ((f = open(*argv, O_RDONLY, 0)) < 0) {
-			rval = pwarn("open %s:", *argv);
+			warn("open %s", *argv);
+			rval = 1;
 			continue;
 		}
 
 		rval |= cat(f, *argv);
 
-		if (f != STDIN_FILENO && close(f) < 0)
-			rval = pwarn("close %s:", *argv);
+		if (f != STDIN_FILENO && close(f) < 0) {
+			warn("close %s", *argv);
+			rval = 1;
+		}
 	}
 
 	return rval;

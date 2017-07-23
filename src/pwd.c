@@ -3,6 +3,7 @@
  */
 #include <sys/stat.h>
 
+#include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -50,7 +51,7 @@ main(int argc, char *argv[])
 		wrong(usage);
 
 	if (!(cwd = logical ? getcwd(NULL, 0) : getcwd_logical()))
-		perr(1, "getcwd:");
+		err(1, "getcwd");
 
 	puts(cwd);
 

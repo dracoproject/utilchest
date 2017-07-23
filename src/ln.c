@@ -3,6 +3,7 @@
  */
 #include <sys/stat.h>
 
+#include <err.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -29,11 +30,15 @@ linkit(const char *src, const char *dest, int opts)
 		flags |= AT_SYMLINK_FOLLOW;
 
 	if (opts & SYMLNK) {
-		if (symlink(src, dest) < 0)
-			rval = pwarn("symlink %s -> %s:", src, dest);
+		if (symlink(src, dest) < 0) {
+			warn("symlink %s -> %s", src, dest);
+			rval = 1;
+		}
 	} else {
-		if (linkat(AT_FDCWD, src, AT_FDCWD, dest, flags) < 0)
-			rval = pwarn("linkat %s:", src, dest);
+		if (linkat(AT_FDCWD, src, AT_FDCWD, dest, flags) < 0) {
+			warn("linkat %s -> %s", src, dest);
+			rval = 1;
+		}
 	}
 
 
@@ -75,7 +80,7 @@ main(int argc, char *argv[])
 
 	sourcedir = argv[argc - 1];
 	if (stat(sourcedir, &st))
-		perr(1, "stat %s:", sourcedir);
+		err(1, "stat %s", sourcedir);
 
 	if (!S_ISDIR(st.st_mode))
 		wrong(usage);

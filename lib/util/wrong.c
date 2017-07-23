@@ -16,7 +16,7 @@ wrong(const char *s)
 			fputs("\n       ", stderr);
 
 		if (*s == '%' && *++s == 's' && ++s)
-			fputs(argv0, stderr);
+			fputs("progname", stderr); /* TODO */
 
 		fputc(*s, stderr);
 	}

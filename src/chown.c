@@ -1,6 +1,7 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
+#include <err.h>
 #include <errno.h>
 #include <grp.h>
 #include <limits.h>
@@ -55,7 +56,7 @@ main(int argc, char *argv[])
 		else if (!errno)
 			uid = estrtonum(owner, 0, UINT_MAX);
 		else
-			perr(1, "getpwnam %s:", owner);
+			err(1, "getpwnam %s", owner);
 	}
 
 	if (group && *group) {
@@ -66,7 +67,7 @@ main(int argc, char *argv[])
 		else if (!errno)
 			gid = estrtonum(group, 0, UINT_MAX);
 		else
-			perr(1, "getgrnam %s:", group);
+			err(1, "getgrnam %s", group);
 	}
 
 	if ((uid == (uid_t)-1) && (gid == (gid_t)-1))

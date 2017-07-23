@@ -1,6 +1,7 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
+#include <err.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -11,10 +12,12 @@ main(int argc, char *argv[])
 {
 	char *tty;
 
-	argv0 = *argv, argc--, argv++;
+	argc--, argv++;
 
-	if (!(tty = ttyname(STDIN_FILENO)))
-		return (pwarn("ttyname:"));
+	if (!(tty = ttyname(STDIN_FILENO))) {
+		warn("ttyname");
+		return 1;
+	}
 
 	puts(tty);
 

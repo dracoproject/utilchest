@@ -11,7 +11,7 @@ SET_USAGE = "%s string";
 int
 main(int argc, char *argv[])
 {
-	argv0 = *argv, argc--, argv++;
+	argc--, argv++;
 
 	if (argc != 1)
 		wrong(usage);

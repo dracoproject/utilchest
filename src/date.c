@@ -1,6 +1,7 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
+#include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -26,7 +27,7 @@ main(int argc, char *argv[])
 	} ARGEND
 
 	if (time(&tval) < 0)
-		perr(1, "time:");
+		err(1, "time");
 
 	if (*argv && **argv == '+')
 		fmt = *argv++;
@@ -36,7 +37,7 @@ main(int argc, char *argv[])
 	if ((tm = localtime(&tval)))
 		strftime(buf, sizeof(buf), ++fmt, tm);
 	else
-		perr(1, "localtime:");
+		err(1, "localtime");
 
 	puts(buf);
 

@@ -1,6 +1,7 @@
 /* This file is part of the UtilChest from EltaninOS
  * See LICENSE file for copyright and license details.
  */
+#include <err.h>
 #include <errno.h>
 #include <grp.h>
 #include <limits.h>
@@ -44,7 +45,7 @@ main(int argc, char *argv[])
 	else if (!errno)
 		gid = estrtonum(argv[0], 0, UINT_MAX);
 	else
-		perr(1, "getgrnam %s:", argv[0]);
+		err(1, "getgrnam %s", argv[0]);
 
 	for (argv++; *argv; argv++)
 		rval |= chownf(*argv, (uid_t)-1, gid, 0);

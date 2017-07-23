@@ -3,6 +3,7 @@
  */
 #include <sys/stat.h>
 
+#include <err.h>
 #include <errno.h>
 #include <unistd.h>
 
@@ -19,7 +20,7 @@ rm_file(const char *f, int silent, int depth)
 
 	if (lstat(f, &st) < 0) {
 		if (!silent || errno != ENOENT)
-			pwarn("lstat %s:", f);
+			warn("lstat %s", f);
 
 		return (!silent);
 	}
@@ -30,9 +31,9 @@ rm_file(const char *f, int silent, int depth)
 		rval = unlink(f);
 
 	if (rval < 0)
-		return (pwarn("rm_file %s:", f));
+		warn("rm_file %s", f);
 
-	return 0;
+	return (rval < 0);
 }
 
 static int
@@ -42,8 +43,13 @@ rm_folder(const char *f, int silent, int depth)
 	FS_DIR dir;
 
 	if (open_dir(&dir, f) < 0) {
-		rval = (errno == ENOTDIR) ? rm_file(f, depth, silent) :
-		       pwarn("open_dir %s:", f);
+		rval = (errno == ENOTDIR);
+
+		if (rval)
+			rval = rm_file(f, depth, silent);
+		else
+			warn("open_dir %s", f);
+
 		return rval;
 	}
 
@@ -57,8 +63,10 @@ rm_folder(const char *f, int silent, int depth)
 			rval |= rm_file(dir.path, silent, depth);
 	}
 
-	if (rmdir(f) < 0)
-		return (pwarn("rmdir %s:", f));
+	if (rmdir(f) < 0) {
+		warn("rmdir %s", f);
+		rval = 1;
+	}
 
 	return rval;
 }

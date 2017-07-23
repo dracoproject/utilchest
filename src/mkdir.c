@@ -3,6 +3,7 @@
  */
 #include <sys/stat.h>
 
+#include <err.h>
 #include <errno.h>
 #include <string.h>
 
@@ -57,11 +58,15 @@ main(int argc, char *argv[])
 		else
 			rval |= mkdir(*argv, mode);
 
-		if (rval < 0)
-			rval = pwarn("mkdir %s:", *argv);
+		if (rval < 0) {
+			warn("mkdir %s", *argv);
+			rval = 1;
+		}
 
-		if (!rval && mode > 0777 && chmod(*argv, mode) < 0)
-			return (pwarn("chmod %s:", *argv));
+		if (!rval && mode > 0777 && chmod(*argv, mode) < 0) {
+			warn("chmod %s", *argv);
+			return 1;
+		}
 	}
 
 	return rval;
