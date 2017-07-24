@@ -29,14 +29,14 @@ copy_file(const char *src, const char *dest, int opts, int depth)
 		unlink(dest);
 
 	if ((FS_FOLLOW(depth) ? stat : lstat)(src, &st) < 0) {
-		warn("lstat %s:", src);
+		warn("lstat %s", src);
 		return 1;
 	}
 
 	switch ((st.st_mode & S_IFMT)) {
 	case S_IFDIR:
 		errno = EISDIR;
-		warn("%s:", src);
+		warn("%s", src);
 		return 1;
 		/*NOTREACHED*/
 	case S_IFLNK:

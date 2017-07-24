@@ -10,14 +10,17 @@
 
 #include "fs.h"
 
+int hflag = 0;
+
 int
 chown_file(const char *s, uid_t uid, gid_t gid, int depth)
 {
 	int (*chownf)(const char *, uid_t, gid_t);
 	struct stat st;
 
-	if ((FS_FOLLOW(depth) ? stat : lstat)(s, &st) < 0) {
-		warn("(l)stat %s:", s);
+	if ((FS_FOLLOW(depth) ||
+	    (hflag & !depth) ? stat : lstat)(s, &st) < 0) {
+		warn("(l)stat %s", s);
 		return 1;
 	}
 
@@ -27,7 +30,7 @@ chown_file(const char *s, uid_t uid, gid_t gid, int depth)
 		chownf = lchown;
 
 	if (chownf(s, (uid == (uid_t)-1) ? st.st_uid : uid, gid) < 0) {
-		warn("(l)chown %s:", s);
+		warn("(l)chown %s", s);
 		return 1;
 	}
 
@@ -46,7 +49,7 @@ chown_folder(const char *s, uid_t uid, gid_t gid, int depth)
 		if (rval)
 			rval = chown_file(s, uid, gid, depth);
 		else
-			warn("open_dir %s:", s);
+			warn("open_dir %s", s);
 
 		return rval;
 	}

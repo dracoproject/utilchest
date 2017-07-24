@@ -10,6 +10,8 @@
 #include "fs.h"
 #include "util.h"
 
+extern int hflag;
+
 SET_USAGE = "%s [-h] [-R [-H|-L|-P]] group file ...";
 
 int
@@ -22,7 +24,7 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'h':
-		fs_follow = 'P';
+		hflag = 1;
 		break;
 	case 'R':
 		chownf = chown_folder;
