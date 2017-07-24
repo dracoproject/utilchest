@@ -31,8 +31,8 @@ copy_reg(const char *src, const char *dest, int opts, struct stat *st)
 
 	fstat(sf, &st1);
 
-	if (st->st_ino != st1.st_ino ||
-	    st->st_dev != st1.st_dev) {
+	if (st->st_ino != st1.st_ino
+	    || st->st_dev != st1.st_dev) {
 		warnx("%s: changed between calls\n", src);
 		rval = 1;
 		goto clean;
@@ -58,10 +58,10 @@ copy_reg(const char *src, const char *dest, int opts, struct stat *st)
 		goto clean;
 	}
 
-	fchmod(tf, st->st_mode);
+	fchmod(tf, st1.st_mode);
 	if (CP_PFLAG & opts) {
-		times[0] = st->st_atim;
-		times[1] = st->st_mtim;
+		times[0] = st1.st_atim;
+		times[1] = st1.st_mtim;
 
 		if ((utimensat(AT_FDCWD, dest, times, 0)) < 0) {
 			warn("utimensat %s", dest);
@@ -69,7 +69,7 @@ copy_reg(const char *src, const char *dest, int opts, struct stat *st)
 			goto clean;
 		}
 
-		if ((fchown(tf, st->st_uid, st->st_gid)) < 0) {
+		if ((fchown(tf, st1.st_uid, st1.st_gid)) < 0) {
 			warn("fchown %s", dest);
 			rval = 1;
 			goto clean;
