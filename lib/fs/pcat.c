@@ -9,8 +9,6 @@
 
 #include "fs.h"
 
-#define SIZE(a, b) (strlen((a)) + strlen((b)) + 2)
-
 char *
 pcat(const char *f1, const char *f2, int isdir)
 {
@@ -27,10 +25,7 @@ pcat(const char *f1, const char *f2, int isdir)
 		return ((char *)f2);
 
 cat:
-	if (SIZE(f1, f2) >= sizeof(buf))
-		return ((char *)f2);
-
-	sprintf(buf, "%s/%s", f2, f1);
+	snprintf(buf, sizeof(buf), "%s/%s", f2, f1);
 
 	return buf;
 }
