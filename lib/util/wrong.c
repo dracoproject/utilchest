@@ -18,7 +18,7 @@ wrong(const char *s)
 			fputs("\n       ", stderr);
 
 		if (*s == '%' && *++s == 's' && ++s)
-			fputs(argv0, stderr); /* TODO */
+			fputs(argv0, stderr);
 
 		fputc(*s, stderr);
 	}
