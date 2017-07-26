@@ -39,6 +39,8 @@ main(int argc, char *argv[])
 	int first = 1, rval = 0;
 	size_t n = 10;
 
+	setprogname(argv[0]);
+
 	ARGBEGIN {
 	case 'n':
 		n = estrtonum(EARGF(wrong(usage)), 0, LLONG_MAX);

@@ -3,6 +3,7 @@
  */
 #include <libgen.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "util.h"
@@ -15,6 +16,7 @@ main(int argc, char *argv[])
 	char *p;
 	ssize_t off;
 
+	setprogname(argv[0]);
 	argc--, argv++;
 
 	if (argc != 1 && argc != 2)

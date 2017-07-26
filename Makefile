@@ -7,6 +7,7 @@ INC= inc
 
 HDR=\
 	inc/arg.h\
+	inc/compat.h\
 	inc/fs.h\
 	inc/utf.h\
 	inc/util.h

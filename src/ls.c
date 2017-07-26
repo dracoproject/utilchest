@@ -611,8 +611,7 @@ main(int argc, char *argv[])
 	int kflag = 0, rval = 0;
 	struct winsize w;
 
-	if (!(ioctl(fileno(stdout), TIOCGWINSZ, &w)) && w.ws_col > 0)
-		termwidth = w.ws_col;
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'i':
@@ -675,6 +674,9 @@ main(int argc, char *argv[])
 	default:
 		wrong(usage);
 	} ARGEND
+
+	if (!(ioctl(fileno(stdout), TIOCGWINSZ, &w)) && w.ws_col > 0)
+		termwidth = w.ws_col;
 
 	if (lflag && printfcn != print1)
 		lflag = 0;

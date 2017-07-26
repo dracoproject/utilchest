@@ -6,6 +6,7 @@
 #include <grp.h>
 #include <limits.h>
 #include <pwd.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "fs.h"
@@ -26,6 +27,8 @@ main(int argc, char *argv[])
 	struct group *grp;
 	struct passwd *pwd;
 	uid_t uid = -1;
+
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'h':

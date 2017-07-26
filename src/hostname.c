@@ -4,6 +4,7 @@
 #include <err.h>
 #include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -16,6 +17,7 @@ main(int argc, char *argv[])
 {
 	char host[HOST_NAME_MAX+1];
 
+	setprogname(argv[0]);
 	argc--, argv++;
 
 	if (argc > 1)

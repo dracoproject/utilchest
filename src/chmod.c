@@ -6,6 +6,7 @@
 #include <err.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "fs.h"
 #include "util.h"
@@ -69,8 +70,11 @@ main(int argc, char *argv[])
 	int (*chmodf)(const char *, const char *, int) = chmod_file;
 	int i, rval = 0;
 
-	for (argc--, argv++;
-	     *argv && (*argv)[0] == '-' && (*argv)[1]; argc--, argv++) {
+	setprogname(argv[0]);
+	argc--, argv++;
+
+	for (; *argv && (*argv)[0] == '-' && (*argv)[1];
+	     argc--, argv++) {
 		for (i = 1; (*argv)[i]; i++) {
 			switch ((*argv)[i]) {
 			case 'R':

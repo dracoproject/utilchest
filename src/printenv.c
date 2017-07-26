@@ -13,6 +13,7 @@ main(int argc, char *argv[])
 	extern char **environ;
 	const char *s;
 
+	setprogname(argv[0]);
 	argc--, argv++;
 
 	if (argc) {

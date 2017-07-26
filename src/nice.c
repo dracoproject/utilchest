@@ -10,20 +10,14 @@
 
 #include "util.h"
 
-#ifndef PRIO_MIN
-#define PRIO_MIN -NZERO
-#endif
-
-#ifndef PRIO_MAX
-#define PRIO_MAX (NZERO-1)
-#endif
-
 SET_USAGE = "%s [-n increment] utility [argument ...]";
 
 int
 main(int argc, char *argv[])
 {
 	int prio = 10;
+
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'n':

@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "arg.h"
+#include "compat.h"
 
 #define SET_USAGE static const char *usage
 

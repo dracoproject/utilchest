@@ -2,6 +2,7 @@
  * See LICENSE file for copyright and license details.
  */
 #include <limits.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "util.h"
@@ -13,6 +14,7 @@ main(int argc, char *argv[])
 {
 	unsigned int secs;
 
+	setprogname(argv[0]);
 	argc--, argv++;
 
 	if (argc != 1)

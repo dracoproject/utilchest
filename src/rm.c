@@ -5,6 +5,7 @@
 
 #include <err.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "fs.h"
@@ -76,6 +77,8 @@ main(int argc, char *argv[])
 {
 	int (*rm)(const char *, int, int) = rm_file;
 	int silent = 0, rval = 0;
+
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'f':

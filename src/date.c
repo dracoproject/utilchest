@@ -18,6 +18,8 @@ main(int argc, char *argv[])
 	struct tm *tm;
 	time_t tval;
 
+	setprogname(argv[0]);
+
 	ARGBEGIN {
 	case 'u':
 		setenv("TZ", "UTC0", 1);

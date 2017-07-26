@@ -2,6 +2,7 @@
  * See LICENSE file for copyright and license details.
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "util.h"
@@ -11,10 +12,13 @@ main(int argc, char *argv[])
 {
 	int nflag = 0;
 
-	if (*++argv && !strcmp(*argv, "-n"))
-		nflag++, argv++;
+	setprogname(argv[0]);
+	argc--, argv++;
 
-	for (argc -= 1; *argv; argc--, argv++)
+	if (*argv && !strcmp(*argv, "-n"))
+		nflag++, argc--, argv++;
+
+	for (; *argv; argc--, argv++)
 		putstr(*argv, stdout);
 
 	if (!nflag)

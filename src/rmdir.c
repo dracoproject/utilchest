@@ -3,6 +3,7 @@
  */
 #include <err.h>
 #include <libgen.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "util.h"
@@ -28,6 +29,8 @@ int
 main(int argc, char *argv[])
 {
 	int rval = 0, (*rmdirf)(const char *) = rmdir;
+
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'p':

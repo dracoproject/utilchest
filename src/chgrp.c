@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <grp.h>
 #include <limits.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "fs.h"
@@ -21,6 +22,8 @@ main(int argc, char *argv[])
 	int (*chownf)(const char *, uid_t, gid_t, int) = chown_file;
 	int rval = 0;
 	struct group *grp;
+
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'h':

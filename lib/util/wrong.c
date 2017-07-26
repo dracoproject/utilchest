@@ -9,6 +9,8 @@
 void
 wrong(const char *s)
 {
+	const char *argv0 = getprogname();
+
 	fputs("usage: ", stderr);
 
 	for (; *s; s++) {
@@ -16,7 +18,7 @@ wrong(const char *s)
 			fputs("\n       ", stderr);
 
 		if (*s == '%' && *++s == 's' && ++s)
-			fputs("progname", stderr); /* TODO */
+			fputs(argv0, stderr); /* TODO */
 
 		fputc(*s, stderr);
 	}

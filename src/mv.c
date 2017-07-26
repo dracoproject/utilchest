@@ -34,6 +34,8 @@ main(int argc, char *argv[])
 	int rval = 0;
 	struct stat sb;
 
+	setprogname(argv[0]);
+
 	ARGBEGIN {
 	case 'f':
 		break;

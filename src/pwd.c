@@ -36,6 +36,8 @@ main(int argc, char *argv[])
 	const char *cwd;
 	int logical = 1;
 
+	setprogname(argv[0]);
+
 	ARGBEGIN {
 	case 'L':
 		logical = 1;

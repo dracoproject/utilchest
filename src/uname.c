@@ -5,6 +5,7 @@
 
 #include <err.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "util.h"
 
@@ -22,6 +23,8 @@ main(int argc, char *argv[])
 {
 	int print = 0;
 	struct utsname sys;
+
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'a':

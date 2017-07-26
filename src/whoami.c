@@ -4,6 +4,7 @@
 #include <err.h>
 #include <pwd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "util.h"
@@ -13,6 +14,7 @@ main(int argc, char *argv[])
 {
 	struct passwd *pw;
 
+	setprogname(argv[0]);
 	argc--, argv++;
 
 	if (!(pw = getpwuid(geteuid())))

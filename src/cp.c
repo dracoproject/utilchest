@@ -20,6 +20,8 @@ main(int argc, char *argv[])
 	int rval = 0, opts = 0;
 	struct stat st;
 
+	setprogname(argv[0]);
+
 	ARGBEGIN {
 	case 'f':
 		opts |= CP_FFLAG;

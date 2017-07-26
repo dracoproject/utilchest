@@ -5,6 +5,7 @@
 
 #include <err.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "util.h"
@@ -37,6 +38,8 @@ main(int argc, char *argv[])
 {
 	int pflag = 0, rval = 0;
 	mode_t mode = 0777 & ~umask(0), dir_mode = mode|S_IWUSR|S_IXUSR;
+
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'p':
