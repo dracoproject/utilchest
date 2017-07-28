@@ -24,6 +24,7 @@ BIN=\
 	src/dirname\
 	src/domainname\
 	src/echo\
+	src/env\
 	src/false\
 	src/head\
 	src/hostname\
