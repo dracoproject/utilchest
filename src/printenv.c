@@ -7,10 +7,11 @@
 
 #include "util.h"
 
+extern char **environ;
+
 int
 main(int argc, char *argv[])
 {
-	extern char **environ;
 	const char *s;
 
 	setprogname(argv[0]);
