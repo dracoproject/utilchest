@@ -11,6 +11,10 @@
 #define PRIO_MAX (NZERO-1)
 #endif
 
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX _POSIX_HOST_NAME_MAX
+#endif
+
 extern char *__progname;
 
 #define getprogname( ) __progname
