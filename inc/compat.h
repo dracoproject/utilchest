@@ -14,4 +14,4 @@
 extern char *__progname;
 
 #define getprogname( ) __progname
-#define setprogname(x)
+#define setprogname(x) __progname = x
