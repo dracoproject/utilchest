@@ -147,15 +147,15 @@ mkent(LS_ENT *ent, char *path)
 		break;
 	}
 
-	if (!lflag)
-		return;
-
 	if (S_ISLNK(ent->info.st_mode)) {
 		if (!(stat(path, &st)))
 			ent->tmode = st.st_mode;
 		else
 			ent->tmode = 0;
 	}
+
+	if (!lflag)
+		return;
 
 	if (!nflag && (pw = getpwuid(ent->info.st_uid)))
 		snprintf(user, sizeof(user), "%s", pw->pw_name);
@@ -220,7 +220,8 @@ free_lsent(LS_ENT *ent, size_t size, int nalloc)
 		goto end;
 
 	for (; i < size; i++) {
-		free(ent[i].name);
+		if (nalloc)
+			free(ent[i].name);
 
 		if (!lflag)
 			continue;
@@ -342,7 +343,7 @@ pname(LS_ENT *ent, int ino, int size)
 	}
 
 	if (Fpflag == 'F' || (Fpflag == 'p' && S_ISDIR(ent->info.st_mode)))
-		chcnt += ptype(ent->info.st_mode);
+		chcnt += ptype(ent->tmode);
 
 	return chcnt;
 }
