@@ -8,7 +8,6 @@
 
 #include <err.h>
 #include <grp.h>
-#include <libgen.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,8 +32,9 @@ typedef struct {
 } LS_COL;
 
 typedef struct {
-	char *name, *path, *user, *group;
+	char *name, *user, *group;
 	size_t len, ulen, glen;
+	mode_t tmode;
 	struct stat info;
 	struct timespec tm;
 } LS_ENT;
@@ -74,8 +74,8 @@ SET_USAGE = "%s [-1AaCcFfiklmnpqrSstux] [file ...]";
 static int
 cmp(const void *va, const void *vb)
 {
-	int cmp;
 	const LS_ENT *a = va, *b = vb;
+	int cmp;
 
 	switch (Sftflag) {
 	case 'S':
@@ -120,41 +120,52 @@ mkcol(LS_COL *col, LS_MAX *max)
 }
 
 static void
-mkent(LS_ENT *ent, char *path, int cut, struct stat *st)
+mkent(LS_ENT *ent, char *path)
 {
 	char user[32], group[32];
 	struct group  *gr;
 	struct passwd *pw;
+	struct stat st;
 
-	ent->info = *st;
-	ent->path = path;
-	ent->name = cut ? basename(ent->path) : ent->path;
+	if (!(ent->name = path))
+		err(1, "strdup");
+
 	ent->len  = strlen(ent->name);
+
+	if (lstat(ent->name, &ent->info) < 0)
+		err(1, "lstat %s", ent->name);
 
 	switch (cuflag) {
 	case 'c':
-		ent->tm = st->st_ctim;
+		ent->tm = ent->info.st_ctim;
 		break;
 	case 'u':
-		ent->tm = st->st_atim;
+		ent->tm = ent->info.st_atim;
 		break;
 	default:
-		ent->tm = st->st_mtim;
+		ent->tm = ent->info.st_mtim;
 		break;
 	}
 
 	if (!lflag)
 		return;
 
-	if (!nflag && (pw = getpwuid(st->st_uid)))
+	if (S_ISLNK(ent->info.st_mode)) {
+		if (!(stat(path, &st)))
+			ent->tmode = st.st_mode;
+		else
+			ent->tmode = 0;
+	}
+
+	if (!nflag && (pw = getpwuid(ent->info.st_uid)))
 		snprintf(user, sizeof(user), "%s", pw->pw_name);
 	else
-		snprintf(user, sizeof(user), "%d", st->st_uid);
+		snprintf(user, sizeof(user), "%d", ent->info.st_uid);
 
-	if (!nflag && (gr = getgrgid(st->st_gid)))
+	if (!nflag && (gr = getgrgid(ent->info.st_gid)))
 		snprintf(group, sizeof(group), "%s", gr->gr_name);
 	else
-		snprintf(group, sizeof(group), "%d", st->st_gid);
+		snprintf(group, sizeof(group), "%d", ent->info.st_gid);
 
 	if (!(ent->group = strdup(group)))
 		err(1, "strdup");
@@ -198,6 +209,28 @@ mkmax(LS_MAX *max, LS_ENT *ent, size_t total)
 	max->size  = MAX(ent->info.st_size, max->size);
 
 	max->btotal += ent->info.st_blocks;
+}
+
+static void
+free_lsent(LS_ENT *ent, size_t size, int nalloc)
+{
+	size_t i = 0;
+
+	if (!nalloc && !lflag)
+		goto end;
+
+	for (; i < size; i++) {
+		free(ent[i].name);
+
+		if (!lflag)
+			continue;
+
+		free(ent[i].user);
+		free(ent[i].group);
+	}
+
+end:
+	free(ent);
 }
 
 /* internal print functions */
@@ -373,12 +406,12 @@ print1(LS_ENT *ents, LS_MAX *max)
 		pname(ep, 0, 0);
 
 		if (S_ISLNK(st->st_mode)) {
-			if ((len = readlink(ep->path, buf, sizeof(buf) - 1)) < 0)
+			if ((len = readlink(ep->name, buf, sizeof(buf) - 1)) < 0)
 				err(1, "readlink %s", ep->name);
 			buf[len] = '\0';
 
 			printf(" -> %s", buf);
-			ptype(st->st_mode);
+			ptype(ep->tmode);
 		}
 next:
 		putchar('\n');
@@ -470,75 +503,71 @@ printx(LS_ENT *ents, LS_MAX *max)
 }
 
 /* ls functions */
-static int
-ls_folder(LS_ENT *ent, int more, int depth)
+static void
+ls_print(LS_ENT *ents, LS_MAX *max, size_t size)
 {
-	FS_DIR dir;
-	size_t i = 0, size = 0;
+	if (sflag || iflag || lflag)
+		printf("total: %lu\n",
+		       howmany((long unsigned)max->btotal, blocksize));
+
+	if (size != 1 && Sftflag != 'f')
+		qsort(ents, size, sizeof(*ents), cmp);
+
+	mkmax(max, NULL, size);
+	printfcn(ents, max);
+}
+
+static int
+ls_folder(const char *path, int more)
+{
+	char p1[PATH_MAX];
+	DIR *dirp;
 	LS_ENT *ents = NULL;
 	LS_MAX max = {0};
+	size_t i = 0, size = 0;
+	struct dirent *dir;
 
-	if (open_dir(&dir, ent->path) < 0) {
-		warn("open_dir %s", ent->path);
+	if (!(dirp = opendir(path))) {
+		warn("open_dir %s", path);
 		return 1;
 	}
 
-	if (Rdflag == 'R' || more) {
-		printf(first ? "%s:\n" : "\n%s:\n", ent->path);
+	if (more || Rdflag == 'R') {
+		printf(first ? "%s:\n" : "\n%s:\n", path);
 		first = 0;
 	}
 
-	while (read_dir(&dir, depth) != EOF) {
-		if (Aaflag != 'a' && ISDOT(dir.name))
+	chdir(path);
+
+	while ((dir = readdir(dirp))) {
+		if (Aaflag != 'a' && ISDOT(dir->d_name))
 			continue;
 
-		if (!Aaflag && dir.name[0] == '.')
+		if (!Aaflag && dir->d_name[0] == '.')
 			continue;
 
 		if (!(ents = REALLOC(ents, ++size)))
 			err(1, "realloc");
 
-		mkent(&ents[size - 1], dir.path, 1, &dir.info);
+		mkent(&ents[size - 1], strdup(dir->d_name));
 		mkmax(&max, &ents[size - 1], 0);
-
-		dir.path = NULL; /* Avoid Free*/
 	}
 
-	if (sflag || iflag || lflag)
-		printf("total: %lu\n",
-		       howmany((long unsigned)max.btotal, blocksize));
+	if (size)
+		ls_print(ents, &max, size);
 
-	if (!size)
-		goto jump;
-
-	if (size != 1 && Sftflag != 'f')
-		qsort(ents, size, sizeof(*ents), cmp);
-
-	mkmax(&max, NULL, size);
-	printfcn(ents, &max);
-
-jump:
 	if (Rdflag == 'R') {
 		for (i = 0; i < size; i++) {
 			if (ISDOT(ents[i].name))
 				continue;
 			if (!S_ISDIR(ents[i].info.st_mode))
 				continue;
-			ls_folder(&ents[i], more, depth+1);
+			snprintf(p1, sizeof(p1), "%s/%s", path, ents[i].name);
+			ls_folder(p1, more);
 		}
 	}
 
-	for (i = 0; i < size; i++) {
-		free(ents[i].path);
-
-		if (!lflag)
-			continue;
-
-		free(ents[i].user);
-		free(ents[i].group);
-	}
-
-	free(ents);
+	free_lsent(ents, size, 1);
 
 	return 0;
 }
@@ -561,11 +590,11 @@ ls(int argc, char **argv)
 		if (Rdflag != 'd' && S_ISDIR(st.st_mode)) {
 			if (!(dents = REALLOC(dents, ++ds)))
 				err(1, "realloc");
-			mkent(&dents[ds - 1], argv[i], 0, &st);
+			mkent(&dents[ds - 1], argv[i]);
 		} else {
 			if (!(fents = REALLOC(fents, ++fs)))
 				err(1, "realloc");
-			mkent(&fents[fs - 1], argv[i], 0, &st);
+			mkent(&fents[fs - 1], argv[i]);
 			mkmax(&max, &fents[fs - 1], 0);
 		}
 	}
@@ -573,33 +602,16 @@ ls(int argc, char **argv)
 	if (ds > 1 && Sftflag != 'f')
 		qsort(dents, ds, sizeof(*dents), cmp);
 
-	if (fs > 1 && Sftflag != 'f')
-		qsort(fents, fs, sizeof(*fents), cmp);
-
-	if (!fs)
-		goto printdir;
-
-	first = 0;
-	if (sflag || iflag || lflag)
-		printf("total %lu\n",
-		       howmany((long unsigned)max.btotal, blocksize));
-
-	mkmax(&max, NULL, fs);
-	printfcn(fents, &max);
-
-printdir:
-	for (i = 0; i < ds; i++)
-		ls_folder(&dents[i], argc-1, 0);
-
-	if (lflag) {
-		for (i = 0; i < fs; i++) {
-			free(fents[i].group);
-			free(fents[i].user);
-		}
+	if (fs) {
+		first = 0;
+		ls_print(fents, &max, fs);
 	}
 
-	free(fents);
-	free(dents);
+	for (i = 0; i < ds; i++)
+		ls_folder(dents[i].name, argc-1);
+
+	free_lsent(fents, fs, 0);
+	free_lsent(dents,  0, 0);
 
 	return rval;
 }
