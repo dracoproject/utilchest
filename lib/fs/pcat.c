@@ -16,16 +16,21 @@ pcat(const char *f1, const char *f2, int isdir)
 	struct stat st;
 
 	if (isdir)
-		goto cat;
+		goto concat;
 
 	if (lstat(f2, &st) < 0)
-		return ((char *)f2);
+		goto notdir;
 
 	if (!(S_ISDIR(st.st_mode)))
-		return ((char *)f2);
+		goto notdir;
 
-cat:
+concat:
+	isdir = 1;
 	snprintf(buf, sizeof(buf), "%s/%s", f2, f1);
 
-	return buf;
+	goto done;
+notdir:
+	isdir = 0;
+done:
+	return (isdir ? buf : f2);
 }
