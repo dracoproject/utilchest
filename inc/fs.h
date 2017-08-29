@@ -33,4 +33,4 @@ int open_dir(FS_DIR *, const char *);
 int read_dir(FS_DIR *, int);
 
 /* pcat.c */
-char * pcat(const char *, const char *, int);
+const char * pcat(const char *, const char *, int);

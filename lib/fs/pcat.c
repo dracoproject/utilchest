@@ -9,7 +9,7 @@
 
 #include "fs.h"
 
-char *
+const char *
 pcat(const char *f1, const char *f2, int isdir)
 {
 	static char buf[PATH_MAX];
@@ -32,5 +32,5 @@ concat:
 notdir:
 	isdir = 0;
 done:
-	return (isdir ? buf : f2);
+	return (const char *)(isdir ? buf : f2);
 }
