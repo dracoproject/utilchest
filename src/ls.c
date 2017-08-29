@@ -25,29 +25,39 @@
 #define SECSPERDAY (24 * 60 * 60)
 #define SIXMONTHS  (180 * SECSPERDAY)
 
-#define REALLOC(a, b) realloc((a), (b) * (sizeof(*(a))))
+struct column {
+	int width;
+	int num;
+};
 
-typedef struct {
-	int width, num;
-} LS_COL;
-
-typedef struct {
-	char *name, *user, *group;
-	size_t len, ulen, glen;
+struct file {
+	char *name;
+	char *group;
+	char *user;
 	mode_t tmode;
-	struct stat info;
+	size_t len;
+	size_t glen;
+	size_t ulen;
+	struct file *next;
+	struct stat st;
 	struct timespec tm;
-} LS_ENT;
+};
 
-typedef struct {
-	int s_block, s_gid, s_nlink;
-	int s_ino, s_size, s_uid, len;
+struct max {
+	int s_block;
+	int s_gid;
+	int s_nlink;
+	int s_ino;
+	int s_size;
+	int s_uid;
+	int len;
 	blkcnt_t block;
 	ino_t ino;
 	nlink_t nlink;
 	off_t size;
-	size_t btotal, total;
-} LS_MAX;
+	size_t btotal;
+	size_t total;
+};
 
 static int iflag = 0;
 static int lflag = 0;
@@ -66,36 +76,83 @@ static int first = 1;
 static long blocksize = 512;
 static unsigned int termwidth = 80;
 
-static void printc(LS_ENT *, LS_MAX *);
-static void (*printfcn)(LS_ENT *, LS_MAX *) = printc;
+static void printc(struct file *, struct max *);
+static void (*printfcn)(struct file *, struct max *) = printc;
 
 SET_USAGE = "%s [-1AaCcFfiklmnpqrSstux] [file ...]";
 
 static int
-cmp(const void *va, const void *vb)
+cmp(struct file *f1, struct file *f2)
 {
-	const LS_ENT *a = va, *b = vb;
 	int cmp;
 
 	switch (Sftflag) {
 	case 'S':
-		cmp = b->info.st_size - a->info.st_size;
+		cmp = f1->st.st_size - f2->st.st_size;
 		break;
 	case 't':
-		if (!(cmp = b->tm.tv_sec - a->tm.tv_sec))
-			cmp = b->tm.tv_nsec - a->tm.tv_nsec;
+		if (!(cmp = f1->tm.tv_sec - f2->tm.tv_sec))
+			cmp = f1->tm.tv_nsec - f2->tm.tv_nsec;
 		break;
 	default:
-		cmp = strcmp(a->name, b->name);
+		cmp = strcmp(f1->name, f2->name);
 		break;
 	}
 
 	return (rflag ? (0 - cmp) : cmp);
 }
 
-/* make structures */
+static void
+freefile(struct file *sp)
+{
+	free(sp->name);
+	free(sp->group);
+	free(sp->user);
+	free(sp);
+}
+
+/* mergesort copied from heirloom */
+static void
+mergesort(struct file **flist)
+{
+	struct file *l1, *l2, **mid;
+
+	l1 = *(mid = &(*flist)->next);
+
+	do {
+		if (!(l1 = l1->next))
+			break;
+		l2 = &(*mid)->next;
+	} while (1);
+
+	l1 = *flist;
+	l2 = *mid;
+	*mid = NULL;
+
+	if ((*flist)->next)
+		mergesort(flist);
+	if (l2->next)
+		mergesort(&l2);
+
+	while (1) {
+		if (cmp(l1, l2) <= 0) {
+			if (!(l1 = *(flist = &l1->next))) {
+				*flist = l2;
+				break;
+			}
+		} else {
+			*flist = l2;
+			l2 = *(flist = &l2->next);
+			*flist = l1;
+
+			if (!l2)
+				break;
+		}
+	}
+}
+
 static int
-mkcol(LS_COL *col, LS_MAX *max)
+mkcol(struct column *col, struct max *max)
 {
 	int twidth = 0;
 
@@ -105,7 +162,7 @@ mkcol(LS_COL *col, LS_MAX *max)
 	if (sflag)
 		col->width += max->s_block + 1;
 	if (Fpflag)
-		col->width += 1;
+		col->width += sizeof(char);
 
 	col->width += 1;
 	twidth = termwidth + 1;
@@ -120,149 +177,156 @@ mkcol(LS_COL *col, LS_MAX *max)
 }
 
 static void
-mkent(LS_ENT *ent, char *path)
-{
-	char user[32], group[32];
-	struct group  *gr;
-	struct passwd *pw;
-	struct stat st;
-
-	if (!(ent->name = path))
-		err(1, "strdup");
-
-	ent->len  = strlen(ent->name);
-
-	if (lstat(ent->name, &ent->info) < 0)
-		err(1, "lstat %s", ent->name);
-
-	switch (cuflag) {
-	case 'c':
-		ent->tm = ent->info.st_ctim;
-		break;
-	case 'u':
-		ent->tm = ent->info.st_atim;
-		break;
-	default:
-		ent->tm = ent->info.st_mtim;
-		break;
-	}
-
-	if (S_ISLNK(ent->info.st_mode)) {
-		if (!(stat(path, &st)))
-			ent->tmode = st.st_mode;
-		else
-			ent->tmode = 0;
-	}
-
-	if (!lflag)
-		return;
-
-	if (!nflag && (pw = getpwuid(ent->info.st_uid)))
-		snprintf(user, sizeof(user), "%s", pw->pw_name);
-	else
-		snprintf(user, sizeof(user), "%d", ent->info.st_uid);
-
-	if (!nflag && (gr = getgrgid(ent->info.st_gid)))
-		snprintf(group, sizeof(group), "%s", gr->gr_name);
-	else
-		snprintf(group, sizeof(group), "%d", ent->info.st_gid);
-
-	if (!(ent->group = strdup(group)))
-		err(1, "strdup");
-
-	if (!(ent->user = strdup(user)))
-		err(1, "strdup");
-
-	ent->ulen = strlen(user);
-	ent->glen = strlen(group);
-}
-
-static void
-mkmax(LS_MAX *max, LS_ENT *ent, size_t total)
+mkmax(struct max *max, struct file *file)
 {
 	char buf[21];
 
-	if (total) {
-		max->total = total;
-
+	if (!file) {
 		max->s_block = snprintf(buf, sizeof(buf), "%llu",
-			       (unsigned long long)max->block);
-
+		               (unsigned long long)max->block);
 		max->s_ino   = snprintf(buf, sizeof(buf), "%llu",
-			       (unsigned long long)max->ino);
-
+		               (unsigned long long)max->ino);
 		max->s_nlink = snprintf(buf, sizeof(buf), "%lu",
-			       (unsigned long)max->nlink);
-
+		               (unsigned long)max->nlink);
 		max->s_size  = snprintf(buf, sizeof(buf), "%lld",
-			       (long long)max->size);
+		               (long long)max->size);
 
 		return;
 	}
 
-	max->block = MAX(ent->info.st_blocks, max->block);
-	max->ino   = MAX(ent->info.st_ino, max->ino);
-	max->len   = MAX(ent->len, max->len);
-	max->nlink = MAX(ent->info.st_nlink, max->nlink);
-	max->s_gid = MAX(ent->glen, max->s_gid);
-	max->s_uid = MAX(ent->ulen, max->s_uid);
-	max->size  = MAX(ent->info.st_size, max->size);
+	max->block = MAX(file->st.st_blocks, max->block);
+	max->ino   = MAX(file->st.st_ino, max->ino);
+	max->len   = MAX(file->len, max->len);
+	max->nlink = MAX(file->st.st_nlink, max->nlink);
+	max->s_gid = MAX(file->glen, max->s_gid);
+	max->s_uid = MAX(file->ulen, max->s_uid);
+	max->size  = MAX(file->st.st_size, max->size);
 
-	max->btotal += ent->info.st_blocks;
+	max->total  += 1;
+	max->btotal += file->st.st_blocks;
+}
+
+struct file *
+newfile(const char *str)
+{
+	char user[32], group[32];
+	struct file *new;
+	struct group *gr;
+	struct passwd *pw;
+	struct stat st;
+
+	if (!(new = malloc(1 * sizeof(*new))))
+		goto err;
+
+	new->name  = NULL;
+	new->group = NULL;
+	new->user  = NULL;
+
+	if (lstat(str, &new->st) < 0)
+		goto err;
+
+	switch (cuflag) {
+	case 'c':
+		new->tm = new->st.st_ctim;
+		break;
+	case 'u':
+		new->tm = new->st.st_atim;
+		break;
+	default:
+		new->tm = new->st.st_mtim;
+		break;
+	}
+
+	if (S_ISLNK(new->st.st_mode)) {
+		if (!(stat(str, &st)))
+			new->tmode = st.st_mode;
+		else
+			new->tmode = 0;
+	}
+
+	if (!(new->name = strdup(str)))
+		goto err;
+
+	new->len  = strlen(str);
+
+	if (!lflag)
+		goto done;
+
+	if (!nflag && (pw = getpwuid(new->st.st_uid)))
+		snprintf(user, sizeof(user), "%s", pw->pw_name);
+	else
+		snprintf(user, sizeof(user), "%d", new->st.st_uid);
+
+	if (!nflag && (gr = getgrgid(new->st.st_gid)))
+		snprintf(group, sizeof(group), "%s", gr->gr_name);
+	else
+		snprintf(group, sizeof(group), "%d", new->st.st_gid);
+
+	if (!(new->group = strdup(group)))
+		goto err;
+
+	if (!(new->user  = strdup(user)))
+		goto err;
+
+	new->glen  = strlen(group);
+	new->ulen  = strlen(user);
+
+	goto done;
+err:
+	err(1, "newfile %s", str);
+done:
+	return new;
+}
+
+struct file *
+popfile(struct file **sp)
+{
+	struct file *old;
+
+	old = *sp;
+	*sp = old->next;
+
+	return old;
 }
 
 static void
-free_lsent(LS_ENT *ent, size_t size, int nalloc)
+pushfile(struct file **sp, struct file *new)
 {
-	size_t i = 0;
-
-	if (!nalloc && !lflag)
-		goto end;
-
-	for (; i < size; i++) {
-		if (nalloc)
-			free(ent[i].name);
-
-		if (!lflag)
-			continue;
-
-		free(ent[i].user);
-		free(ent[i].group);
-	}
-
-end:
-	free(ent);
+	new->next = *sp;
+	*sp = new;
 }
 
 /* internal print functions */
 static int
 ptype(mode_t mode)
 {
+	char type = '\0';
+
 	switch (mode & S_IFMT) {
 	case S_IFDIR:
-		putchar('/');
-		return 1;
+		type = '/';
+		break;
 	case S_IFIFO:
-		putchar('|');
-		return 1;
+		type = '|';
+		break;
 	case S_IFLNK:
-		putchar('@');
-		return 1;
+		type = '@';
+		break;
 	case S_IFSOCK:
-		putchar('=');
-		return 1;
+		type = '=';
+		break;
 	}
 
-	if (mode & (S_IXUSR | S_IXGRP | S_IXOTH)) {
-		putchar('*');
-		return 1;
-	}
+	if (mode & (S_IXUSR | S_IXGRP | S_IXOTH))
+		type = '*';
 
-	return 0;
+	putchar(type);
+	return (type ? 1 : 0);
 }
 
 static void
-pmode(struct stat *st) {
+pmode(struct stat *st)
+{
 	char mode[]  = "?---------";
 
 	switch (st->st_mode & S_IFMT) {
@@ -320,7 +384,7 @@ pmode(struct stat *st) {
 }
 
 static int
-pname(LS_ENT *ent, int ino, int size)
+pname(struct file *file, int ino, int size)
 {
 	const char *ch;
 	int chcnt = 0, len = 0;
@@ -328,12 +392,12 @@ pname(LS_ENT *ent, int ino, int size)
 
 	if (iflag && ino)
 		chcnt += printf("%*llu ", ino,
-			 (unsigned long long)ent->info.st_ino);
+			 (unsigned long long)file->st.st_ino);
 	if (sflag && size)
 		chcnt += printf("%*lld ", size,
-			 howmany((long long)ent->info.st_blocks, blocksize));
+			 howmany((long long)file->st.st_blocks, blocksize));
 
-	for (ch = ent->name; *ch; ch += len) {
+	for (ch = file->name; *ch; ch += len) {
 		len = chartorune(&rune, ch);
 
 		if (!qflag || isprintrune(rune))
@@ -342,8 +406,8 @@ pname(LS_ENT *ent, int ino, int size)
 			chcnt += fwrite("?", sizeof(char), 1, stdout);
 	}
 
-	if (Fpflag == 'F' || (Fpflag == 'p' && S_ISDIR(ent->info.st_mode)))
-		chcnt += ptype(ent->tmode);
+	if (Fpflag == 'F' || (Fpflag == 'p' && S_ISDIR(file->st.st_mode)))
+		chcnt += ptype(file->tmode);
 
 	return chcnt;
 }
@@ -369,50 +433,46 @@ ptime(struct timespec t)
 
 /* external print functions */
 static void
-print1(LS_ENT *ents, LS_MAX *max)
+print1(struct file *file, struct max *max)
 {
 	char buf[BUFSIZ];
-	LS_ENT *ep;
-	ssize_t i, len;
-	struct stat *st;
+	ssize_t len;
+	struct file *sp;
 
-	for (i = 0; i < max->total; i++) {
-		ep = &ents[i];
-		st = &ents[i].info;
-
+	for (sp = file; sp; sp = sp->next) {
 		if (!lflag) {
-			pname(ep, max->s_ino, max->s_block);
+			pname(sp, max->s_ino, max->s_block);
 			goto next;
 		}
 
 		if (iflag)
 			printf("%*llu ", max->s_ino,
-			       (unsigned long long)st->st_ino);
+			       (unsigned long long)sp->st.st_ino);
 		if (sflag)
 			printf("%*lld ", max->s_block,
-			       howmany((long long)st->st_blocks, blocksize));
+			       howmany((long long)sp->st.st_blocks, blocksize));
 
-		pmode(st);
-		printf("%*lu %-*s %-*s ", max->s_nlink, st->st_nlink,
-		       max->s_uid, ep->user, max->s_gid, ep->group);
+		pmode(&sp->st);
+		printf("%*lu %-*s %-*s ", max->s_nlink, sp->st.st_nlink,
+		       max->s_uid, sp->user, max->s_gid, sp->group);
 
-		if (S_ISBLK(st->st_mode) || S_ISCHR(st->st_mode))
+		if (S_ISBLK(sp->st.st_mode) || S_ISCHR(sp->st.st_mode))
 			printf("%3d, %3d ",
-			       major(st->st_rdev), minor(st->st_rdev));
+			       major(sp->st.st_rdev), minor(sp->st.st_rdev));
 		else
 			printf("%*s%*lld ", 8 - max->s_size, "",
-			       max->s_size, (long long)st->st_size);
+			       max->s_size, (long long)sp->st.st_size);
 
-		ptime(ep->tm);
-		pname(ep, 0, 0);
+		ptime(sp->tm);
+		pname(sp, 0, 0);
 
-		if (S_ISLNK(st->st_mode)) {
-			if ((len = readlink(ep->name, buf, sizeof(buf) - 1)) < 0)
-				err(1, "readlink %s", ep->name);
+		if (S_ISLNK(sp->st.st_mode)) {
+			if ((len = readlink(sp->name, buf, sizeof(buf) - 1)) < 0)
+				err(1, "readlink %s", sp->name);
 			buf[len] = '\0';
 
 			printf(" -> %s", buf);
-			ptype(ep->tmode);
+			ptype(sp->tmode);
 		}
 next:
 		putchar('\n');
@@ -420,14 +480,15 @@ next:
 }
 
 static void
-printc(LS_ENT *ents, LS_MAX *max)
+printc(struct file *file, struct max *max)
 {
 	int chcnt = 0, row = 0;
-	int col, base, num, nrows;
-	LS_COL cols;
+	int col, base, num, nrows, i;
+	struct column cols;
+	struct file *sp;
 
 	if (mkcol(&cols, max)) {
-		print1(ents, max);
+		print1(file, max);
 		return;
 	}
 
@@ -439,7 +500,9 @@ printc(LS_ENT *ents, LS_MAX *max)
 
 	for (; row < nrows; row++) {
 		for (base = row, col = 0; col < cols.width; col++) {
-			chcnt = pname(&ents[base], max->s_ino, max->s_block);
+			for (sp = file, i = 0; i != base; sp = sp->next, i++)
+				continue;
+			chcnt = pname(sp, max->s_ino, max->s_block);
 			if ((base += nrows) >= num)
 				break;
 			while (chcnt++ < cols.width)
@@ -450,10 +513,10 @@ printc(LS_ENT *ents, LS_MAX *max)
 }
 
 static void
-printm(LS_ENT *ents, LS_MAX *max)
+printm(struct file *file, struct max *max)
 {
 	int chcnt = 0, width = 0;
-	size_t i = 0;
+	struct file *sp;
 
 	if (iflag)
 		width += max->s_ino;
@@ -462,40 +525,40 @@ printm(LS_ENT *ents, LS_MAX *max)
 	if (Fpflag)
 		width += 1;
 
-	for (; i < max->total; i++) {
+	for (sp = file; sp; sp = sp->next) {
 		if (chcnt > 0) {
 			putchar(',');
-			if ((chcnt += 3) + width + ents[i].len >= termwidth)
+			if ((chcnt += 3) + width + sp->len >= termwidth)
 				putchar('\n'), chcnt = 0;
 			else
 				putchar(' ');
 		}
 
-		chcnt += pname(&ents[i], max->s_ino, max->s_block);
+		chcnt += pname(sp, max->s_ino, max->s_block);
 	}
 
 	putchar('\n');
 }
 
 static void
-printx(LS_ENT *ents, LS_MAX *max)
+printx(struct file *file, struct max *max)
 {
 	int chcnt = 0, col = 0;
-	size_t i = 0;
-	LS_COL cols;
+	struct column cols;
+	struct file *sp;
 
 	if (mkcol(&cols, max)) {
-		print1(ents, max);
+		print1(file, max);
 		return;
 	}
 
-	for (; i < max->total; col++, i++) {
+	for (sp = file; sp; sp = sp->next, col++) {
 		if (col >= cols.num) {
 			col = 0;
 			putchar('\n');
 		}
 
-		chcnt = pname(&ents[i], max->s_ino, max->s_block);
+		chcnt = pname(sp, max->s_ino, max->s_block);
 		while (chcnt++ < cols.width)
 			putchar(' ');
 	}
@@ -503,30 +566,27 @@ printx(LS_ENT *ents, LS_MAX *max)
 	putchar('\n');
 }
 
-/* ls functions */
 static void
-ls_print(LS_ENT *ents, LS_MAX *max, size_t size)
+printls(struct file **flist, struct max *max)
 {
 	if (sflag || iflag || lflag)
 		printf("total: %lu\n",
 		       howmany((long unsigned)max->btotal, blocksize));
 
-	if (size != 1 && Sftflag != 'f')
-		qsort(ents, size, sizeof(*ents), cmp);
+	if (!(max->total <= 1) && Sftflag != 'f')
+		mergesort(flist);
 
-	mkmax(max, NULL, size);
-	printfcn(ents, max);
+	mkmax(max, NULL);
+	printfcn(*flist, max);
 }
 
 static int
-ls_folder(const char *path, int more)
+lsdir(const char *path, int more)
 {
-	char p1[PATH_MAX];
 	DIR *dirp;
-	LS_ENT *ents = NULL;
-	LS_MAX max = {0};
-	size_t i = 0, size = 0;
 	struct dirent *dir;
+	struct file *flist = NULL, *p;
+	struct max max = {0};
 
 	if (!(dirp = opendir(path))) {
 		warn("open_dir %s", path);
@@ -547,75 +607,73 @@ ls_folder(const char *path, int more)
 		if (!Aaflag && dir->d_name[0] == '.')
 			continue;
 
-		if (!(ents = REALLOC(ents, ++size)))
-			err(1, "realloc");
-
-		mkent(&ents[size - 1], strdup(dir->d_name));
-		mkmax(&max, &ents[size - 1], 0);
+		pushfile(&flist, newfile(dir->d_name));
+		mkmax(&max, flist);
 	}
 
-	if (size)
-		ls_print(ents, &max, size);
+	if (max.total)
+		printls(&flist, &max);
 
 	if (Rdflag == 'R') {
-		for (i = 0; i < size; i++) {
-			if (ISDOT(ents[i].name))
+		for (p = flist; p; p = p->next) {
+			if (ISDOT(p->name))
 				continue;
-			if (!S_ISDIR(ents[i].info.st_mode))
+			if (!S_ISDIR(p->st.st_mode))
 				continue;
-			snprintf(p1, sizeof(p1), "%s/%s", path, ents[i].name);
-			ls_folder(p1, more);
+			lsdir(pcat(p->name, path, 1), more);
 		}
 	}
 
-	free_lsent(ents, size, 1);
+	while (flist)
+		freefile(popfile(&flist));
+
+	closedir(dirp);
 
 	return 0;
 }
 
 static int
-ls(int argc, char **argv)
+ls(char **argv, int more)
 {
-	int ds = 0, fs = 0, i = 0, rval = 0;
-	LS_ENT *fents = NULL, *dents = NULL;
-	LS_MAX max = {0};
+	int rval = 0;
+	struct file *flist = NULL, *dlist = NULL, *p;
+	struct max max = {0};
 	struct stat st;
 
-	for (; i < argc; i++) {
-		if ((FS_FOLLOW(0) ? stat : lstat)(argv[i], &st) < 0) {
-			warn("(l)stat %s", argv[i]);
+	for (; *argv; argv++) {
+		if ((FS_FOLLOW(0) ? stat : lstat)(*argv, &st) < 0) {
+			warn("(l)stat %s", *argv);
 			rval = 1;
 			continue;
 		}
 
 		if (Rdflag != 'd' && S_ISDIR(st.st_mode)) {
-			if (!(dents = REALLOC(dents, ++ds)))
-				err(1, "realloc");
-			mkent(&dents[ds - 1], argv[i]);
+			pushfile(&dlist, newfile(*argv));
 		} else {
-			if (!(fents = REALLOC(fents, ++fs)))
-				err(1, "realloc");
-			mkent(&fents[fs - 1], argv[i]);
-			mkmax(&max, &fents[fs - 1], 0);
+			pushfile(&flist, newfile(*argv));
+			mkmax(&max, flist);
 		}
 	}
 
-	if (ds > 1 && Sftflag != 'f')
-		qsort(dents, ds, sizeof(*dents), cmp);
+	if (dlist && dlist->next && Sftflag != 'f')
+		mergesort(&dlist);
 
-	if (fs) {
+	if (max.total) {
 		first = 0;
-		ls_print(fents, &max, fs);
+		printls(&flist, &max);
 	}
 
-	for (i = 0; i < ds; i++)
-		ls_folder(dents[i].name, argc-1);
+	for (p = dlist; p; p = p->next)
+		rval |= lsdir(p->name, more);
 
-	free_lsent(fents, fs, 0);
-	free_lsent(dents,  0, 0);
+	while (flist)
+		freefile(popfile(&flist));
+	while (dlist)
+		freefile(popfile(&dlist));
 
 	return rval;
 }
+
 
 int
 main(int argc, char *argv[])
@@ -691,7 +749,7 @@ main(int argc, char *argv[])
 	if (!(ioctl(fileno(stdout), TIOCGWINSZ, &w)) && w.ws_col > 0)
 		termwidth = w.ws_col;
 
-	if (lflag && printfcn != print1)
+	if ((printfcn != print1) && lflag)
 		lflag = 0;
 
 	if (lflag || sflag) {
@@ -706,10 +764,12 @@ main(int argc, char *argv[])
 	if (printfcn != print1 && (temp = getenv("COLUMNS")))
 		termwidth = estrtonum(temp, 0, UINT_MAX);
 
-	if (!argc)
-		argc++, *argv = ".";
+	if (!argc) {
+		argv[0] = ".";
+		argv[1] = NULL;
+	}
 
-	rval = ls(argc, argv);
+	rval = ls(argv, argc > 1);
 
 	return (rval | fshut("<stdout>", stdout));
 }
