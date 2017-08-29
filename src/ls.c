@@ -103,12 +103,12 @@ cmp(struct file *f1, struct file *f2)
 }
 
 static void
-freefile(struct file *sp)
+freefile(struct file *p)
 {
-	free(sp->name);
-	free(sp->group);
-	free(sp->user);
-	free(sp);
+	free(p->name);
+	free(p->group);
+	free(p->user);
+	free(p);
 }
 
 /* mergesort copied from heirloom */
@@ -122,7 +122,7 @@ mergesort(struct file **flist)
 	do {
 		if (!(l1 = l1->next))
 			break;
-		l2 = &(*mid)->next;
+		mid = &(*mid)->next;
 	} while (1);
 
 	l1 = *flist;
@@ -279,21 +279,21 @@ done:
 }
 
 struct file *
-popfile(struct file **sp)
+popfile(struct file **p)
 {
 	struct file *old;
 
-	old = *sp;
-	*sp = old->next;
+	old = *p;
+	*p = old->next;
 
 	return old;
 }
 
 static void
-pushfile(struct file **sp, struct file *new)
+pushfile(struct file **p, struct file *new)
 {
-	new->next = *sp;
-	*sp = new;
+	new->next = *p;
+	*p = new;
 }
 
 /* internal print functions */
@@ -433,46 +433,46 @@ ptime(struct timespec t)
 
 /* external print functions */
 static void
-print1(struct file *file, struct max *max)
+print1(struct file *flist, struct max *max)
 {
 	char buf[BUFSIZ];
 	ssize_t len;
-	struct file *sp;
+	struct file *p;
 
-	for (sp = file; sp; sp = sp->next) {
+	for (p = flist; p; p = p->next) {
 		if (!lflag) {
-			pname(sp, max->s_ino, max->s_block);
+			pname(p, max->s_ino, max->s_block);
 			goto next;
 		}
 
 		if (iflag)
 			printf("%*llu ", max->s_ino,
-			       (unsigned long long)sp->st.st_ino);
+			       (unsigned long long)p->st.st_ino);
 		if (sflag)
 			printf("%*lld ", max->s_block,
-			       howmany((long long)sp->st.st_blocks, blocksize));
+			       howmany((long long)p->st.st_blocks, blocksize));
 
-		pmode(&sp->st);
-		printf("%*lu %-*s %-*s ", max->s_nlink, sp->st.st_nlink,
-		       max->s_uid, sp->user, max->s_gid, sp->group);
+		pmode(&p->st);
+		printf("%*lu %-*s %-*s ", max->s_nlink, p->st.st_nlink,
+		       max->s_uid, p->user, max->s_gid, p->group);
 
-		if (S_ISBLK(sp->st.st_mode) || S_ISCHR(sp->st.st_mode))
+		if (S_ISBLK(p->st.st_mode) || S_ISCHR(p->st.st_mode))
 			printf("%3d, %3d ",
-			       major(sp->st.st_rdev), minor(sp->st.st_rdev));
+			       major(p->st.st_rdev), minor(p->st.st_rdev));
 		else
 			printf("%*s%*lld ", 8 - max->s_size, "",
-			       max->s_size, (long long)sp->st.st_size);
+			       max->s_size, (long long)p->st.st_size);
 
-		ptime(sp->tm);
-		pname(sp, 0, 0);
+		ptime(p->tm);
+		pname(p, 0, 0);
 
-		if (S_ISLNK(sp->st.st_mode)) {
-			if ((len = readlink(sp->name, buf, sizeof(buf) - 1)) < 0)
-				err(1, "readlink %s", sp->name);
+		if (S_ISLNK(p->st.st_mode)) {
+			if ((len = readlink(p->name, buf, sizeof(buf) - 1)) < 0)
+				err(1, "readlink %s", p->name);
 			buf[len] = '\0';
 
 			printf(" -> %s", buf);
-			ptype(sp->tmode);
+			ptype(p->tmode);
 		}
 next:
 		putchar('\n');
@@ -480,15 +480,15 @@ next:
 }
 
 static void
-printc(struct file *file, struct max *max)
+printc(struct file *flist, struct max *max)
 {
-	int chcnt = 0, row = 0;
-	int col, base, num, nrows, i;
+	int chcnt = 0, row = 0, i = 0;
+	int col, base, num, nrows;
 	struct column cols;
-	struct file *sp;
+	struct file *p, **pa;
 
 	if (mkcol(&cols, max)) {
-		print1(file, max);
+		print1(flist, max);
 		return;
 	}
 
@@ -498,11 +498,16 @@ printc(struct file *file, struct max *max)
 	if (num % cols.num)
 		nrows += 1;
 
+	/* create a array of pointers for random access */
+	if (!(pa = malloc(max->total * sizeof(struct file *))))
+		err(1, "malloc");
+
+	for (p = flist; p; p = p->next, i++)
+		pa[i] = p;
+
 	for (; row < nrows; row++) {
 		for (base = row, col = 0; col < cols.width; col++) {
-			for (sp = file, i = 0; i != base; sp = sp->next, i++)
-				continue;
-			chcnt = pname(sp, max->s_ino, max->s_block);
+			chcnt = pname(pa[base], max->s_ino, max->s_block);
 			if ((base += nrows) >= num)
 				break;
 			while (chcnt++ < cols.width)
@@ -510,13 +515,16 @@ printc(struct file *file, struct max *max)
 		}
 		putchar('\n');
 	}
+
+	free(pa);
+	pa = NULL;
 }
 
 static void
-printm(struct file *file, struct max *max)
+printm(struct file *flist, struct max *max)
 {
 	int chcnt = 0, width = 0;
-	struct file *sp;
+	struct file *p;
 
 	if (iflag)
 		width += max->s_ino;
@@ -525,40 +533,40 @@ printm(struct file *file, struct max *max)
 	if (Fpflag)
 		width += 1;
 
-	for (sp = file; sp; sp = sp->next) {
+	for (p = flist; p; p = p->next) {
 		if (chcnt > 0) {
 			putchar(',');
-			if ((chcnt += 3) + width + sp->len >= termwidth)
+			if ((chcnt += 3) + width + p->len >= termwidth)
 				putchar('\n'), chcnt = 0;
 			else
 				putchar(' ');
 		}
 
-		chcnt += pname(sp, max->s_ino, max->s_block);
+		chcnt += pname(p, max->s_ino, max->s_block);
 	}
 
 	putchar('\n');
 }
 
 static void
-printx(struct file *file, struct max *max)
+printx(struct file *flist, struct max *max)
 {
 	int chcnt = 0, col = 0;
 	struct column cols;
-	struct file *sp;
+	struct file *p;
 
 	if (mkcol(&cols, max)) {
-		print1(file, max);
+		print1(flist, max);
 		return;
 	}
 
-	for (sp = file; sp; sp = sp->next, col++) {
+	for (p = flist; p; p = p->next, col++) {
 		if (col >= cols.num) {
 			col = 0;
 			putchar('\n');
 		}
 
-		chcnt = pname(sp, max->s_ino, max->s_block);
+		chcnt = pname(p, max->s_ino, max->s_block);
 		while (chcnt++ < cols.width)
 			putchar(' ');
 	}
