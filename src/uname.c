@@ -62,19 +62,23 @@ main(int argc, char *argv[])
 		fputs(sys.sysname, stdout);
 	}
 	if (print & NOD) {
-		putchar(space++ ? ' ' : '\0');
+		if (space++)
+			putchar(' ');
 		fputs(sys.nodename, stdout);
 	}
 	if (print & REL) {
-		putchar(space++ ? ' ' : '\0');
+		if (space++)
+			putchar(' ');
 		fputs(sys.release, stdout);
 	}
 	if (print & VER) {
-		putchar(space++ ? ' ' : '\0');
+		if (space++)
+			putchar(' ');
 		fputs(sys.version, stdout);
 	}
 	if (print & MAC) {
-		putchar(space++ ? ' ' : '\0');
+		if (space++)
+			putchar(' ');
 		fputs(sys.machine, stdout);
 	}
 	putchar('\n');
