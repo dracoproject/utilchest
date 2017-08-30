@@ -18,8 +18,11 @@ main(int argc, char *argv[])
 	if (*argv && !strcmp(*argv, "-n"))
 		nflag++, argc--, argv++;
 
-	for (; *argv; argc--, argv++)
-		putstr(*argv, stdout);
+	for (; *argv; argc--, argv++) {
+		fputs(*argv, stdout);
+		if (argc-1)
+			putchar(' ');
+	}
 
 	if (!nflag)
 		putchar('\n');
