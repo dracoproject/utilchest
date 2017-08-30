@@ -9,8 +9,6 @@
 
 #include "util.h"
 
-#define ALLPERMS (S_ISUID|S_ISGID|S_ISVTX|S_IRWXU|S_IRWXG|S_IRWXO)
-
 mode_t
 strtomode(const char *str, mode_t mode)
 {
