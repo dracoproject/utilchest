@@ -36,6 +36,7 @@ BIN=\
 	src/nice\
 	src/printenv\
 	src/pwd\
+	src/readlink\
 	src/rm\
 	src/rmdir\
 	src/sleep\

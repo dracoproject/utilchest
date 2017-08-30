@@ -26,6 +26,7 @@ It's a collection of Unix utilities written to be simple and small
 * nice
 * printenv
 * pwd
+* readlink
 * rm
 * rmdir
 * sleep
