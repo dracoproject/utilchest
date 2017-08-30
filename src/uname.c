@@ -74,7 +74,7 @@ main(int argc, char *argv[])
 		fputs(sys.version, stdout);
 	}
 	if (print & MAC) {
-		putchar(space++ ? ' ' : NULL);
+		putchar(space++ ? ' ' : '\0');
 		fputs(sys.machine, stdout);
 	}
 	putchar('\n');
