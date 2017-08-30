@@ -57,5 +57,5 @@ main(int argc, char *argv[])
 
 	puts(cwd);
 
-	return (fshut("<stdout>", stdout));
+	exit(0);
 }

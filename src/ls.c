@@ -688,7 +688,7 @@ int
 main(int argc, char *argv[])
 {
 	char *temp;
-	int kflag = 0, rval = 0;
+	int kflag = 0;
 	struct winsize w;
 
 	setprogname(argv[0]);
@@ -778,7 +778,5 @@ main(int argc, char *argv[])
 		argv[1] = NULL;
 	}
 
-	rval = ls(argv, argc > 1);
-
-	return (rval | fshut("<stdout>", stdout));
+	exit(ls(argv, argc > 1));
 }

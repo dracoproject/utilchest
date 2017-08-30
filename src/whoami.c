@@ -22,5 +22,5 @@ main(int argc, char *argv[])
 
 	puts(pw->pw_name);
 
-	return (fshut("<stdout>", stdout));
+	exit(0);
 }

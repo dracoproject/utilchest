@@ -29,5 +29,5 @@ main(int argc, char *argv[])
 			puts(*environ);
 	}
 
-	return (fshut("<stdout>", stdout));
+	exit(0);
 }

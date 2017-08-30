@@ -30,5 +30,5 @@ main(int argc, char *argv[])
 	}
 	puts(p);
 
-	return (fshut("<stdout>", stdout));
+	exit(0);
 }

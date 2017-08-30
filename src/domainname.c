@@ -33,5 +33,5 @@ main(int argc, char *argv[])
 		puts(domain);
 	}
 
-	return (fshut("<stdout>", stdout));
+	exit(0);
 }

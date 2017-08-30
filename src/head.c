@@ -73,5 +73,5 @@ main(int argc, char *argv[])
 			fclose(fp);
 	}
 
-	return (rval | fshut("<stdout>", stdout));
+	exit(rval);
 }

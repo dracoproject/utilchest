@@ -9,19 +9,21 @@
 
 #include "util.h"
 
-#define MAC 0x01
-#define NOD 0x02
-#define REL 0x04
-#define SYS 0x08
-#define VER 0x10
-#define ALL (MAC|NOD|REL|SYS|VER)
+enum flags {
+	MAC = 0x01,
+	NOD = 0x02,
+	REL = 0x04,
+	SYS = 0x08,
+	VER = 0x10,
+	ALL = 0x1f
+};
 
 SET_USAGE = "%s [-amnrsv]";
 
 int
 main(int argc, char *argv[])
 {
-	int print = 0;
+	int space = 0, print = 0;
 	struct utsname sys;
 
 	setprogname(argv[0]);
@@ -55,17 +57,27 @@ main(int argc, char *argv[])
 	if (uname(&sys) < 0)
 		err(1, "uname");
 
-	if (!print || (print & SYS))
-		putstr(sys.sysname, stdout);
-	if (print & NOD)
-		putstr(sys.nodename, stdout);
-	if (print & REL)
-		putstr(sys.release, stdout);
-	if (print & VER)
-		putstr(sys.version, stdout);
-	if (print & MAC)
-		putstr(sys.machine, stdout);
+	if (!print || (print & SYS)) {
+		space++;
+		fputs(sys.sysname, stdout);
+	}
+	if (print & NOD) {
+		putchar(space++ ? ' ' : '\0');
+		fputs(sys.nodename, stdout);
+	}
+	if (print & REL) {
+		putchar(space++ ? ' ' : '\0');
+		fputs(sys.release, stdout);
+	}
+	if (print & VER) {
+		putchar(space++ ? ' ' : '\0');
+		fputs(sys.version, stdout);
+	}
+	if (print & MAC) {
+		putchar(space++ ? ' ' : NULL);
+		fputs(sys.machine, stdout);
+	}
 	putchar('\n');
 
-	return (fshut("<stdout>", stdout));
+	exit(0);
 }

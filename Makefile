@@ -63,8 +63,6 @@ LIBUTFSRC=\
 
 LIBUTILSRC=\
 	lib/util/estrtonum.c\
-	lib/util/fshut.c\
-	lib/util/putstr.c\
 	lib/util/mode.c\
 	lib/util/wrong.c
 

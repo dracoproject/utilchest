@@ -23,5 +23,5 @@ main(int argc, char *argv[])
 
 	puts(tty);
 
-	return (fshut("<stdout>", stdout));
+	exit(0);
 }
