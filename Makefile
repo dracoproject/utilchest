@@ -19,6 +19,7 @@ BIN=\
 	src/chgrp\
 	src/chmod\
 	src/chown\
+	src/clear\
 	src/cp\
 	src/date\
 	src/dirname\
