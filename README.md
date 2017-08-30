@@ -9,6 +9,7 @@ It's a collection of Unix utilities written to be simple and small
 * chgrp
 * chmod
 * chown
+* chroot
 * clear
 * cp
 * date
