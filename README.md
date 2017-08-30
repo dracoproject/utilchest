@@ -24,6 +24,7 @@ It's a collection of Unix utilities written to be simple and small
 * ln
 * ls
 * mkdir
+* mkfifo
 * mv
 * nice
 * printenv

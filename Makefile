@@ -34,6 +34,7 @@ BIN=\
 	src/ln\
 	src/ls\
 	src/mkdir\
+	src/mkfifo\
 	src/mv\
 	src/nice\
 	src/printenv\
