@@ -125,7 +125,6 @@ mergesort(struct file **flist)
 		mid = &(*mid)->next;
 	} while (1);
 
-	l1 = *flist;
 	l2 = *mid;
 	*mid = NULL;
 
@@ -133,6 +132,8 @@ mergesort(struct file **flist)
 		mergesort(flist);
 	if (l2->next)
 		mergesort(&l2);
+
+	l1 = *flist;
 
 	while (1) {
 		if (cmp(l1, l2) <= 0) {
