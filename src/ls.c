@@ -113,7 +113,7 @@ freefile(struct file *p)
 
 /* mergesort copied from heirloom */
 static void
-mergesort(struct file **flist)
+_mergesort(struct file **flist)
 {
 	struct file *l1, *l2, **mid;
 
@@ -129,9 +129,9 @@ mergesort(struct file **flist)
 	*mid = NULL;
 
 	if ((*flist)->next)
-		mergesort(flist);
+		_mergesort(flist);
 	if (l2->next)
-		mergesort(&l2);
+		_mergesort(&l2);
 
 	l1 = *flist;
 
@@ -583,7 +583,7 @@ printls(struct file **flist, struct max *max)
 		       howmany((long unsigned)max->btotal, blocksize));
 
 	if (!(max->total <= 1) && Sftflag != 'f')
-		mergesort(flist);
+		_mergesort(flist);
 
 	mkmax(max, NULL);
 	printfcn(*flist, max);
@@ -665,7 +665,7 @@ ls(char **argv, int more)
 	}
 
 	if (dlist && dlist->next && Sftflag != 'f')
-		mergesort(&dlist);
+		_mergesort(&dlist);
 
 	if (max.total) {
 		first = 0;
