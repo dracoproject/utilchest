@@ -16,45 +16,48 @@ SET_USAGE = "%s [-f] [-Rr] file ...";
 static int
 rm_file(const char *f, int silent, int depth)
 {
+	int (*rm)(const char *);
 	int rval = 0;
 	struct stat st;
 
 	if (lstat(f, &st) < 0) {
-		if (!silent || errno != ENOENT)
+		if ((rval = !silent) || errno != ENOENT)
 			warn("lstat %s", f);
-
-		return (!silent);
+		goto done;
 	}
 
 	if (S_ISDIR(st.st_mode))
-		rval = rmdir(f);
+		rm = rmdir;
 	else
-		rval = unlink(f);
+		rm = unlink;
 
-	if (rval < 0)
+	if (rm(f) < 0) {
 		warn("rm_file %s", f);
+		rval = 1;
+	}
 
-	return (rval < 0);
+done:
+	return rval;
 }
 
 static int
 rm_folder(const char *f, int silent, int depth)
 {
-	int rval = 0;
+	int rd, rval = 0;
 	FS_DIR dir;
 
 	if (open_dir(&dir, f) < 0) {
-		rval = (errno == ENOTDIR);
+		rval = !(errno == ENOTDIR);
 
-		if (rval)
+		if (!rval)
 			rval = rm_file(f, depth, silent);
 		else
 			warn("open_dir %s", f);
 
-		return rval;
+		goto done;
 	}
 
-	while (read_dir(&dir, depth) != EOF) {
+	while ((rd = read_dir(&dir, depth)) == FS_EXEC) {
 		if (ISDOT(dir.name))
 			continue;
 
@@ -64,11 +67,20 @@ rm_folder(const char *f, int silent, int depth)
 			rval |= rm_file(dir.path, silent, depth);
 	}
 
-	if (rmdir(f) < 0) {
-		warn("rmdir %s", f);
-		rval = 1;
+	if (rd < 0) {
+		warn("read_dir %s", dir.path);
+		goto failure;
 	}
 
+	if (rmdir(f) < 0) {
+		warn("rmdir %s", f);
+		goto failure;
+	}
+
+	goto done;
+failure:
+	rval = 1;
+done:
 	return rval;
 }
 

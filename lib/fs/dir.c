@@ -13,19 +13,24 @@
 
 #include "fs.h"
 
+enum RET {
+	EXEC = 1,
+	END = 0,
+	ERR = -1
+};
+
 int fs_follow = 'P';
 
 int
-open_dir(FS_DIR *dir, const char *p)
+open_dir(FS_DIR *dir, const char *path)
 {
 	int rval = 0;
 
-	dir->dir= (char *)p;
+	dir->dir=  (char *)path;
 	dir->dlen= strlen(dir->dir);
-	dir->path= NULL;
 
 	if (!(dir->dirp = opendir(dir->dir)))
-		rval = -1;
+		rval = ERR;
 
 	return rval;
 }
@@ -33,7 +38,8 @@ open_dir(FS_DIR *dir, const char *p)
 int
 read_dir(FS_DIR *dir, int rtime)
 {
-	int rval = 0, (*statf)(const char *, struct stat *);
+	int rval = EXEC;
+	int (*statf)(const char *, struct stat *);
 	struct dirent *entry;
 
 	if (FS_FOLLOW(rtime))
@@ -45,20 +51,21 @@ read_dir(FS_DIR *dir, int rtime)
 		dir->name = entry->d_name;
 		dir->nlen = strlen(dir->name);
 
-		free(dir->path);
-		if (!(dir->path = malloc(dir->dlen + dir->nlen + 2)))
-			err(1, "malloc");
-
-		dir->plen = sprintf(dir->path, "%s/%s", dir->dir, dir->name);
+		snprintf(dir->path, sizeof(dir->path),
+		         "%s/%s", dir->dir, dir->name);
 
 		if (statf(dir->path, &dir->info) < 0)
-			rval = -1;
+			goto err;
 	} else {
-		rval = -1;
-		free(dir->path);
-		dir->path = NULL;
-		closedir(dir->dirp);
+		rval = END;
+		goto clean;
 	}
 
+	goto done;
+err:
+	rval = ERR;
+clean:
+	closedir(dir->dirp);
+done:
 	return rval;
 }

@@ -45,12 +45,12 @@ int
 chown_folder(const char *s, uid_t uid, gid_t gid, int depth)
 {
 	FS_DIR dir;
-	int rval = 0;
+	int rd, rval = 0;
 
 	if (open_dir(&dir, s) < 0) {
-		rval = (errno == ENOTDIR);
+		rval = !(errno == ENOTDIR);
 
-		if (rval)
+		if (!rval)
 			rval = chown_file(s, uid, gid, depth);
 		else
 			warn("open_dir %s", s);
@@ -58,13 +58,18 @@ chown_folder(const char *s, uid_t uid, gid_t gid, int depth)
 		goto done;
 	}
 
-	while (read_dir(&dir, depth) != EOF) {
+	while ((rd = read_dir(&dir, depth)) == 1) {
 		if (ISDOT(dir.name))
 			continue;
 
 		rval |= chown_file(s, uid, gid, depth);
 		if (S_ISDIR(dir.info.st_mode))
 			rval |= chown_folder(s, uid, gid, depth + 1);
+	}
+
+	if (rd < 0) {
+		warn("read_dir %s", dir.path);
+		rval = 1;
 	}
 
 done:

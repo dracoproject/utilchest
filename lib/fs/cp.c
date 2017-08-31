@@ -178,13 +178,13 @@ int
 copy_folder(const char *src, const char *dest, int opts, int depth)
 {
 	char buf[PATH_MAX];
-	int rval = 0;
+	int rd, rval = 0;
 	FS_DIR dir;
 
 	if (open_dir(&dir, src) < 0) {
-		rval = (errno == ENOTDIR);
+		rval = !(errno == ENOTDIR);
 
-		if (rval)
+		if (!rval)
 			rval = copy_file(src, dest, opts, depth);
 		else
 			warn("open_dir %s", src);
@@ -195,7 +195,7 @@ copy_folder(const char *src, const char *dest, int opts, int depth)
 	if (!depth)
 		(void)mkdir(dest, 0777);
 
-	while (read_dir(&dir, depth) != EOF) {
+	while ((rd = read_dir(&dir, depth)) == FS_EXEC) {
 		if (ISDOT(dir.name))
 			continue;
 
@@ -211,6 +211,11 @@ copy_folder(const char *src, const char *dest, int opts, int depth)
 			rval |= copy_folder(dir.path, buf, opts, depth+1);
 		} else
 			rval |= copy_file(dir.path, buf, opts, depth);
+	}
+
+	if (rd < 0) {
+		warn("read_dir %s", dir.path);
+		goto failure;
 	}
 
 	goto done;

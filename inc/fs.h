@@ -4,17 +4,25 @@
 #include <sys/stat.h>
 
 #include <dirent.h>
+#include <limits.h>
 
-#define CP_FFLAG 0x1 /* force copy */
-#define CP_PFLAG 0x2 /* preserve permissions */
+enum cp_flags {
+	CP_FFLAG = 0x1, /* force copy */
+	CP_PFLAG = 0x2  /* preserve permissions */
+};
 
+#define FS_EXEC      1
 #define FS_FOLLOW(a) ((fs_follow == 'L') || ((fs_follow == 'H') && !(a)))
-#define ISDOT(a) ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
+#define ISDOT(a)     ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
 
 typedef struct {
+	char *dir;
+	char *name;
+	char path[PATH_MAX];
 	DIR *dirp;
-	char *dir, *name, *path;
-	size_t dlen, nlen, plen;
+	size_t dlen;
+	size_t nlen;
+	size_t plen;
 	struct stat info;
 } FS_DIR;
 
