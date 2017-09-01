@@ -8,6 +8,7 @@
 
 #include <err.h>
 #include <grp.h>
+#include <libgen.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,6 +35,7 @@ struct file {
 	char *name;
 	char *group;
 	char *user;
+	char *link;
 	mode_t tmode;
 	size_t len;
 	size_t glen;
@@ -107,6 +109,7 @@ freefile(struct file *p)
 {
 	free(p->name);
 	free(p->group);
+	free(p->link);
 	free(p->user);
 	free(p);
 }
@@ -208,9 +211,10 @@ mkmax(struct max *max, struct file *file)
 }
 
 struct file *
-newfile(const char *str)
+newfile(const char *str, struct stat *info, int cut)
 {
-	char user[32], group[32];
+	char user[32], group[32], lp[PATH_MAX];
+	ssize_t len;
 	struct file *new;
 	struct group *gr;
 	struct passwd *pw;
@@ -219,12 +223,14 @@ newfile(const char *str)
 	if (!(new = malloc(1 * sizeof(*new))))
 		goto err;
 
-	new->name  = NULL;
-	new->group = NULL;
-	new->user  = NULL;
-
-	if (lstat(str, &new->st) < 0)
+	if (!(new->name = strdup(cut ? basename((char *)str) : str)))
 		goto err;
+
+	new->group = NULL;
+	new->link  = NULL;
+	new->user  = NULL;
+	new->len   = strlen(str);
+	new->st    = *info;
 
 	switch (cuflag) {
 	case 'c':
@@ -239,16 +245,18 @@ newfile(const char *str)
 	}
 
 	if (S_ISLNK(new->st.st_mode)) {
-		if (!(stat(str, &st)))
+		if (stat(str, &st) == 0)
 			new->tmode = st.st_mode;
 		else
 			new->tmode = 0;
+
+		if ((len = readlink(str, lp, sizeof(lp) - 1)) < 0)
+			goto err;
+		lp[len] = '\0';
+
+		if (!(new->link = strdup(lp)))
+			goto err;
 	}
-
-	if (!(new->name = strdup(str)))
-		goto err;
-
-	new->len  = strlen(str);
 
 	if (!lflag)
 		goto done;
@@ -301,28 +309,27 @@ pushfile(struct file **p, struct file *new)
 static int
 ptype(mode_t mode)
 {
-	char type = '\0';
-
 	switch (mode & S_IFMT) {
 	case S_IFDIR:
-		type = '/';
-		break;
+		putchar('/');
+		return 1;
 	case S_IFIFO:
-		type = '|';
-		break;
+		putchar('|');
+		return 1;
 	case S_IFLNK:
-		type = '@';
-		break;
+		putchar('@');
+		return 1;
 	case S_IFSOCK:
-		type = '=';
-		break;
+		putchar('=');
+		return 1;
 	}
 
-	if (mode & (S_IXUSR | S_IXGRP | S_IXOTH))
-		type = '*';
+	if (mode & (S_IXUSR | S_IXGRP | S_IXOTH)) {
+		putchar('*');
+		return 1;
+	}
 
-	putchar(type);
-	return (type ? 1 : 0);
+	return 0;
 }
 
 static void
@@ -408,7 +415,7 @@ pname(struct file *file, int ino, int size)
 	}
 
 	if (Fpflag == 'F' || (Fpflag == 'p' && S_ISDIR(file->st.st_mode)))
-		chcnt += ptype(file->tmode);
+		chcnt += ptype(file->st.st_mode);
 
 	return chcnt;
 }
@@ -436,8 +443,6 @@ ptime(struct timespec t)
 static void
 print1(struct file *flist, struct max *max)
 {
-	char buf[BUFSIZ];
-	ssize_t len;
 	struct file *p;
 
 	for (p = flist; p; p = p->next) {
@@ -468,11 +473,7 @@ print1(struct file *flist, struct max *max)
 		pname(p, 0, 0);
 
 		if (S_ISLNK(p->st.st_mode)) {
-			if ((len = readlink(p->name, buf, sizeof(buf) - 1)) < 0)
-				err(1, "readlink %s", p->name);
-			buf[len] = '\0';
-
-			printf(" -> %s", buf);
+			printf(" -> %s", p->link);
 			ptype(p->tmode);
 		}
 next:
@@ -576,14 +577,11 @@ printx(struct file *flist, struct max *max)
 }
 
 static void
-printls(struct file **flist, struct max *max)
+print_list(struct file **flist, struct max *max)
 {
 	if (sflag || iflag || lflag)
 		printf("total: %lu\n",
 		       howmany((long unsigned)max->btotal, blocksize));
-
-	if (!(max->total <= 1) && Sftflag != 'f')
-		_mergesort(flist);
 
 	mkmax(max, NULL);
 	printfcn(*flist, max);
@@ -592,36 +590,34 @@ printls(struct file **flist, struct max *max)
 static int
 lsdir(const char *path, int more)
 {
-	DIR *dirp;
-	struct dirent *dir;
-	struct file *flist = NULL, *p;
+	char npath[PATH_MAX];
+	FS_DIR dir;
+	int rd;
+	struct file *p, *flist = NULL;
 	struct max max = {0};
 
-	if (!(dirp = opendir(path))) {
-		warn("open_dir %s", path);
-		return 1;
-	}
+	if (open_dir(&dir, path) < 0)
+		err(1, "open_dir %s", path);
 
-	if (more || Rdflag == 'R') {
-		printf(first ? "%s:\n" : "\n%s:\n", path);
-		first = 0;
-	}
+	if (more || Rdflag == 'R')
+		printf((first-- == 1) ? "%s:\n" : "\n%s:\n", path);
 
-	chdir(path);
-
-	while ((dir = readdir(dirp))) {
-		if (Aaflag != 'a' && ISDOT(dir->d_name))
+	while ((rd = read_dir(&dir, 0)) == FS_EXEC) {
+		if (Aaflag != 'a' && ISDOT(dir.name))
 			continue;
 
-		if (!Aaflag && dir->d_name[0] == '.')
+		if (!Aaflag && dir.name[0] == '.')
 			continue;
 
-		pushfile(&flist, newfile(dir->d_name));
+		pushfile(&flist, newfile(dir.path, &dir.info, 1));
 		mkmax(&max, flist);
 	}
 
+	if (flist && flist->next && Sftflag != 'f')
+		_mergesort(&flist);
+
 	if (max.total)
-		printls(&flist, &max);
+		print_list(&flist, &max);
 
 	if (Rdflag == 'R') {
 		for (p = flist; p; p = p->next) {
@@ -629,66 +625,25 @@ lsdir(const char *path, int more)
 				continue;
 			if (!S_ISDIR(p->st.st_mode))
 				continue;
-			lsdir(pcat(p->name, path, 1), more);
+			snprintf(npath, sizeof(npath), "%s/%s", path, p->name);
+			lsdir(npath, more);
 		}
 	}
 
 	while (flist)
 		freefile(popfile(&flist));
-
-	closedir(dirp);
 
 	return 0;
 }
-
-static int
-ls(char **argv, int more)
-{
-	int rval = 0;
-	struct file *flist = NULL, *dlist = NULL, *p;
-	struct max max = {0};
-	struct stat st;
-
-	for (; *argv; argv++) {
-		if ((FS_FOLLOW(0) ? stat : lstat)(*argv, &st) < 0) {
-			warn("(l)stat %s", *argv);
-			rval = 1;
-			continue;
-		}
-
-		if (Rdflag != 'd' && S_ISDIR(st.st_mode)) {
-			pushfile(&dlist, newfile(*argv));
-		} else {
-			pushfile(&flist, newfile(*argv));
-			mkmax(&max, flist);
-		}
-	}
-
-	if (dlist && dlist->next && Sftflag != 'f')
-		_mergesort(&dlist);
-
-	if (max.total) {
-		first = 0;
-		printls(&flist, &max);
-	}
-
-	for (p = dlist; p; p = p->next)
-		rval |= lsdir(p->name, more);
-
-	while (flist)
-		freefile(popfile(&flist));
-	while (dlist)
-		freefile(popfile(&dlist));
-
-	return rval;
-}
-
 
 int
 main(int argc, char *argv[])
 {
 	char *temp;
-	int kflag = 0;
+	int more, rval = 0, kflag = 0;
+	struct file *p, *dlist = NULL, *flist = NULL;
+	struct max max = {0};
+	struct stat st;
 	struct winsize w;
 
 	setprogname(argv[0]);
@@ -778,5 +733,39 @@ main(int argc, char *argv[])
 		argv[1] = NULL;
 	}
 
-	exit(ls(argv, argc > 1));
+	for (; *argv; argv++) {
+		if ((FS_FOLLOW(0) ? stat : lstat)(*argv, &st) < 0) {
+			warn("(l)stat %s", *argv);
+			rval = 1;
+			continue;
+		}
+
+		if (Rdflag != 'd' && S_ISDIR(st.st_mode)) {
+			pushfile(&dlist, newfile(*argv, &st, 0));
+		} else {
+			pushfile(&flist, newfile(*argv, &st, 0));
+			mkmax(&max, flist);
+		}
+	}
+
+	if (dlist && dlist->next && Sftflag != 'f')
+		_mergesort(&dlist);
+	if (flist && flist->next && Sftflag != 'f')
+		_mergesort(&flist);
+
+	if (max.total) {
+		first = 0;
+		print_list(&flist, &max);
+	}
+
+	for (more = argc > 1, p = dlist; p; p = p->next)
+		rval |= lsdir(p->name, more);
+
+	while (flist)
+		freefile(popfile(&flist));
+	while (dlist)
+		freefile(popfile(&dlist));
+
+
+	exit(rval);
 }
