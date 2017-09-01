@@ -8,7 +8,6 @@
 
 #include <err.h>
 #include <grp.h>
-#include <libgen.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -211,7 +210,7 @@ mkmax(struct max *max, struct file *file)
 }
 
 struct file *
-newfile(const char *str, struct stat *info, int cut)
+newfile(const char *path, const char *str, struct stat *info)
 {
 	char user[32], group[32], lp[PATH_MAX];
 	ssize_t len;
@@ -223,7 +222,7 @@ newfile(const char *str, struct stat *info, int cut)
 	if (!(new = malloc(1 * sizeof(*new))))
 		goto err;
 
-	if (!(new->name = strdup(cut ? basename((char *)str) : str)))
+	if (!(new->name = strdup(str)))
 		goto err;
 
 	new->group = NULL;
@@ -245,12 +244,12 @@ newfile(const char *str, struct stat *info, int cut)
 	}
 
 	if (S_ISLNK(new->st.st_mode)) {
-		if (stat(str, &st) == 0)
+		if (stat(path, &st) == 0)
 			new->tmode = st.st_mode;
 		else
 			new->tmode = 0;
 
-		if ((len = readlink(str, lp, sizeof(lp) - 1)) < 0)
+		if ((len = readlink(path, lp, sizeof(lp) - 1)) < 0)
 			goto err;
 		lp[len] = '\0';
 
@@ -609,7 +608,7 @@ lsdir(const char *path, int more)
 		if (!Aaflag && dir.name[0] == '.')
 			continue;
 
-		pushfile(&flist, newfile(dir.path, &dir.info, 1));
+		pushfile(&flist, newfile(dir.path, dir.name, &dir.info));
 		mkmax(&max, flist);
 	}
 
@@ -744,9 +743,9 @@ main(int argc, char *argv[])
 		}
 
 		if (Rdflag != 'd' && S_ISDIR(st.st_mode)) {
-			pushfile(&dlist, newfile(*argv, &st, 0));
+			pushfile(&dlist, newfile(*argv, *argv, &st));
 		} else {
-			pushfile(&flist, newfile(*argv, &st, 0));
+			pushfile(&flist, newfile(*argv, *argv, &st));
 			mkmax(&max, flist);
 		}
 	}
