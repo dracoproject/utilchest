@@ -613,6 +613,9 @@ lsdir(const char *path, int more)
 		mkmax(&max, flist);
 	}
 
+	if (rd < 0)
+		err(1, "read_dir %s", dir.path);
+
 	if (flist && flist->next && Sftflag != 'f')
 		_mergesort(&flist);
 
@@ -765,7 +768,6 @@ main(int argc, char *argv[])
 		freefile(popfile(&flist));
 	while (dlist)
 		freefile(popfile(&dlist));
-
 
 	exit(rval);
 }
