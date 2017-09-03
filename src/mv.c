@@ -11,7 +11,7 @@
 #include "util.h"
 
 SET_USAGE = "%s [-f] source target\n"
-            "%s [-f] source ... dir";
+    "%s [-f] source ... dir";
 
 static int
 move(const char *src, const char *dest)

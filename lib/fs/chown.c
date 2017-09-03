@@ -15,13 +15,13 @@ int hflag = 0;
 int
 chown_file(const char *s, uid_t uid, gid_t gid, int depth)
 {
-	int rval = 0, (*chownf)(const char *, uid_t, gid_t);
+	int (*chownf)(const char *, uid_t, gid_t);
 	struct stat st;
 
 	if ((FS_FOLLOW(depth) ||
 	    (hflag & !depth) ? stat : lstat)(s, &st) < 0) {
 		warn("(l)stat %s", s);
-		goto failure;
+		return 1;
 	}
 
 	if (!S_ISLNK(st.st_mode))
@@ -31,14 +31,10 @@ chown_file(const char *s, uid_t uid, gid_t gid, int depth)
 
 	if (chownf(s, (uid == (uid_t)-1) ? st.st_uid : uid, gid) < 0) {
 		warn("(l)chown %s", s);
-		goto failure;
+		return 1;
 	}
 
-	goto done;
-failure:
-	rval = 1;
-done:
-	return rval;
+	return 0;
 }
 
 int
@@ -48,30 +44,28 @@ chown_folder(const char *s, uid_t uid, gid_t gid, int depth)
 	int rd, rval = 0;
 
 	if (open_dir(&dir, s) < 0) {
-		rval = !(errno == ENOTDIR);
-
-		if (!rval)
+		if (!(rval = errno != ENOTDIR))
 			rval = chown_file(s, uid, gid, depth);
 		else
 			warn("open_dir %s", s);
 
-		goto done;
+		return rval;
 	}
 
-	while ((rd = read_dir(&dir, depth)) == 1) {
+	while ((rd = read_dir(&dir, depth)) == FS_EXEC) {
 		if (ISDOT(dir.name))
 			continue;
 
 		rval |= chown_file(s, uid, gid, depth);
+
 		if (S_ISDIR(dir.info.st_mode))
 			rval |= chown_folder(s, uid, gid, depth + 1);
 	}
 
 	if (rd < 0) {
 		warn("read_dir %s", dir.path);
-		rval = 1;
+		return 1;
 	}
 
-done:
 	return rval;
 }

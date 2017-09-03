@@ -24,15 +24,13 @@ int fs_follow = 'P';
 int
 open_dir(FS_DIR *dir, const char *path)
 {
-	int rval = 0;
-
 	dir->dir=  (char *)path;
 	dir->dlen= strlen(dir->dir);
 
 	if (!(dir->dirp = opendir(dir->dir)))
-		rval = ERR;
+		return -1;
 
-	return rval;
+	return 0;
 }
 
 int
@@ -52,18 +50,18 @@ read_dir(FS_DIR *dir, int rtime)
 		dir->nlen = strlen(dir->name);
 
 		snprintf(dir->path, sizeof(dir->path),
-		         "%s/%s", dir->dir, dir->name);
+		    "%s/%s", dir->dir, dir->name);
 
-		if (statf(dir->path, &dir->info) < 0)
-			goto err;
+		if (statf(dir->path, &dir->info) < 0) {
+			rval = ERR;
+			goto clean;
+		}
 	} else {
 		rval = END;
 		goto clean;
 	}
 
 	goto done;
-err:
-	rval = ERR;
 clean:
 	closedir(dir->dirp);
 done:

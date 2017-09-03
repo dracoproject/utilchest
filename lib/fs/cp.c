@@ -36,7 +36,10 @@ copy_reg(struct copy *cp)
 		goto failure;
 	}
 
-	fstat(sf, &st1);
+	if (fstat(sf, &st1) < 0) {
+		warn("fstat %s", cp->src);
+		goto failure;
+	}
 
 	if (cp->st.st_ino != st1.st_ino ||
 	    cp->st.st_dev != st1.st_dev) {
@@ -81,8 +84,10 @@ copy_reg(struct copy *cp)
 failure:
 	rval = 1;
 done:
-	close(sf);
-	close(tf);
+	if (sf != -1)
+		close(sf);
+	if (tf != -1)
+		close(tf);
 
 	return rval;
 }
@@ -91,56 +96,49 @@ static int
 copy_lnk(struct copy *cp)
 {
 	char path[PATH_MAX];
-	int rval = 0;
 	ssize_t rl;
 
 	if ((rl = readlink(cp->src, path, sizeof(path)-1)) < 0) {
 		warn("readlink %s", cp->src);
-		goto failure;
+		return 1;
 	}
 	path[rl] = '\0';
 
 	if (cp->st.st_size < rl) {
 		warnx("%s: symlink increased in size\n", cp->src);
-		goto failure;
+		return 1;
 	}
 
 	if (symlink(path, cp->dest) < 0) {
 		warn("symlink %s -> %s", cp->dest, path);
-		goto failure;
+		return 1;
 	}
 
 	if ((CP_PFLAG & cp->opts)
 	    && lchown(cp->dest, cp->st.st_uid, cp->st.st_gid) < 0) {
 		warn("lchown %s", cp->dest);
-		goto failure;
+		return 1;
 	}
 
-	goto done;
-failure:
-	rval = 1;
-done:
-	return rval;
+	return 0;
 }
 
 static int
 copy_spc(struct copy *cp)
 {
-	int rval = 0;
-
 	if (mknod(cp->dest, cp->st.st_mode, cp->st.st_dev) < 0) {
 		warn("mknod %s", cp->dest);
-		rval = 1;
+		return 1;
 	}
 
-	return rval;
+	return 0;
 }
 
 /* external functions */
 int
 copy_file(const char *src, const char *dest, int opts, int depth)
 {
-	int rval = 0;
+	int rval;
 	struct copy cp = {.src = src, .dest = dest, .opts = opts};
 
 	if (CP_FFLAG & opts)
@@ -148,14 +146,14 @@ copy_file(const char *src, const char *dest, int opts, int depth)
 
 	if ((FS_FOLLOW(depth) ? stat : lstat)(src, &cp.st) < 0) {
 		warn("lstat %s", src);
-		goto failure;
+		return 1;
 	}
 
 	switch ((cp.st.st_mode & S_IFMT)) {
 	case S_IFDIR:
 		errno = EISDIR;
 		warn("copy_file %s", src);
-		goto failure;
+		return 1;
 	case S_IFLNK:
 		rval = copy_lnk(&cp);
 		break;
@@ -167,10 +165,6 @@ copy_file(const char *src, const char *dest, int opts, int depth)
 		break;
 	}
 
-	goto done;
-failure:
-	rval = 1;
-done:
 	return rval;
 }
 
@@ -182,14 +176,12 @@ copy_folder(const char *src, const char *dest, int opts, int depth)
 	FS_DIR dir;
 
 	if (open_dir(&dir, src) < 0) {
-		rval = !(errno == ENOTDIR);
-
-		if (!rval)
+		if (!(rval = errno != ENOTDIR))
 			rval = copy_file(src, dest, opts, depth);
 		else
 			warn("open_dir %s", src);
 
-		goto done;
+		return rval;
 	}
 
 	if (!depth)
@@ -205,7 +197,7 @@ copy_folder(const char *src, const char *dest, int opts, int depth)
 			if (mkdir(buf, dir.info.st_mode) < 0
 			    && errno != EEXIST) {
 				warn("mkdir %s", buf);
-				goto failure;
+				return 1;
 			}
 
 			rval |= copy_folder(dir.path, buf, opts, depth+1);
@@ -215,12 +207,8 @@ copy_folder(const char *src, const char *dest, int opts, int depth)
 
 	if (rd < 0) {
 		warn("read_dir %s", dir.path);
-		goto failure;
+		return 1;
 	}
 
-	goto done;
-failure:
-	rval = 1;
-done:
 	return rval;
 }

@@ -16,12 +16,12 @@
 #define SYMLNK 0x4 /* create symlink */
 
 SET_USAGE = "%s [-f] [-L|-P|-s] source [target]\n"
-            "%s [-f] [-L|-P|-s] source ... dir";
+    "%s [-f] [-L|-P|-s] source [target]";
 
 static int
 linkit(const char *src, const char *dest, int opts)
 {
-	int flags = 0, rval = 0;
+	int flags = 0;
 
 	if (opts & FORCE)
 		unlink(dest);
@@ -32,17 +32,17 @@ linkit(const char *src, const char *dest, int opts)
 	if (opts & SYMLNK) {
 		if (symlink(src, dest) < 0) {
 			warn("symlink %s -> %s", src, dest);
-			rval = 1;
+			return 1;
 		}
 	} else {
 		if (linkat(AT_FDCWD, src, AT_FDCWD, dest, flags) < 0) {
 			warn("linkat %s -> %s", src, dest);
-			rval = 1;
+			return 1;
 		}
 	}
 
 
-	return rval;
+	return 0;
 }
 
 int
@@ -90,5 +90,5 @@ main(int argc, char *argv[])
 	for (; *argv != sourcedir; argv++)
 		rval |= linkit(*argv, pcat(argv[0], sourcedir, 1), opts);
 
-	return 0;
+	return rval;
 }

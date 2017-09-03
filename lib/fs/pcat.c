@@ -19,18 +19,15 @@ pcat(const char *f1, const char *f2, int isdir)
 		goto concat;
 
 	if (lstat(f2, &st) < 0)
-		goto notdir;
+		return f2;
 
 	if (!(S_ISDIR(st.st_mode)))
-		goto notdir;
+		return f2;
 
 concat:
 	isdir = 1;
 	snprintf(buf, sizeof(buf), "%s/%s", f2, f1);
 
-	goto done;
-notdir:
-	isdir = 0;
 done:
-	return (const char *)(isdir ? buf : f2);
+	return (const char *)buf;
 }

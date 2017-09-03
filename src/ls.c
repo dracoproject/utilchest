@@ -60,18 +60,18 @@ struct max {
 	size_t total;
 };
 
-static int iflag = 0;
-static int lflag = 0;
-static int nflag = 0;
-static int qflag = 0;
-static int rflag = 0;
-static int sflag = 0;
+static int iflag;
+static int lflag;
+static int nflag;
+static int qflag;
+static int rflag;
+static int sflag;
 
-static int Aaflag = 0;
-static int cuflag = 0;
-static int Fpflag = 0;
-static int Rdflag = 0;
-static int Sftflag = 0;
+static int Aaflag;
+static int cuflag;
+static int Fpflag;
+static int Rdflag;
+static int Sftflag;
 
 static int first = 1;
 static long blocksize = 512;
@@ -186,13 +186,13 @@ mkmax(struct max *max, struct file *file)
 
 	if (!file) {
 		max->s_block = snprintf(buf, sizeof(buf), "%llu",
-		               (unsigned long long)max->block);
+		    (unsigned long long)max->block);
 		max->s_ino   = snprintf(buf, sizeof(buf), "%llu",
-		               (unsigned long long)max->ino);
+		    (unsigned long long)max->ino);
 		max->s_nlink = snprintf(buf, sizeof(buf), "%lu",
-		               (unsigned long)max->nlink);
+		    (unsigned long)max->nlink);
 		max->s_size  = snprintf(buf, sizeof(buf), "%lld",
-		               (long long)max->size);
+		    (long long)max->size);
 
 		return;
 	}
@@ -220,16 +220,17 @@ newfile(const char *path, const char *str, struct stat *info)
 	struct stat st;
 
 	if (!(new = malloc(1 * sizeof(*new))))
-		goto err;
+		err(1, "malloc");
 
 	if (!(new->name = strdup(str)))
-		goto err;
+		err(1, "strdup");
+
+	new->len   = strlen(str);
+	new->st    = *info;
 
 	new->group = NULL;
 	new->link  = NULL;
 	new->user  = NULL;
-	new->len   = strlen(str);
-	new->st    = *info;
 
 	switch (cuflag) {
 	case 'c':
@@ -250,11 +251,11 @@ newfile(const char *path, const char *str, struct stat *info)
 			new->tmode = 0;
 
 		if ((len = readlink(path, lp, sizeof(lp) - 1)) < 0)
-			goto err;
+			err(1, "readlink %s", path);
 		lp[len] = '\0';
 
 		if (!(new->link = strdup(lp)))
-			goto err;
+			err(1, "strdup");
 	}
 
 	if (!lflag)
@@ -271,18 +272,14 @@ newfile(const char *path, const char *str, struct stat *info)
 		snprintf(group, sizeof(group), "%d", new->st.st_gid);
 
 	if (!(new->group = strdup(group)))
-		goto err;
+		err(1, "strdup");
 
 	if (!(new->user  = strdup(user)))
-		goto err;
+		err(1, "strdup");
 
 	new->glen  = strlen(group);
 	new->ulen  = strlen(user);
 
-	goto done;
-err:
-	err(1, "newfile %s", str);
-done:
 	return new;
 }
 
@@ -399,10 +396,10 @@ pname(struct file *file, int ino, int size)
 
 	if (iflag && ino)
 		chcnt += printf("%*llu ", ino,
-			 (unsigned long long)file->st.st_ino);
+		    (unsigned long long)file->st.st_ino);
 	if (sflag && size)
 		chcnt += printf("%*lld ", size,
-			 howmany((long long)file->st.st_blocks, blocksize));
+		    howmany((long long)file->st.st_blocks, blocksize));
 
 	for (ch = file->name; *ch; ch += len) {
 		len = chartorune(&rune, ch);
@@ -452,21 +449,21 @@ print1(struct file *flist, struct max *max)
 
 		if (iflag)
 			printf("%*llu ", max->s_ino,
-			       (unsigned long long)p->st.st_ino);
+			    (unsigned long long)p->st.st_ino);
 		if (sflag)
 			printf("%*lld ", max->s_block,
-			       howmany((long long)p->st.st_blocks, blocksize));
+			    howmany((long long)p->st.st_blocks, blocksize));
 
 		pmode(&p->st);
 		printf("%*lu %-*s %-*s ", max->s_nlink, p->st.st_nlink,
-		       max->s_uid, p->user, max->s_gid, p->group);
+		    max->s_uid, p->user, max->s_gid, p->group);
 
 		if (S_ISBLK(p->st.st_mode) || S_ISCHR(p->st.st_mode))
 			printf("%3d, %3d ",
-			       major(p->st.st_rdev), minor(p->st.st_rdev));
+			    major(p->st.st_rdev), minor(p->st.st_rdev));
 		else
 			printf("%*s%*lld ", 8 - max->s_size, "",
-			       max->s_size, (long long)p->st.st_size);
+			    max->s_size, (long long)p->st.st_size);
 
 		ptime(p->tm);
 		pname(p, 0, 0);
@@ -580,7 +577,7 @@ print_list(struct file **flist, struct max *max)
 {
 	if (sflag || iflag || lflag)
 		printf("total: %lu\n",
-		       howmany((long unsigned)max->btotal, blocksize));
+		    howmany((long unsigned)max->btotal, blocksize));
 
 	mkmax(max, NULL);
 	printfcn(*flist, max);
