@@ -45,7 +45,7 @@ main(int argc, char *argv[])
 		if (!(realpath(*argv, buf)))
 			err(1, "realpath %s", *argv);
 	} else {
-		if ((n = readlink(*argv, buf, PATH_MAX)) < 0)
+		if ((n = readlink(*argv, buf, PATH_MAX - 1)) < 0)
 			exit(1);
 		buf[n] = '\0';
 	}
