@@ -14,7 +14,7 @@
 #include "fs.h"
 
 enum RET {
-	EXEC = 1,
+	EXE = 1,
 	END = 0,
 	ERR = -1
 };
@@ -36,7 +36,7 @@ open_dir(FS_DIR *dir, const char *path)
 int
 read_dir(FS_DIR *dir, int rtime)
 {
-	int rval = EXEC;
+	int rval = EXE;
 	int (*statf)(const char *, struct stat *);
 	struct dirent *entry;
 
