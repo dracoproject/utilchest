@@ -259,7 +259,7 @@ newfile(const char *path, const char *str, struct stat *info)
 	}
 
 	if (!lflag)
-		goto done;
+		return new;
 
 	if (!nflag && (pw = getpwuid(new->st.st_uid)))
 		snprintf(user, sizeof(user), "%s", pw->pw_name);
