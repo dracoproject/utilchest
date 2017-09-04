@@ -4,19 +4,28 @@
 #include <sys/stat.h>
 
 #include <err.h>
+#include <limits.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "fs.h"
 #include "util.h"
 
+int (*fn)(const char *, const char *, int, int) = copy_file;
+
 SET_USAGE = "%s [-fp] [-R [-H|-L|-P]] source target\n"
     "%s [-fp] [-R [-H|-L|-P]] source ... dir";
+
+static int
+cp(const char *s1, const char *s2, int opts)
+{
+	return(fn(s1, s2, 0, opts));
+}
 
 int
 main(int argc, char *argv[])
 {
 	const char *sourcedir;
-	int (*cp)(const char *, const char *, int, int) = copy_file;
 	int rval = 0, opts = 0;
 	struct stat st;
 
@@ -31,7 +40,7 @@ main(int argc, char *argv[])
 		break;
 	case 'r':
 	case 'R':
-		cp = copy_folder;
+		fn = copy_folder;
 		break;
 	case 'H':
 	case 'L':
@@ -47,7 +56,7 @@ main(int argc, char *argv[])
 	case 1:
 		wrong(usage);
 	case 2:
-		exit(cp(argv[0], pcat(argv[0], argv[1], 0), 0, opts));
+		exit(call(cp, argv[0], argv[1], opts));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -58,7 +67,7 @@ main(int argc, char *argv[])
 		wrong(usage);
 
 	for (; *argv != sourcedir; argc--, argv++)
-		rval |= cp(*argv, pcat(*argv, sourcedir, 1), 0, opts);
+		rval |= call(cp, *argv, sourcedir, opts);
 
 	return rval;
 }

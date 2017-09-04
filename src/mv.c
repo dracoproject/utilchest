@@ -14,7 +14,7 @@ SET_USAGE = "%s [-f] source target\n"
     "%s [-f] source ... dir";
 
 static int
-move(const char *src, const char *dest)
+move(const char *src, const char *dest, int opts)
 {
 	if (!rename(src, dest))
 		return 0;
@@ -48,7 +48,7 @@ main(int argc, char *argv[])
 	case 1:
 		wrong(usage);
 	case 2:
-		exit(move(argv[0], pcat(argv[0], argv[1], 0)));
+		exit(call(move, argv[0], argv[1], 0));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -59,7 +59,7 @@ main(int argc, char *argv[])
 		wrong(usage);
 
 	for (; *argv != sourcedir; argv++)
-		rval |= move(*argv, pcat(*argv, sourcedir, 1));
+		rval |= call(move, *argv, sourcedir, 0);
 
 	return rval;
 }

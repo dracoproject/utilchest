@@ -75,9 +75,9 @@ main(int argc, char *argv[])
 	case 0:
 		wrong(usage);
 	case 1:
-		exit(linkit(argv[0], pcat(argv[0], ".", 1), opts));
+		exit(call(linkit, argv[0], ".", opts));
 	case 2:
-		exit(linkit(argv[0], pcat(argv[0], argv[1], 0), opts));
+		exit(call(linkit, argv[0], argv[1], opts));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -88,7 +88,7 @@ main(int argc, char *argv[])
 		wrong(usage);
 
 	for (; *argv != sourcedir; argv++)
-		rval |= linkit(*argv, pcat(argv[0], sourcedir, 1), opts);
+		rval |= call(linkit, argv[0], argv[1], opts);
 
 	return rval;
 }

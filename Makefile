@@ -55,8 +55,7 @@ BIN=\
 LIBFSSRC=\
 	lib/fs/chown.c\
 	lib/fs/cp.c\
-	lib/fs/dir.c\
-	lib/fs/pcat.c
+	lib/fs/dir.c
 
 LIBUTFSRC=\
 	lib/utf/chartorune.c\
@@ -66,6 +65,7 @@ LIBUTFSRC=\
 	lib/utf/runetype.c
 
 LIBUTILSRC=\
+	lib/util/call.c\
 	lib/util/estrtonum.c\
 	lib/util/mode.c\
 	lib/util/wrong.c

@@ -10,6 +10,10 @@
 
 #define SET_USAGE static const char *usage
 
+/* call.c */
+int call(int(*)(const char *, const char *, int),
+    const char *, const char *, int);
+
 /* estrtonum.c */
 long long estrtonum(const char *, long long, long long);
 
