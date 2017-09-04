@@ -9,12 +9,12 @@
 
 #include "util.h"
 
-#define MAC = 0x01
-#define NOD = 0x02
-#define REL = 0x04
-#define SYS = 0x08
-#define VER = 0x10
-#define ALL = 0x1f
+#define MAC 0x01
+#define NOD 0x02
+#define REL 0x04
+#define SYS 0x08
+#define VER 0x10
+#define ALL 0x1f
 
 
 SET_USAGE = "%s [-amnrsv]";
