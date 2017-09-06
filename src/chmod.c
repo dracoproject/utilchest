@@ -72,40 +72,26 @@ main(int argc, char *argv[])
 {
 	const char *modestr;
 	int (*chmodf)(const char *, const char *, int) = chmod_file;
-	int i, rval = 0;
+	int rval = 0;
 
 	setprogname(argv[0]);
-	argc--, argv++;
 
-	for (; *argv && (*argv)[0] == '-' && (*argv)[1];
-	    argc--, argv++) {
-		for (i = 1; (*argv)[i]; i++) {
-			switch ((*argv)[i]) {
-			case 'R':
-				chmodf = chmod_folder;
-				break;
-			case 'H':
-			case 'L':
-			case 'P':
-				fs_follow = (*argv)[i];
-				break;
-			case 'r': case 'w': case 'x':
-			case 'X': case 's': case 't':
-				if (i)
-					goto done;
-				/* fallthrough */
-			case '-':
-				if (i && !(*argv)[i + 1]) {
-					argc--, argv++;
-					goto done;
-				}
-				/* fallthrough */
-			default:
-				wrong(usage);
-			}
-		}
-	}
-
+	ARGBEGIN {
+	case 'R':
+		chmodf = chmod_folder;
+		break;
+	case 'H':
+	case 'L':
+	case 'P':
+		fs_follow = ARGC();
+		break;
+	case 'r': case 'w': case 'x':
+	case 'X': case 's': case 't':
+		argv[0]--; /* recover lost char */
+		goto done;
+	default:
+		wrong(usage);
+	} ARGEND
 done:
 	if (argc < 2)
 		wrong(usage);
