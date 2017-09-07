@@ -5,31 +5,26 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 #include "util.h"
 
+#define ISDASH(x) (x[0] == '-' && x[1] == '\0')
+
 SET_USAGE = "%s [-u] [file ...]";
 
-static int
+static void
 cat(int f, const char *name)
 {
 	char buf[BUFSIZ];
 	ssize_t n;
 
 	while ((n = read(f, buf, sizeof(buf))) > 0)
-		if (write(1, buf, n) != n) {
-			warn("write %s", name);
-			return 1;
-		}
+		if (write(STDOUT_FILENO, buf, n) != n)
+			err(1, "write %s", name);
 
-	if (n < 0) {
-		warn("read %s", name);
-		return 1;
-	}
-
-	return 0;
+	if (n < 0)
+		err(1, "read %s", name);
 }
 
 int
@@ -47,10 +42,10 @@ main(int argc, char *argv[])
 	} ARGEND
 
 	if (!argc)
-		cat(0, "<stdin>");
+		cat(STDIN_FILENO, "<stdin>");
 
 	for (; *argv; argv++) {
-		if (!strcmp(*argv, "-")) {
+		if (ISDASH(*argv)) {
 			*argv = "<stdin>";
 			f = STDIN_FILENO;
 		} else if ((f = open(*argv, O_RDONLY, 0)) < 0) {
@@ -59,12 +54,10 @@ main(int argc, char *argv[])
 			continue;
 		}
 
-		rval |= cat(f, *argv);
+		cat(f, *argv);
 
-		if (f != STDIN_FILENO && close(f) < 0) {
-			warn("close %s", *argv);
-			rval = 1;
-		}
+		if (f != STDIN_FILENO)
+			close(f);
 	}
 
 	return rval;
