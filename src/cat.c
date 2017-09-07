@@ -11,8 +11,6 @@
 
 #define ISDASH(x) (x[0] == '-' && x[1] == '\0')
 
-SET_USAGE = "%s [-u] [file ...]";
-
 static void
 cat(int f, const char *name)
 {
@@ -27,6 +25,13 @@ cat(int f, const char *name)
 		err(1, "read %s", name);
 }
 
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-u] [file ...]\n", getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -38,7 +43,7 @@ main(int argc, char *argv[])
 	case 'u':
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (!argc)

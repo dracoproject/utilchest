@@ -3,12 +3,18 @@
  */
 #include <err.h>
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "util.h"
 
-SET_USAGE = "%s newroot [command ...]";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s newroot [command ...]\n", getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -19,7 +25,7 @@ main(int argc, char *argv[])
 	argc--, argv++;
 
 	if (!argc)
-		wrong(usage);
+		usage();
 
 	if (!(shell = getenv("SHELL")))
 		shell = "/bin/sh";

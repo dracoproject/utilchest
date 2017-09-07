@@ -5,13 +5,11 @@
 
 #include <err.h>
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "fs.h"
 #include "util.h"
-
-SET_USAGE = "%s [-f] source target\n"
-    "%s [-f] source ... dir";
 
 static int
 move(const char *src, const char *dest, int opts)
@@ -27,6 +25,16 @@ move(const char *src, const char *dest, int opts)
 	return 1;
 }
 
+static void
+usage(void)
+{
+	fprintf(stderr,
+	    "usage: %s [-f] source target\n"
+	    "       %s [-f] source ... dir\n",
+	    getprogname(), getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -40,13 +48,13 @@ main(int argc, char *argv[])
 	case 'f':
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	switch (argc) {
 	case 0:
 	case 1:
-		wrong(usage);
+		usage();
 	case 2:
 		exit(call(move, argv[0], argv[1], 0));
 	}
@@ -56,7 +64,7 @@ main(int argc, char *argv[])
 		err(1, "stat %s", sourcedir);
 
 	if (!S_ISDIR(sb.st_mode))
-		wrong(usage);
+		usage();
 
 	for (; *argv != sourcedir; argv++)
 		rval |= call(move, *argv, sourcedir, 0);

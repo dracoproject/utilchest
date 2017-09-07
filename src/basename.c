@@ -8,7 +8,12 @@
 
 #include "util.h"
 
-SET_USAGE = "%s string [suffix]";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s string [suffix]\n", getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -20,7 +25,7 @@ main(int argc, char *argv[])
 	argc--, argv++;
 
 	if (argc != 1 && argc != 2)
-		wrong(usage);
+		usage();
 
 	p = basename(*argv++);
 	if (*argv) {

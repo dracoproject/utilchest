@@ -8,8 +8,6 @@
 #include "arg.h"
 #include "compat.h"
 
-#define SET_USAGE static const char *usage
-
 /* call.c */
 int call(int(*)(const char *, const char *, int),
     const char *, const char *, int);
@@ -25,6 +23,3 @@ void putstr(const char *, FILE *);
 
 /* strtomode.c */
 mode_t strtomode(const char *, mode_t);
-
-/* wrong.c */
-void wrong(const char *);

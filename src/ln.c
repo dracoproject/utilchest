@@ -5,6 +5,7 @@
 
 #include <err.h>
 #include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -14,9 +15,6 @@
 #define FORCE  0x1 /* force */
 #define FOLLOW 0x2 /* follow symlink */
 #define SYMLNK 0x4 /* create symlink */
-
-SET_USAGE = "%s [-f] [-L|-P|-s] source [target]\n"
-    "%s [-f] [-L|-P|-s] source [target]";
 
 static int
 linkit(const char *src, const char *dest, int opts)
@@ -45,6 +43,16 @@ linkit(const char *src, const char *dest, int opts)
 	return 0;
 }
 
+static void
+usage(void)
+{
+	fprintf(stderr, 
+	    "usage: %s [-f] [-L|-P|-s] source [target]\n"
+	    "       %s [-f] [-L|-P|-s] source ... dir\n",
+	    getprogname(), getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -68,12 +76,12 @@ main(int argc, char *argv[])
 		opts |= ~FOLLOW;
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	switch (argc) {
 	case 0:
-		wrong(usage);
+		usage();
 	case 1:
 		exit(call(linkit, argv[0], ".", opts));
 	case 2:
@@ -85,7 +93,7 @@ main(int argc, char *argv[])
 		err(1, "stat %s", sourcedir);
 
 	if (!S_ISDIR(st.st_mode))
-		wrong(usage);
+		usage();
 
 	for (; *argv != sourcedir; argv++)
 		rval |= call(linkit, argv[0], argv[1], opts);

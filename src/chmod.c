@@ -11,9 +11,6 @@
 #include "fs.h"
 #include "util.h"
 
-SET_USAGE = "%s [-R [-H|-L|-P]] mode file ...";
-
-
 static int
 chmod_file(const char *s, const char *ms, int depth)
 {
@@ -67,6 +64,14 @@ chmod_folder(const char *s, const char *ms, int depth)
 	return rval;
 }
 
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-R [-H|-L|-P]] mode file ...\n",
+	    getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -90,11 +95,11 @@ main(int argc, char *argv[])
 		argv[0]--; /* recover lost char */
 		goto done;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 done:
 	if (argc < 2)
-		wrong(usage);
+		usage();
 
 	modestr = *argv++;
 

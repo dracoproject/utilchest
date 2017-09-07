@@ -11,7 +11,12 @@
 
 #include "util.h"
 
-SET_USAGE = "%s [-fn] file";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-fn] file\n", getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -30,11 +35,11 @@ main(int argc, char *argv[])
 		nflag = 1;
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (argc != 1)
-		wrong(usage);
+		usage();
 
 	if (strlen(*argv) >= PATH_MAX) {
 		errno = ENAMETOOLONG;

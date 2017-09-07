@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <grp.h>
 #include <limits.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,7 +14,13 @@
 
 extern int hflag;
 
-SET_USAGE = "%s [-h] [-R [-H|-L|-P]] group file ...";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-h] [-R [-H|-L|-P]] group file ...\n",
+	    getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -38,11 +45,11 @@ main(int argc, char *argv[])
 		fs_follow = ARGC();
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (argc < 2)
-		wrong(usage);
+		usage();
 
 	errno = 0;
 	if ((grp = getgrnam(argv[0])))

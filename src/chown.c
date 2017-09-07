@@ -6,6 +6,7 @@
 #include <grp.h>
 #include <limits.h>
 #include <pwd.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,8 +15,15 @@
 
 extern int hflag;
 
-SET_USAGE = "%s [-h] [-R [-H|-L|-P]] owner[:group] file ...\n"
-    "%s [-h] [-R [-H|-L|-P]] :group file ...";
+static void
+usage(void)
+{
+	fprintf(stderr,
+	    "usage: %s [-h] [-R [-H|-L|-P]] owner[:group] file ...\n"
+	    "       %s [-h] [-R [-H|-L|-P]] :group file ...\n",
+	    getprogname(), getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -43,11 +51,11 @@ main(int argc, char *argv[])
 		fs_follow = ARGC();
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (argc < 2)
-		wrong(usage);
+		usage();
 
 	owner = argv[0];
 	if ((group = strchr(owner, ':')))
@@ -76,7 +84,7 @@ main(int argc, char *argv[])
 	}
 
 	if ((uid == (uid_t)-1) && (gid == (gid_t)-1))
-		wrong(usage);
+		usage();
 
 	for (argv++; *argv; argv++)
 		rval |= chownf(*argv, uid, gid, 0);

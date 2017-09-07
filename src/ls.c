@@ -80,8 +80,6 @@ static unsigned int termwidth = 80;
 static void printc(struct file *, struct max *);
 static void (*printfcn)(struct file *, struct max *) = printc;
 
-SET_USAGE = "%s [-1AaCcFfiklmnpqrSstux] [file ...]";
-
 static int
 cmp(struct file *f1, struct file *f2)
 {
@@ -635,6 +633,14 @@ lsdir(const char *path, int more)
 	return 0;
 }
 
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-1AaCcFfiklmnpqrSstux] [file ...]\n",
+	    getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -706,7 +712,7 @@ main(int argc, char *argv[])
 		Sftflag = ARGC();
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (!(ioctl(fileno(stdout), TIOCGWINSZ, &w)) && w.ws_col > 0)

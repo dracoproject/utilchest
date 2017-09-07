@@ -4,11 +4,17 @@
 #include <sys/stat.h>
 
 #include <err.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "util.h"
 
-SET_USAGE = "%s [-m mode] file ...";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-m mode] file ...\n", getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -23,11 +29,11 @@ main(int argc, char *argv[])
 		mode = strtomode(ARGF(), DEFFILEMODE);
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (!argc)
-		wrong(usage);
+		usage();
 
 	for (; *argv; argc--, argv++) {
 		if (mkfifo(*argv, mode) < 0) {

@@ -9,8 +9,6 @@
 
 #include "util.h"
 
-SET_USAGE = "%s [-n number] [file ...]";
-
 static void
 head(const char *fname, FILE *f, size_t n)
 {
@@ -32,6 +30,13 @@ head(const char *fname, FILE *f, size_t n)
 		err(1, "getline %s", fname);
 }
 
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-n number] [file ...]\n", getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -43,10 +48,10 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'n':
-		n = estrtonum(EARGF(wrong(usage)), 0, LLONG_MAX);
+		n = estrtonum(EARGF(usage()), 0, LLONG_MAX);
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (!argc)

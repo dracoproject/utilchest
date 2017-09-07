@@ -16,8 +16,12 @@
 #define VER 0x10
 #define ALL 0x1f
 
-
-SET_USAGE = "%s [-amnrsv]";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-amnrsv]\n", getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -47,11 +51,11 @@ main(int argc, char *argv[])
 		print |= VER;
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (argc)
-		wrong(usage);
+		usage();
 
 	if (uname(&sys) < 0)
 		err(1, "uname");

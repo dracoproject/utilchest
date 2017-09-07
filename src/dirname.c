@@ -7,7 +7,12 @@
 
 #include "util.h"
 
-SET_USAGE = "%s string";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s string\n", getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -16,7 +21,7 @@ main(int argc, char *argv[])
 	argc--, argv++;
 
 	if (argc != 1)
-		wrong(usage);
+		usage();
 
 	puts(dirname(*argv));
 

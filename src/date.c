@@ -8,8 +8,12 @@
 
 #include "util.h"
 
-SET_USAGE = "%s [-u] [+format]";
-/* mmddhhmm[[cc]yy] TODO */
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-u] [+format]\n", getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -25,7 +29,7 @@ main(int argc, char *argv[])
 		setenv("TZ", "UTC0", 1);
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (time(&tval) < 0)

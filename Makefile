@@ -67,8 +67,7 @@ LIBUTFSRC=\
 LIBUTILSRC=\
 	lib/util/call.c\
 	lib/util/estrtonum.c\
-	lib/util/mode.c\
-	lib/util/wrong.c
+	lib/util/mode.c
 
 # LIB PATH
 LIBFS= lib/libfs.a

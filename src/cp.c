@@ -13,13 +13,20 @@
 
 int (*fn)(const char *, const char *, int, int) = copy_file;
 
-SET_USAGE = "%s [-fp] [-R [-H|-L|-P]] source target\n"
-    "%s [-fp] [-R [-H|-L|-P]] source ... dir";
-
 static int
 cp(const char *s1, const char *s2, int opts)
 {
 	return(fn(s1, s2, 0, opts));
+}
+
+static void
+usage(void)
+{
+	fprintf(stderr,
+	    "usage: %s [-fp] [-R [-H|-L|-P]] source target\n"
+	    "       %s [-fp] [-R [-H|-L|-P]] source .. dir\n",
+	    getprogname(), getprogname());
+	exit(1);
 }
 
 int
@@ -48,13 +55,13 @@ main(int argc, char *argv[])
 		fs_follow = ARGC();
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	switch (argc) {
 	case 0:
 	case 1:
-		wrong(usage);
+		usage();
 	case 2:
 		exit(call(cp, argv[0], argv[1], opts));
 	}
@@ -64,7 +71,7 @@ main(int argc, char *argv[])
 		err(1, "stat %s", sourcedir);
 
 	if (!S_ISDIR(st.st_mode))
-		wrong(usage);
+		usage();
 
 	for (; *argv != sourcedir; argc--, argv++)
 		rval |= call(cp, *argv, sourcedir, opts);

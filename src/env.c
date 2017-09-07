@@ -12,7 +12,13 @@
 
 extern char **environ;
 
-SET_USAGE = "%s [-i] [name=value]... [utility [args...]]";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-i] [name=value ...] [command]\n",
+	    getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -24,7 +30,7 @@ main(int argc, char *argv[])
 		*environ = NULL;
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	for (; *argv && strchr(*argv, '='); argc--, argv++)

@@ -5,12 +5,11 @@
 
 #include <err.h>
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "util.h"
-
-SET_USAGE = "%s [-p] [-m mode] dir ...";
 
 static int
 mkdirp(const char *path, mode_t dir_mode, mode_t mode)
@@ -27,10 +26,16 @@ mkdirp(const char *path, mode_t dir_mode, mode_t mode)
 		if (mkdir(path, (c == '\0') ? mode : dir_mode) < 0\
 		    && errno != EEXIST)
 			return -1;
-
 	} while ((*p = c) != '\0');
 
 	return 0;
+}
+
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-p] [-m mode] dir ...\n", getprogname());
+	exit(1);
 }
 
 int
@@ -49,11 +54,11 @@ main(int argc, char *argv[])
 		mode = strtomode(ARGF(), S_IRWXU|S_IRWXG|S_IRWXO);
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (!argc)
-		wrong(usage);
+		usage();
 
 	for (; *argv; argc--, argv++) {
 		if (pflag)

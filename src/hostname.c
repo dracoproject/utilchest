@@ -10,7 +10,12 @@
 
 #include "util.h"
 
-SET_USAGE = "%s [name]";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [name]\n", getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -21,7 +26,7 @@ main(int argc, char *argv[])
 	argc--, argv++;
 
 	if (argc > 1)
-		wrong(usage);
+		usage();
 
 	if (argc == 1) {
 		if (sethostname(*argv, strlen(*argv)))

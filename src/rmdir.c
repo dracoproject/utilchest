@@ -3,12 +3,11 @@
  */
 #include <err.h>
 #include <libgen.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "util.h"
-
-SET_USAGE = "%s [-p] dir ...";
 
 static int
 rmdir_path(const char *p)
@@ -25,6 +24,13 @@ rmdir_path(const char *p)
 	return 0;
 }
 
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-p] dir ...\n", getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -37,11 +43,11 @@ main(int argc, char *argv[])
 		rmdirf = rmdir_path;
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (!argc)
-		wrong(usage);
+		usage();
 
 	for (; *argv; argv++) {
 		if (rmdirf(*argv) < 0) {

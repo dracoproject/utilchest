@@ -5,12 +5,19 @@
 
 #include <err.h>
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "util.h"
 
-SET_USAGE = "%s [-n increment] utility [argument ...]";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-n increment] utility [argument ...]\n",
+	    getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -21,14 +28,14 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'n':
-		prio = estrtonum(EARGF(wrong(usage)), PRIO_MIN, PRIO_MAX);
+		prio = estrtonum(EARGF(usage()), PRIO_MIN, PRIO_MAX);
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (!argc)
-		wrong(usage);
+		usage();
 
 	errno = 0;
 	prio += getpriority(PRIO_PROCESS, 0);

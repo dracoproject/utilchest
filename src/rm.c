@@ -5,13 +5,12 @@
 
 #include <err.h>
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "fs.h"
 #include "util.h"
-
-SET_USAGE = "%s [-f] [-Rr] file ...";
 
 static int
 rm_file(const char *f, int silent, int depth)
@@ -76,6 +75,13 @@ rm_folder(const char *f, int silent, int depth)
 	return rval;
 }
 
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-f] [-Rr] file ...\n", getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -93,11 +99,11 @@ main(int argc, char *argv[])
 		rm = rm_folder;
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (!argc && !silent)
-		wrong(usage);
+		usage();
 
 	for (; *argv; argv++) {
 		if (ISDOT(*argv))

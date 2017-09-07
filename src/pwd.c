@@ -10,8 +10,6 @@
 
 #include "util.h"
 
-SET_USAGE = "%s [-L|-P]";
-
 static char *
 getcwd_logical(void)
 {
@@ -30,6 +28,13 @@ getcwd_logical(void)
 	return pwd;
 }
 
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [-L|-P]\n", getprogname());
+	exit(1);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -46,11 +51,11 @@ main(int argc, char *argv[])
 		logical = 0;
 		break;
 	default:
-		wrong(usage);
+		usage();
 	} ARGEND
 
 	if (argc)
-		wrong(usage);
+		usage();
 
 	if (!(cwd = logical ? getcwd(NULL, 0) : getcwd_logical()))
 		err(1, "getcwd");

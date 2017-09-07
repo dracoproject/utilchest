@@ -2,12 +2,18 @@
  * See LICENSE file for copyright and license details.
  */
 #include <limits.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "util.h"
 
-SET_USAGE = "%s time";
+static void
+usage(void)
+{
+	fprintf(stderr, "usage: %s time\n", getprogname());
+	exit(1);
+}
 
 int
 main(int argc, char *argv[])
@@ -18,7 +24,7 @@ main(int argc, char *argv[])
 	argc--, argv++;
 
 	if (argc != 1)
-		wrong(usage);
+		usage();
 
 	for (secs = estrtonum(argv[0], 0, UINT_MAX); secs;)
 		secs = sleep(secs);
