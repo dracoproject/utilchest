@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "fs.h"
 #include "util.h"
 
 int (*fn)(const char *, const char *, int, int) = copy_file;

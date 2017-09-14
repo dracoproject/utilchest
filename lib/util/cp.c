@@ -12,7 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "fs.h"
+#include "util.h"
 
 struct copy {
 	const char *src;

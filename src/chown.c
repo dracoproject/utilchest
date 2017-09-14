@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fs.h"
 #include "util.h"
 
 extern int hflag;
@@ -67,7 +66,7 @@ main(int argc, char *argv[])
 		if ((pwd = getpwnam(owner)))
 			uid = pwd->pw_uid;
 		else if (!errno)
-			uid = estrtonum(owner, 0, UINT_MAX);
+			uid = stoll(owner, 0, UINT_MAX);
 		else
 			err(1, "getpwnam %s", owner);
 	}
@@ -78,7 +77,7 @@ main(int argc, char *argv[])
 		if ((grp = getgrnam(group)))
 			gid = grp->gr_gid;
 		else if (!errno)
-			gid = estrtonum(group, 0, UINT_MAX);
+			gid = stoll(group, 0, UINT_MAX);
 		else
 			err(1, "getgrnam %s", group);
 	}

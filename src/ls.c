@@ -15,7 +15,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "fs.h"
 #include "utf.h"
 #include "util.h"
 
@@ -217,15 +216,13 @@ newfile(const char *path, const char *str, struct stat *info)
 	struct passwd *pw;
 	struct stat st;
 
-	if (!(new = malloc(1 * sizeof(*new))))
-		err(1, "malloc");
+	/* alloc/copy initial values */
+	new       = emalloc(1 * sizeof(*new));
+	new->name = estrdup(str);
+	new->len  = strlen(str);
+	new->st   = *info;
 
-	if (!(new->name = strdup(str)))
-		err(1, "strdup");
-
-	new->len   = strlen(str);
-	new->st    = *info;
-
+	/* set to null to avoid free trash values */
 	new->group = NULL;
 	new->link  = NULL;
 	new->user  = NULL;
@@ -250,10 +247,9 @@ newfile(const char *path, const char *str, struct stat *info)
 
 		if ((len = readlink(path, lp, sizeof(lp) - 1)) < 0)
 			err(1, "readlink %s", path);
-		lp[len] = '\0';
 
-		if (!(new->link = strdup(lp)))
-			err(1, "strdup");
+		lp[len] = '\0';
+		new->link = estrdup(lp);
 	}
 
 	if (!lflag)
@@ -269,12 +265,8 @@ newfile(const char *path, const char *str, struct stat *info)
 	else
 		snprintf(group, sizeof(group), "%d", new->st.st_gid);
 
-	if (!(new->group = strdup(group)))
-		err(1, "strdup");
-
-	if (!(new->user  = strdup(user)))
-		err(1, "strdup");
-
+	new->group = estrdup(group);
+	new->user  = estrdup(user);
 	new->glen  = strlen(group);
 	new->ulen  = strlen(user);
 
@@ -723,7 +715,7 @@ main(int argc, char *argv[])
 
 	if (lflag || sflag) {
 		if (!kflag && (temp = getenv("BLOCKSIZE")))
-			blocksize = estrtonum(temp, 0, LONG_MAX);
+			blocksize = stoll(temp, 0, LONG_MAX);
 		else if (kflag)
 			blocksize = 1024;
 
@@ -731,7 +723,7 @@ main(int argc, char *argv[])
 	}
 
 	if (printfcn != print1 && (temp = getenv("COLUMNS")))
-		termwidth = estrtonum(temp, 0, UINT_MAX);
+		termwidth = stoll(temp, 0, UINT_MAX);
 
 	if (!argc) {
 		argv[0] = ".";

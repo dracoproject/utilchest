@@ -8,7 +8,7 @@
 #include "util.h"
 
 long long
-estrtonum(const char *str, long long min, long long max)
+stoll(const char *str, long long min, long long max)
 {
 	char *end;
 	long long ll;
@@ -23,7 +23,7 @@ estrtonum(const char *str, long long min, long long max)
 		errno = ERANGE;
 
 	if (errno)
-		err(1, "strtol %s", str);
+		err(1, "stoll %s", str);
 
 	return ll;
 }

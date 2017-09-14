@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fs.h"
 #include "util.h"
 
 extern int hflag;
@@ -55,7 +54,7 @@ main(int argc, char *argv[])
 	if ((grp = getgrnam(argv[0])))
 		gid = grp->gr_gid;
 	else if (!errno)
-		gid = estrtonum(argv[0], 0, UINT_MAX);
+		gid = stoll(argv[0], 0, UINT_MAX);
 	else
 		err(1, "getgrnam %s", argv[0]);
 

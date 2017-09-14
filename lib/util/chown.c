@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include "fs.h"
+#include "util.h"
 
 int hflag = 0;
 

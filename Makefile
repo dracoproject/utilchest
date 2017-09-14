@@ -8,7 +8,6 @@ INC= inc
 HDR=\
 	inc/arg.h\
 	inc/compat.h\
-	inc/fs.h\
 	inc/utf.h\
 	inc/util.h
 
@@ -52,11 +51,6 @@ BIN=\
 	src/yes
 
 # LIB SOURCE
-LIBFSSRC=\
-	lib/fs/chown.c\
-	lib/fs/cp.c\
-	lib/fs/dir.c
-
 LIBUTFSRC=\
 	lib/utf/chartorune.c\
 	lib/utf/iscntrlrune.c\
@@ -66,17 +60,19 @@ LIBUTFSRC=\
 
 LIBUTILSRC=\
 	lib/util/call.c\
-	lib/util/estrtonum.c\
-	lib/util/mode.c
+	lib/util/chown.c\
+	lib/util/cp.c\
+	lib/util/dir.c\
+	lib/util/ealloc.c\
+	lib/util/mode.c\
+	lib/util/stoll.c
 
 # LIB PATH
-LIBFS= lib/libfs.a
-LIBUTF= lib/libutf.a
+LIBUTF=  lib/libutf.a
 LIBUTIL= lib/libutil.a
 
 # LIB OBJS
-LIBFSOBJ= $(LIBFSSRC:.c=.o)
-LIBUTFOBJ= $(LIBUTFSRC:.c=.o)
+LIBUTFOBJ=  $(LIBUTFSRC:.c=.o)
 LIBUTILOBJ= $(LIBUTILSRC:.c=.o)
 
 # ALL
@@ -98,10 +94,6 @@ $(OBJ): $(HDR) config.mk
 	$(CC) $(CFLAGS) $(CPPFLAGS) -I $(INC) -o $@ -c $<
 
 # LIBRARIES RULES
-$(LIBFS): $(LIBFSOBJ)
-	$(AR) rc $@ $?
-	$(RANLIB) $@
-
 $(LIBUTF): $(LIBUTFOBJ)
 	$(AR) rc $@ $?
 	$(RANLIB) $@

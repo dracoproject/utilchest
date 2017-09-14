@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fs.h"
+#include "util.h"
 
 enum RET {
 	EXE = 1,

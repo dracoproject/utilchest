@@ -21,11 +21,11 @@ for (argc--, argv++;\
 #define ARGC() _argc;
 
 #define ARGF() \
-((argv[0][1] == '\0' && !argv[1]) ? (char *)0 :\
-(_brk = 1, (argv[0][1] != '\0') ? (&argv[0][1]) : (argc--, argv++, argv[0])))
+(((*argv)[1] == '\0' && !argv[1]) ? (char *)0 :\
+(_brk = 1, ((*argv)[1] != '\0') ? (&(*argv)[1]) : (argc--, argv++, *argv)))
 
 #define EARGF(x) \
-((argv[0][1] == '\0' && !argv[1]) ? ((x), abort(), (char *)0) :\
-(_brk = 1, (argv[0][1] != '\0') ? (&argv[0][1]) : (argc--, argv++, argv[0])))
+(((*argv)[1] == '\0' && !argv[1]) ? ((x), abort(), (char *)0) :\
+(_brk = 1, ((*argv)[1] != '\0') ? (&(*argv)[1]) : (argc--, argv++, *argv)))
 
 #endif

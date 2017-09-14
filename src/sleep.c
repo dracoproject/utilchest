@@ -26,7 +26,7 @@ main(int argc, char *argv[])
 	if (argc != 1)
 		usage();
 
-	for (secs = estrtonum(argv[0], 0, UINT_MAX); secs;)
+	for (secs = stoll(argv[0], 0, UINT_MAX); secs;)
 		secs = sleep(secs);
 
 	return 0;

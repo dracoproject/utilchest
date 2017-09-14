@@ -48,7 +48,7 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'n':
-		n = estrtonum(EARGF(usage()), 0, LLONG_MAX);
+		n = stoll(EARGF(usage()), 0, LLONG_MAX);
 		break;
 	default:
 		usage();
