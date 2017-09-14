@@ -9,12 +9,14 @@
 
 #include "util.h"
 
-#define MAC 0x01
-#define NOD 0x02
-#define REL 0x04
-#define SYS 0x08
-#define VER 0x10
-#define ALL 0x1f
+enum Flags {
+	MAC = 0x01,
+	NOD = 0x02,
+	REL = 0x04,
+	SYS = 0x08,
+	VER = 0x10,
+	ALL = 0x1f
+};
 
 static void
 usage(void)
