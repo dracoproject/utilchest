@@ -1,4 +1,4 @@
-/* See LICENSE_UTF file for copyright and license details. */
+/* See UTF_LICENSE file for copyright and license details. */
 #include "runetype.h"
 
 int

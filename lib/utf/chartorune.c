@@ -1,4 +1,4 @@
-/* See LICENSE_UTF file for copyright and license details. */
+/* See UTF_LICENSE file for copyright and license details. */
 #include "utf.h"
 
 /* lookup table for the number of bytes expected in a sequence */
