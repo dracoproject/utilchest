@@ -1,6 +1,3 @@
-/* This file is part of the UtilChest from EltaninOS
- * See LICENSE file for copyright and license details.
- */
 #ifndef __ARG_H__
 #define __ARG_H__
 

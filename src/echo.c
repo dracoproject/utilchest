@@ -1,6 +1,3 @@
-/* This file is part of the UtilChest from EltaninOS
- * See LICENSE file for copyright and license details.
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
