@@ -1,6 +1,7 @@
 # UtilChest - Utilities Chest
 
 [![Build Status](https://travis-ci.org/eltanin-os/utilchest.svg?branch=master)](https://travis-ci.org/eltanin-os/utilchest) [![Coverity Scan Build Status](https://img.shields.io/coverity/scan/13660.svg)](https://scan.coverity.com/projects/eltanin-os-utilchest)
+
 It's a collection of Unix utilities written to be simple and small
 
 #### Binaries
