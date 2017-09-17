@@ -107,51 +107,56 @@ freefile(struct file *p)
 	free(p);
 }
 
-/* mergesort copied from heirloom */
+static struct file *
+mergelist(struct file *l1, struct file *l2)
+{
+	struct file *ret = NULL;
+
+	if (l1 == NULL)
+		return l2;
+	if (l2 == NULL)
+		return l1;
+
+	if (cmp(l1, l2) <= 0) {
+		ret = l1;
+		ret->next = mergelist(l1->next, l2);
+	} else {
+		ret = l2;
+		ret->next = mergelist(l1, l2->next);
+	}
+
+	return ret;
+}
+
 static void
 _mergesort(struct file **flist)
 {
-	struct file *l1, *l2, **mid;
+	struct file *l1, *l2, *end;
 
-	l1 = *(mid = &(*flist)->next);
+	if (!(l1 = *flist) || !(end = (*flist)->next))
+		return;
 
-	do {
-		if (!(l1 = l1->next))
+	while (end) {
+		if (!(end = end->next))
 			break;
-		mid = &(*mid)->next;
-	} while (1);
+		l1 = l1->next;
+		end = end->next;
+	}
 
-	l2 = *mid;
-	*mid = NULL;
-
-	if ((*flist)->next)
-		_mergesort(flist);
-	if (l2->next)
-		_mergesort(&l2);
-
+	l2 = l1->next;
+	l1->next = NULL;
 	l1 = *flist;
 
-	while (1) {
-		if (cmp(l1, l2) <= 0) {
-			if (!(l1 = *(flist = &l1->next))) {
-				*flist = l2;
-				break;
-			}
-		} else {
-			*flist = l2;
-			l2 = *(flist = &l2->next);
-			*flist = l1;
+	_mergesort(&l1);
+	_mergesort(&l2);
 
-			if (!l2)
-				break;
-		}
-	}
+	*flist = mergelist(l1, l2);
 }
 
 static int
 mkcol(struct column *col, struct max *max)
 {
-	int twidth = 0;
+	int twidth;
 
 	col->width = max->len;
 	if (iflag)
@@ -467,8 +472,8 @@ next:
 static void
 printc(struct file *flist, struct max *max)
 {
-	int chcnt = 0, row = 0, i = 0;
-	int col, base, num, nrows;
+	int chcnt = 0, row = 0, num = 0;
+	int col, base, nrows;
 	struct column cols;
 	struct file *p, **pa;
 
@@ -477,21 +482,19 @@ printc(struct file *flist, struct max *max)
 		return;
 	}
 
-	num = max->total;
-	nrows = (num / cols.num);
-
-	if (num % cols.num)
-		nrows += 1;
-
 	/* create a array of pointers for random access */
 	if (!(pa = malloc(max->total * sizeof(struct file *))))
 		err(1, "malloc");
 
-	for (p = flist; p; p = p->next, i++)
-		pa[i] = p;
+	for (p = flist; p; p = p->next)
+		pa[num++] = p;
+
+	nrows = num / cols.num;
+	if (num % cols.num)
+		nrows += 1;
 
 	for (; row < nrows; row++) {
-		for (base = row, col = 0; col < cols.width; col++) {
+		for (base = row, col = 0; col < cols.num; col++) {
 			chcnt = pname(pa[base], max->s_ino, max->s_block);
 			if ((base += nrows) >= num)
 				break;
