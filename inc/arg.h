@@ -15,7 +15,7 @@ for (argc--, argv++;\
 
 #define ARGEND } }
 
-#define ARGC() _argc;
+#define ARGC() _argc
 
 #define ARGF() \
 (((*argv)[1] == '\0' && !argv[1]) ? (char *)0 :\
