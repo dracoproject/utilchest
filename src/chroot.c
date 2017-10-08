@@ -16,7 +16,7 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	const char *shell;
+	const char *shell, *cmd, *cmd_arg;
 
 	setprogname(argv[0]);
 	argc--, argv++;
@@ -31,13 +31,17 @@ main(int argc, char *argv[])
 		err(1, "chroot %s", *argv);
 
 	if (chdir("/") < 0)
-		err(1, "chdir %s", *argv);
+		err(1, "chdir");
 
-	if (argc == 1)
+	if (argc == 1) {
+		cmd = "execvp";
+		cmd_arg = argv[1];
 		execvp(argv[1], &argv[1]);
-	else
+	} else {
+		cmd = "execlp";
+		cmd_arg = shell;
 		execlp(shell, shell, "-i", (char *)NULL);
+	}
 
-	err(126 + (errno == ENOENT), "exec%cp %s",
-	    argc == 1 ? 'v' : 'l', argc == 1 ? shell : argv[1]);
+	err(126 + (errno == ENOENT), "%s %s", cmd, cmd_arg);
 }
