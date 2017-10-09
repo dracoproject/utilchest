@@ -17,7 +17,7 @@ int
 main(int argc, char *argv[])
 {
 	int rval = 0;
-	mode_t mode = DEFFILEMODE & ~umask(0);
+	mode_t mode = DEFFILEMODE;
 
 	setprogname(argv[0]);
 

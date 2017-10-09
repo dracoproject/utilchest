@@ -21,7 +21,7 @@ int
 main(int argc, char *argv[])
 {
 	int ret = 0;
-	mode_t mode = 0644, type = 0;
+	mode_t mode = DEFFILEMODE, type = 0;
 	unsigned long major, minor;
 
 	setprogname(argv[0]);

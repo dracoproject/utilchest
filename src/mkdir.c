@@ -39,9 +39,12 @@ int
 main(int argc, char *argv[])
 {
 	int pflag = 0, rval = 0;
-	mode_t mode = 0777 & ~umask(0), dir_mode = mode|S_IWUSR|S_IXUSR;
+	mode_t mode, dir_mode;
 
 	setprogname(argv[0]);
+
+	mode     = (S_IRWXU|S_IRWXG|S_IRWXO) & ~umask(0);
+	dir_mode = mode|S_IWUSR|S_IXUSR;
 
 	ARGBEGIN {
 	case 'p':
