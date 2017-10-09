@@ -23,7 +23,7 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'm':
-		mode = strtomode(ARGF(), DEFFILEMODE);
+		mode = strtomode(EARGF(usage()), DEFFILEMODE);
 		break;
 	default:
 		usage();

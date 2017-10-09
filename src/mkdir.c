@@ -48,7 +48,7 @@ main(int argc, char *argv[])
 		pflag = 1;
 		break;
 	case 'm':
-		mode = strtomode(ARGF(), S_IRWXU|S_IRWXG|S_IRWXO);
+		mode = strtomode(EARGF(usage()), S_IRWXU|S_IRWXG|S_IRWXO);
 		break;
 	default:
 		usage();
