@@ -34,9 +34,7 @@ main(int argc, char *argv[])
 		usage();
 	} ARGEND
 
-	if (argc < 2)
-		usage();
-	if (argv[1][1] != '\0')
+	if (argc < 2 || argv[1][1] != '\0')
 		usage();
 
 	switch (argv[1][0]) {
