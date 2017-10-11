@@ -29,6 +29,7 @@ BIN=\
 	src/false\
 	src/head\
 	src/hostname\
+	src/id\
 	src/link\
 	src/ln\
 	src/ls\

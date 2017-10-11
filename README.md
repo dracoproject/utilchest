@@ -21,6 +21,7 @@ It's a collection of Unix utilities written to be simple and small
 * false
 * head
 * hostname
+* id
 * link
 * ln
 * ls
