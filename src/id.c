@@ -18,17 +18,17 @@ static int nflag;
 static void
 printsup(const char *str, uid_t uid)
 {
-	static int putc;
+	static int putch;
 
 	if (Gguflag) {
-		if (putc++)
+		if (putch++)
 			putchar(' ');
 		if (nflag)
 			printf("%s", str);
 		else
 			printf("%u", uid);
 	} else {
-		if (putc++)
+		if (putch++)
 			putchar(',');
 		printf("%u(%s)", uid, str);
 	}
