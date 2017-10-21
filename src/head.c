@@ -2,11 +2,8 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-/*#include <string.h>*/
 
 #include "util.h"
-
-#define ISDASH(x) ((x)[0] == '-' && (x)[1] == '\0')
 
 static void
 head(const char *fname, FILE *f, size_t n)

@@ -11,6 +11,7 @@
 #define FS_EXEC      1
 #define FS_FOLLOW(a) ((fs_follow == 'L') || ((fs_follow == 'H') && !(a)))
 #define ISDOT(a)     ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
+#define ISDASH(a)    ((a)[0] == '-' && (a)[1] == '\0')
 
 /* hide mess, only used here and in call.c */
 #define CC   const char *, const char *

@@ -6,8 +6,6 @@
 
 #include "util.h"
 
-#define ISDASH(x) ((x)[0] == '-' && (x)[1] == '\0')
-
 static void
 cat(int f, const char *name)
 {
