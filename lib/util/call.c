@@ -1,22 +1,50 @@
 #include <sys/stat.h>
 
+#include <libgen.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "util.h"
 
-int
-call(int (*fn)(const char *, const char *, int),
-    const char *s1, const char *s2, int opts)
+static void
+glue(char *buf, size_t bsize, const char *f1, const char *f2)
 {
-	char buf[PATH_MAX];
+	size_t len;
 	struct stat st;
 
-	if (!(stat(s2, &st) == 0 && S_ISDIR(st.st_mode)))
-		return (fn(s1, s2, opts));
+	if (!(stat(f2, &st) == 0 && S_ISDIR(st.st_mode))) {
+		snprintf(buf, bsize, "%s", f2);
+		return;
+	}
 
-	snprintf(buf, sizeof(buf), "%s/%s", s2, s1);
+	len  = strlen(f2);
+	if (f2[len-1] == '/')
+		snprintf(buf, bsize, "%s%s",  f2, basename((char *)f1));
+	else
+		snprintf(buf, bsize, "%s/%s", f2, basename((char *)f1));
+}
 
-	return (fn(s1, buf, opts));
+int
+cc(int (*fn)(CC), const char *f1, const char *f2)
+{
+	char buf[PATH_MAX];
+	glue(buf, sizeof(buf), f1, f2);
+	return (fn(f1, buf));
+}
+
+int
+cci(int (*fn)(CCI), const char *f1, const char *f2, int opts)
+{
+	char buf[PATH_MAX];
+	glue(buf, sizeof(buf), f1, f2);
+	return (fn(f1, buf, opts));
+}
+
+int
+ccii(int (*fn)(CCII), const char *f1, const char *f2, int opts, int depth)
+{
+	char buf[PATH_MAX];
+	glue(buf, sizeof(buf), f1, f2);
+	return (fn(f1, buf, opts, depth));
 }

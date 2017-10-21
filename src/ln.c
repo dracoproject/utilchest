@@ -42,7 +42,7 @@ linkit(const char *src, const char *dest, int opts)
 static void
 usage(void)
 {
-	fprintf(stderr, 
+	fprintf(stderr,
 	    "usage: %s [-f] [-L|-P|-s] source [target]\n"
 	    "       %s [-f] [-L|-P|-s] source ... dir\n",
 	    getprogname(), getprogname());
@@ -79,9 +79,9 @@ main(int argc, char *argv[])
 	case 0:
 		usage();
 	case 1:
-		exit(call(linkit, argv[0], ".", opts));
+		exit(cci(linkit, argv[0], ".", opts));
 	case 2:
-		exit(call(linkit, argv[0], argv[1], opts));
+		exit(cci(linkit, argv[0], argv[1], opts));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -92,7 +92,7 @@ main(int argc, char *argv[])
 		usage();
 
 	for (; *argv != sourcedir; argv++)
-		rval |= call(linkit, argv[0], argv[1], opts);
+		rval |= cci(linkit, argv[0], argv[1], opts);
 
 	return rval;
 }

@@ -12,6 +12,11 @@
 #define FS_FOLLOW(a) ((fs_follow == 'L') || ((fs_follow == 'H') && !(a)))
 #define ISDOT(a)     ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
 
+/* hide mess, only used here and in call.c */
+#define CC   const char *, const char *
+#define CCI  const char *, const char *, int
+#define CCII const char *, const char *, int, int
+
 enum cp_flags {
 	CP_FFLAG = 0x1, /* force copy */
 	CP_PFLAG = 0x2  /* preserve permissions */
@@ -31,8 +36,9 @@ typedef struct {
 extern int fs_follow;
 
 /* call.c */
-int call(int(*)(const char *, const char *, int),
-    const char *, const char *, int);
+int cc(int (*)(CC), CC);
+int cci(int (*)(CCI), CCI);
+int ccii(int (*)(CCII), CCII);
 
 /* chown.c */
 int chown_file(const char *, uid_t, gid_t, int);

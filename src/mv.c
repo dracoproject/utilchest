@@ -8,7 +8,7 @@
 #include "util.h"
 
 static int
-move(const char *src, const char *dest, int opts)
+move(const char *src, const char *dest)
 {
 	if (!rename(src, dest))
 		return 0;
@@ -52,7 +52,7 @@ main(int argc, char *argv[])
 	case 1:
 		usage();
 	case 2:
-		exit(call(move, argv[0], argv[1], 0));
+		exit(cc(move, argv[0], argv[1]));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -63,7 +63,7 @@ main(int argc, char *argv[])
 		usage();
 
 	for (; *argv != sourcedir; argv++)
-		rval |= call(move, *argv, sourcedir, 0);
+		rval |= cc(move, *argv, sourcedir);
 
 	return rval;
 }

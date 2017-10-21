@@ -7,14 +7,6 @@
 
 #include "util.h"
 
-int (*fn)(const char *, const char *, int, int) = copy_file;
-
-static int
-cp(const char *s1, const char *s2, int opts)
-{
-	return(fn(s1, s2, 0, opts));
-}
-
 static void
 usage(void)
 {
@@ -30,6 +22,7 @@ main(int argc, char *argv[])
 {
 	const char *sourcedir;
 	int rval = 0, opts = 0;
+	int (*cp)(const char *, const char *, int, int) = copy_file;
 	struct stat st;
 
 	setprogname(argv[0]);
@@ -43,7 +36,7 @@ main(int argc, char *argv[])
 		break;
 	case 'r':
 	case 'R':
-		fn = copy_folder;
+		cp = copy_folder;
 		break;
 	case 'H':
 	case 'L':
@@ -59,7 +52,7 @@ main(int argc, char *argv[])
 	case 1:
 		usage();
 	case 2:
-		exit(call(cp, argv[0], argv[1], opts));
+		exit(ccii(cp, argv[0], argv[1], opts, 0));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -70,7 +63,7 @@ main(int argc, char *argv[])
 		usage();
 
 	for (; *argv != sourcedir; argc--, argv++)
-		rval |= call(cp, *argv, sourcedir, opts);
+		rval |= ccii(cp, *argv, sourcedir, opts, 0);
 
 	return rval;
 }
