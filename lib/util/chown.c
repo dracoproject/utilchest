@@ -7,7 +7,7 @@
 
 #include "util.h"
 
-int hflag = 0;
+int chown_hflag = 0;
 
 int
 chown_file(const char *s, uid_t uid, gid_t gid, int depth)
@@ -16,7 +16,7 @@ chown_file(const char *s, uid_t uid, gid_t gid, int depth)
 	struct stat st;
 
 	if ((FS_FOLLOW(depth) ||
-	    (hflag & !depth) ? stat : lstat)(s, &st) < 0) {
+	    (chown_hflag & !depth) ? stat : lstat)(s, &st) < 0) {
 		warn("(l)stat %s", s);
 		return 1;
 	}

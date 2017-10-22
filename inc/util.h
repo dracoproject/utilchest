@@ -30,6 +30,7 @@ typedef struct {
 } FS_DIR;
 
 extern int fs_follow;
+extern int chown_hflag;
 
 /* call.c */
 void pathcat(char *, size_t, const char *, const char *);

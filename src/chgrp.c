@@ -8,8 +8,6 @@
 
 #include "util.h"
 
-extern int hflag;
-
 static void
 usage(void)
 {
@@ -30,7 +28,7 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'h':
-		hflag = 1;
+		chown_hflag = 1;
 		break;
 	case 'R':
 		chownf = chown_folder;
