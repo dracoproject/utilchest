@@ -20,7 +20,7 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	const char *sourcedir;
+	char buf[PATH_MAX], *sourcedir;
 	int rval = 0, opts = 0;
 	int (*cp)(const char *, const char *, int, int) = copy_file;
 	struct stat st;
@@ -52,7 +52,8 @@ main(int argc, char *argv[])
 	case 1:
 		usage();
 	case 2:
-		exit(ccii(cp, argv[0], argv[1], opts, 0));
+		pathcat(buf, sizeof(buf), argv[0], argv[1]);
+		exit(cp(argv[0], buf, opts, 0));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -62,8 +63,10 @@ main(int argc, char *argv[])
 	if (!S_ISDIR(st.st_mode))
 		usage();
 
-	for (; *argv != sourcedir; argc--, argv++)
-		rval |= ccii(cp, *argv, sourcedir, opts, 0);
+	for (; *argv != sourcedir; argc--, argv++) {
+		pathcat(buf, sizeof(buf), *argv, sourcedir);
+		rval |= cp(*argv, buf, opts, 0);
+	}
 
 	return rval;
 }

@@ -61,12 +61,12 @@ LIBUTFSRC=\
 	lib/utf/runetype.c
 
 LIBUTILSRC=\
-	lib/util/call.c\
 	lib/util/chown.c\
 	lib/util/cp.c\
 	lib/util/dir.c\
 	lib/util/ealloc.c\
 	lib/util/mode.c\
+	lib/util/pathcat.c\
 	lib/util/stoll.c
 
 # LIB PATH

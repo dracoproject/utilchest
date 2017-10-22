@@ -2,6 +2,7 @@
 
 #include <err.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -52,7 +53,7 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	const char *sourcedir;
+	char buf[PATH_MAX], *sourcedir;
 	int opts = 0, rval = 0;
 	struct stat st;
 
@@ -79,9 +80,11 @@ main(int argc, char *argv[])
 	case 0:
 		usage();
 	case 1:
-		exit(cci(linkit, argv[0], ".", opts));
+		pathcat(buf, sizeof(buf), argv[0], ".");
+		exit(linkit(argv[0], buf, opts));
 	case 2:
-		exit(cci(linkit, argv[0], argv[1], opts));
+		pathcat(buf, sizeof(buf), argv[0], argv[1]);
+		exit(linkit(argv[0], buf, opts));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -91,8 +94,10 @@ main(int argc, char *argv[])
 	if (!S_ISDIR(st.st_mode))
 		usage();
 
-	for (; *argv != sourcedir; argv++)
-		rval |= cci(linkit, argv[0], argv[1], opts);
+	for (; *argv != sourcedir; argv++) {
+		pathcat(buf, sizeof(buf), *argv, sourcedir);
+		rval |= linkit(*argv, buf, opts);
+	}
 
 	return rval;
 }

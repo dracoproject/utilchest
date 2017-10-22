@@ -2,6 +2,7 @@
 
 #include <err.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -34,7 +35,7 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	const char *sourcedir;
+	char buf[PATH_MAX], *sourcedir;
 	int rval = 0;
 	struct stat sb;
 
@@ -52,7 +53,8 @@ main(int argc, char *argv[])
 	case 1:
 		usage();
 	case 2:
-		exit(cc(move, argv[0], argv[1]));
+		pathcat(buf, sizeof(buf), argv[0], argv[1]);
+		exit(move(argv[0], buf));
 	}
 
 	sourcedir = argv[argc - 1];
@@ -62,8 +64,10 @@ main(int argc, char *argv[])
 	if (!S_ISDIR(sb.st_mode))
 		usage();
 
-	for (; *argv != sourcedir; argv++)
-		rval |= cc(move, *argv, sourcedir);
+	for (; *argv != sourcedir; argv++) {
+		pathcat(buf, sizeof(buf), *argv, sourcedir);
+		rval |= move(*argv, buf);
+	}
 
 	return rval;
 }
