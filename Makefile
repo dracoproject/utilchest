@@ -123,12 +123,12 @@ utilchest: $(LIB) $(SRC)
 
 utilchest-install: utilchest
 	mkdir -p $(DESTDIR)/$(PREFIX)/bin
-	cp -f utilchest $(DESTDIR)/$(PREFIX)/bin
+	install -c -s -m 555 utilchest $(DESTDIR)/$(PREFIX)/bin
 	for f in $$(echo $(BIN) | sed 's/src\///g'); do ln -s utilchest $(DESTDIR)/$(PREFIX)/bin/$$f; done
 
 install: all
 	mkdir -p $(DESTDIR)/$(PREFIX)/bin
-	cp -f $(BIN) $(DESTDIR)/$(PREFIX)/bin
+	install -c -s -m 555 $(BIN) $(DESTDIR)/$(PREFIX)/bin
 
 clean:
 	rm -f $(BIN) $(OBJ) $(LIB) utilchest
