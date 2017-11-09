@@ -36,12 +36,12 @@ extern int chown_hflag;
 void pathcat(char *, size_t, const char *, const char *);
 
 /* chown.c */
-int chown_file(const char *, uid_t, gid_t, int);
-int chown_folder(const char *, uid_t, gid_t, int);
+int chownfile(const char *, uid_t, gid_t, int);
+int chowndir(const char *, uid_t, gid_t, int);
 
 /* cp.c */
-int copy_file(const char *, const char *, int, int);
-int copy_folder(const char *, const char *, int, int);
+int cpfile(const char *, const char *, int, int);
+int cpdir(const char *, const char *, int, int);
 
 /* dir.c */
 int open_dir(FS_DIR *, const char *);
@@ -50,9 +50,6 @@ int read_dir(FS_DIR *, int);
 /* ealloc.c */
 void * emalloc(size_t);
 char * estrdup(const char *);
-
-/* fshut.c */
-int fshut(const char *, FILE *);
 
 /* putstr.c */
 void putstr(const char *, FILE *);

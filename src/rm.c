@@ -8,16 +8,18 @@
 
 #include "util.h"
 
+static int fflag;
+
 static int
-rm_file(const char *f, int silent, int depth)
+delfile(const char *f, int depth)
 {
 	int (*rm)(const char *);
 	struct stat st;
 
 	if (lstat(f, &st) < 0) {
-		if (errno != ENOENT)
+		if (!fflag && errno != ENOENT)
 			warn("lstat %s", f);
-		return (!silent);
+		return (!fflag);
 	}
 
 	if (S_ISDIR(st.st_mode))
@@ -26,7 +28,7 @@ rm_file(const char *f, int silent, int depth)
 		rm = unlink;
 
 	if (rm(f) < 0) {
-		warn("rm_file %s", f);
+		warn("delfile %s", f);
 		return 1;
 	}
 
@@ -34,14 +36,14 @@ rm_file(const char *f, int silent, int depth)
 }
 
 static int
-rm_folder(const char *f, int silent, int depth)
+deldir(const char *f, int depth)
 {
 	int rd, rval = 0;
 	FS_DIR dir;
 
 	if (open_dir(&dir, f) < 0) {
 		if (!(rval = errno != ENOTDIR))
-			rval = rm_file(f, depth, silent);
+			rval = delfile(f, depth);
 		else
 			warn("open_dir %s", f);
 
@@ -53,9 +55,9 @@ rm_folder(const char *f, int silent, int depth)
 			continue;
 
 		if (S_ISDIR(dir.info.st_mode))
-			rval |= rm_folder(dir.path, silent, depth);
+			rval |= deldir(dir.path, depth);
 		else
-			rval |= rm_file(dir.path, silent, depth);
+			rval |= delfile(dir.path, depth);
 	}
 
 	if (rd < 0) {
@@ -64,7 +66,7 @@ rm_folder(const char *f, int silent, int depth)
 	}
 
 	if (rmdir(f) < 0) {
-		warn("rmdir %s", f);
+		warn("deldir %s", f);
 		return 1;
 	}
 
@@ -81,31 +83,31 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int (*rm)(const char *, int, int) = rm_file;
-	int silent = 0, rval = 0;
+	int (*rm)(const char *, int) = delfile;
+	int rval = 0;
 
 	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'f':
-		silent = 1;
+		fflag = 1;
 		break;
 	case 'r':
 	case 'R':
-		rm = rm_folder;
+		rm = deldir;
 		break;
 	default:
 		usage();
 	} ARGEND
 
-	if (!argc && !silent)
+	if (!argc && !fflag)
 		usage();
 
 	for (; *argv; argv++) {
 		if (ISDOT(*argv))
 			continue;
 
-		rval |= rm(*argv, silent, 0);
+		rval |= rm(*argv, 0);
 	}
 
 	return rval;

@@ -22,7 +22,7 @@ main(int argc, char *argv[])
 {
 	char buf[PATH_MAX], *sourcedir;
 	int rval = 0, opts = 0;
-	int (*cp)(const char *, const char *, int, int) = copy_file;
+	int (*cp)(const char *, const char *, int, int) = cpfile;
 	struct stat st;
 
 	setprogname(argv[0]);
@@ -36,7 +36,7 @@ main(int argc, char *argv[])
 		break;
 	case 'r':
 	case 'R':
-		cp = copy_folder;
+		cp = cpdir;
 		break;
 	case 'H':
 	case 'L':

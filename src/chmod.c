@@ -8,7 +8,7 @@
 #include "util.h"
 
 static int
-chmod_file(const char *s, const char *ms, int depth)
+chmodfile(const char *s, const char *ms, int depth)
 {
 	mode_t mode;
 	struct stat st;
@@ -28,14 +28,14 @@ chmod_file(const char *s, const char *ms, int depth)
 }
 
 static int
-chmod_folder(const char *s, const char *ms, int depth)
+chmoddir(const char *s, const char *ms, int depth)
 {
 	FS_DIR dir;
 	int rd, rval = 0;
 
 	if (open_dir(&dir, s) < 0) {
 		if (!(rval = errno != ENOTDIR))
-			rval = chmod_file(s, ms, depth);
+			rval = chmodfile(s, ms, depth);
 		else
 			warn("open_dir %s", s);
 
@@ -46,10 +46,10 @@ chmod_folder(const char *s, const char *ms, int depth)
 		if (ISDOT(dir.name))
 			continue;
 
-		rval |= chmod_file(s, ms, depth);
+		rval |= chmodfile(s, ms, depth);
 
 		if (S_ISDIR(dir.info.st_mode))
-			rval |= chmod_folder(s, ms, depth+1);
+			rval |= chmoddir(s, ms, depth+1);
 	}
 
 	if (rd < 0) {
@@ -72,14 +72,14 @@ int
 main(int argc, char *argv[])
 {
 	const char *modestr;
-	int (*chmodf)(const char *, const char *, int) = chmod_file;
+	int (*chmodf)(const char *, const char *, int) = chmodfile;
 	int rval = 0;
 
 	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'R':
-		chmodf = chmod_folder;
+		chmodf = chmoddir;
 		break;
 	case 'H':
 	case 'L':

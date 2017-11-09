@@ -133,7 +133,7 @@ copy_spc(struct copy *cp)
 
 /* external functions */
 int
-copy_file(const char *src, const char *dest, int opts, int depth)
+cpfile(const char *src, const char *dest, int opts, int depth)
 {
 	int rval;
 	struct copy cp = {.src = src, .dest = dest, .opts = opts};
@@ -149,7 +149,7 @@ copy_file(const char *src, const char *dest, int opts, int depth)
 	switch ((cp.st.st_mode & S_IFMT)) {
 	case S_IFDIR:
 		errno = EISDIR;
-		warn("copy_file %s", src);
+		warn("cpfile %s", src);
 		return 1;
 	case S_IFLNK:
 		rval = copy_lnk(&cp);
@@ -166,7 +166,7 @@ copy_file(const char *src, const char *dest, int opts, int depth)
 }
 
 int
-copy_folder(const char *src, const char *dest, int opts, int depth)
+cpdir(const char *src, const char *dest, int opts, int depth)
 {
 	char buf[PATH_MAX];
 	int rd, rval = 0;
@@ -174,7 +174,7 @@ copy_folder(const char *src, const char *dest, int opts, int depth)
 
 	if (open_dir(&dir, src) < 0) {
 		if (!(rval = errno != ENOTDIR))
-			rval = copy_file(src, dest, opts, depth);
+			rval = cpfile(src, dest, opts, depth);
 		else
 			warn("open_dir %s", src);
 
@@ -197,9 +197,9 @@ copy_folder(const char *src, const char *dest, int opts, int depth)
 				return 1;
 			}
 
-			rval |= copy_folder(dir.path, buf, opts, depth+1);
+			rval |= cpdir(dir.path, buf, opts, depth+1);
 		} else
-			rval |= copy_file(dir.path, buf, opts, depth);
+			rval |= cpfile(dir.path, buf, opts, depth);
 	}
 
 	if (rd < 0) {

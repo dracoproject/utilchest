@@ -10,7 +10,7 @@
 int chown_hflag = 0;
 
 int
-chown_file(const char *s, uid_t uid, gid_t gid, int depth)
+chownfile(const char *s, uid_t uid, gid_t gid, int depth)
 {
 	int (*chownf)(const char *, uid_t, gid_t);
 	struct stat st;
@@ -35,14 +35,14 @@ chown_file(const char *s, uid_t uid, gid_t gid, int depth)
 }
 
 int
-chown_folder(const char *s, uid_t uid, gid_t gid, int depth)
+chowndir(const char *s, uid_t uid, gid_t gid, int depth)
 {
 	FS_DIR dir;
 	int rd, rval = 0;
 
 	if (open_dir(&dir, s) < 0) {
 		if (!(rval = errno != ENOTDIR))
-			rval = chown_file(s, uid, gid, depth);
+			rval = chownfile(s, uid, gid, depth);
 		else
 			warn("open_dir %s", s);
 
@@ -53,10 +53,10 @@ chown_folder(const char *s, uid_t uid, gid_t gid, int depth)
 		if (ISDOT(dir.name))
 			continue;
 
-		rval |= chown_file(s, uid, gid, depth);
+		rval |= chownfile(s, uid, gid, depth);
 
 		if (S_ISDIR(dir.info.st_mode))
-			rval |= chown_folder(s, uid, gid, depth + 1);
+			rval |= chowndir(s, uid, gid, depth + 1);
 	}
 
 	if (rd < 0) {

@@ -15,7 +15,7 @@ move(const char *src, const char *dest)
 		return 0;
 
 	if (errno == EXDEV)
-		return (copy_folder(src, dest, 0, CP_PFLAG));
+		return (cpdir(src, dest, 0, CP_PFLAG));
 	else
 		warn("rename %s -> %s", src, dest);
 

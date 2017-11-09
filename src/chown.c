@@ -24,7 +24,7 @@ main(int argc, char *argv[])
 {
 	char *owner, *group;
 	gid_t gid = -1;
-	int (*chownf)(const char *, uid_t, gid_t, int) = chown_file;
+	int (*chownf)(const char *, uid_t, gid_t, int) = chownfile;
 	int rval = 0;
 	struct group *grp;
 	struct passwd *pwd;
@@ -37,7 +37,7 @@ main(int argc, char *argv[])
 		chown_hflag = 1;
 		break;
 	case 'R':
-		chownf = chown_folder;
+		chownf = chowndir;
 		break;
 	case 'H':
 	case 'L':
