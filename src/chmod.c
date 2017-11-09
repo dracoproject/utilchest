@@ -7,8 +7,10 @@
 
 #include "util.h"
 
+const char *modestr;
+
 static int
-chmodfile(const char *s, const char *ms, int depth)
+chmodfile(const char *s, int depth)
 {
 	mode_t mode;
 	struct stat st;
@@ -18,7 +20,7 @@ chmodfile(const char *s, const char *ms, int depth)
 		return 1;
 	}
 
-	mode = strtomode(ms, st.st_mode);
+	mode = strtomode(modestr, st.st_mode);
 	if (chmod(s, mode) < 0) {
 		warn("chmod %s", s);
 		return 1;
@@ -28,14 +30,14 @@ chmodfile(const char *s, const char *ms, int depth)
 }
 
 static int
-chmoddir(const char *s, const char *ms, int depth)
+chmoddir(const char *s, int depth)
 {
 	FS_DIR dir;
 	int rd, rval = 0;
 
 	if (open_dir(&dir, s) < 0) {
 		if (!(rval = errno != ENOTDIR))
-			rval = chmodfile(s, ms, depth);
+			rval = chmodfile(s, depth);
 		else
 			warn("open_dir %s", s);
 
@@ -46,10 +48,10 @@ chmoddir(const char *s, const char *ms, int depth)
 		if (ISDOT(dir.name))
 			continue;
 
-		rval |= chmodfile(s, ms, depth);
+		rval |= chmodfile(s, depth);
 
 		if (S_ISDIR(dir.info.st_mode))
-			rval |= chmoddir(s, ms, depth+1);
+			rval |= chmoddir(s, depth+1);
 	}
 
 	if (rd < 0) {
@@ -71,8 +73,7 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	const char *modestr;
-	int (*chmodf)(const char *, const char *, int) = chmodfile;
+	int (*chmodf)(const char *, int) = chmodfile;
 	int rval = 0;
 
 	setprogname(argv[0]);
@@ -100,7 +101,7 @@ done:
 	modestr = *argv++;
 
 	for (; *argv; argv++)
-		rval |= chmodf(*argv, modestr, 0);
+		rval |= chmodf(*argv, 0);
 
 	return rval;
 }
