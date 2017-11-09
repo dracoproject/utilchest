@@ -7,7 +7,7 @@
 
 #include "util.h"
 
-const char *modestr;
+static const char *modestr;
 
 static int
 chmodfile(const char *s, int depth)
