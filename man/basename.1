@@ -1,0 +1,30 @@
+.Dd November 16, 2017
+.Dt BASENAME 1
+.Os
+.Sh NAME
+.Nm basename
+.Nd strip filename affixes
+.Sh SYNOPSIS
+.Nm
+.Ar string
+.Op Ar suffix
+.Sh DESCRIPTION
+.Nm
+deletes any prefix ending with the last slash
+.Pq Sq \&/
+and
+.Ar suffix ,
+if given, from
+.Ar string ,
+and writes the result on the standard output. A non-existent suffix is ignored.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr dirname 1 ,
+.Xr basename 3
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.

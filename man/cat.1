@@ -1,0 +1,41 @@
+.Dd November 17, 2017
+.Dt CAT 1
+.Os
+.Sh NAME
+.Nm cat
+.Nd concatenate and print files
+.Sh SYNOPSIS
+.Nm
+.Op Fl u
+.Op Ar file ...
+.Sh DESCRIPTION
+.Nm
+reads each
+.Ar file
+sequentially and writes it on the standard output. If
+.Ar file
+is a single dash
+.Pq Sq -
+or absent,
+.Nm
+reads from the standard input.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl u
+Ignored.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr cp 1
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
+.Sh CAVEATS
+Because of the shell language mechanism used to perform output redirection,
+using a file that is being read as output will cause data loss.
+.Pp
+.Dl $ cat file1 file2 > file1
