@@ -1,0 +1,26 @@
+.Dd November 19, 2017
+.Dt DIRNAME 1
+.Os
+.Sh NAME
+.Nm dirname
+.Nd return the directory portion of a pathname
+.Sh SYNOPSIS
+.Nm
+.Ar string
+.Op Ar suffix
+.Sh DESCRIPTION
+.Nm
+deletes the last level of the pathname, from
+.Ar string ,
+and writes the result to the standard output.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr basename 1 ,
+.Xr dirname 3
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
