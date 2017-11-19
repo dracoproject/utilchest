@@ -1,0 +1,42 @@
+.Dd November 19, 2017
+.Dt UNAME 1
+.Os
+.Sh NAME
+.Nm uname
+.Nd return system name
+.Sh SYNOPSIS
+.Nm
+.Op Fl amnrsv
+.Sh DESCRIPTION
+.Nm
+writes symbols representing one or more system
+characteristics to the standard output.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl a
+Print all the information below.
+.It Fl m
+Print the machine hardware name.
+.It Fl n
+Print the nodename.
+.It Fl r
+Print the operating system release.
+.It Fl s
+Print the system name.
+.It Fl v
+Print the operating system version
+.El
+.Pp
+The default is as if the
+.Fl s
+option had been specified.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr uname 2
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.

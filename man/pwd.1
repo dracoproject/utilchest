@@ -1,0 +1,44 @@
+.Dd November 19, 2017
+.Dt PWD 1
+.Os
+.Sh NAME
+.Nm pwd
+.Nd return working directory name
+.Sh SYNOPSIS
+.Nm
+.Op Fl L | Fl P
+.Sh DESCRIPTION
+.Nm
+writes an absolute pathname of the current working directory to the
+standard output.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl L
+Display the logical current working directory.
+.It Fl P
+Display the physical current working directory (all symbolic links resolved).
+.El
+.Pp
+The
+.Fl L
+and
+.Fl P
+options override each other and the command's actions are determined
+by the last one specified. The default is as if the
+.Fl L
+option had been specified.
+.Sh ENVIRONMENT
+.Bl -tag -width PWD
+.It Ev PWD
+The presumptive logical path to the current working directory.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr getcwd 3
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
