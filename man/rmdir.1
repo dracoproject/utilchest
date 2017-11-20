@@ -1,0 +1,31 @@
+.Dd m d, yyy
+.Dt RMDIR 1
+.Os
+.Sh NAME
+.Nm rmdir
+.Nd remove directories
+.Sh SYNOPSIS
+.Nm
+.Op fl p
+.Ar dir ...
+.Sh DESCRIPTION
+.Nm
+removes each
+.Ar dir ,
+which must be a directory and empty.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl p
+Removes all directories in a pathname.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr rm 1 ,
+.Xr rmdir 2
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
