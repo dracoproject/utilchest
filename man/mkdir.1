@@ -1,0 +1,41 @@
+.Dd November 2017
+.Dt MKDIR 1
+.Os
+.Sh NAME
+.Nm mkdir
+.Nd make directories
+.Sh SYNOPSIS
+.Nm
+.Op Fl p
+.Op Fl m Ar mode
+.Ar dir ...
+.Sh DESCRIPTION
+.Nm
+creates the directories specified by
+.Ar dir ,
+in the order specified.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl m Ar mode
+Set the mode to be used for new directories.
+.It Fl p
+Create intermediate directories as required.
+.El
+.Pp
+If
+.Ar mode
+is omitted, it defaults to rwxrwxrwx
+.Pq 0777
+modified by the current umask.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr chmod 1 ,
+.Xr mkdir 2 ,
+.Xr umask 2
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
