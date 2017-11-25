@@ -1,0 +1,44 @@
+.Dd November 2017
+.Dt MV 1
+.Os
+.Sh NAME
+.Nm mv
+.Nd move files
+.Sh SYNOPSIS
+.Nm
+.Op Fl f
+.Ar source target
+.Nm
+.Op Fl f
+.Ar source ... directory
+.Sh DESCRIPTION
+In the first synopsis form,
+.Nm
+moves the
+.Ar source
+to
+.Ar target .
+In the second synopsis form,
+.Nm
+moves each
+.Ar source
+to the destination
+.Ar directory.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl f
+Ignored.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr cp 1 ,
+.Xr rename 2
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification except from the
+.Fl i
+flag.
