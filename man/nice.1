@@ -1,0 +1,56 @@
+.Dd November 2017
+.Dt NICE 1
+.Os
+.Sh NAME
+.Nm nice
+.Nd run a utility with an altered nice value
+.Sh SYNOPSIS
+.Nm
+.Op Fl n Ar increment
+.Ar utility
+.Op Ar arguments ...
+.Sh DESCRIPTION
+.Nm
+runs
+.Ar utility
+with an altered nice value.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl n Ar increment
+Increment the priority by a specified number, ranging from -20 to +20.
+.El
+.Pp
+If
+.Ar increment
+is omitted, it defaults to 10.
+.Sh EXIT STATUS
+The
+.Nm
+utility exits with one of the following values:
+.Pp
+.Bl -tag -width indent -offset indent -compact
+.It 1\-125
+An error occured.
+.It 126
+The
+.Ar utility
+was found but could not be invoked.
+.It 127
+The
+.Ar utility
+could not be found.
+.El
+.Pp
+Otherwise, the exit status of
+.Nm
+will be that of
+.Ar utility .
+.Sh SEE ALSO
+.Xr renice 1 ,
+.Xr nice 2
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
