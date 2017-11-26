@@ -1,0 +1,59 @@
+.Dd November 2017
+.Dt MKNOD 1
+.Os
+.Sh NAME
+.Nm mknod
+.Nd make device special file
+.Sh SYNOPSIS
+.Nm
+.Op Fl m Ar mode
+.Ar name
+.Cm b | c
+.Ar major minor
+.Nm
+.Op Fl m Ar mode
+.Ar name
+.Cm p
+.Sh DESCRIPTION
+In the first synopsis form,
+.Nm
+creates a device special file named
+.Ar name ,
+with the indicated
+.Ar major
+and
+.Ar minor
+device numbers.
+In the second synopsis form,
+.Nm
+creates a device special file named
+.Ar name .
+.Pp
+The device special file types are the following:
+.Bl -tag -width Ds
+.It Cm b
+A block device.
+.It Cm c
+A character device.
+.It Cm p
+A named pipe.
+.El
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl m Ar mode
+Set the mode to be used for new device special files.
+.El
+.Pp
+If
+.Ar mode
+is omitted, it defaults to rwrwrw
+.Pq 0666
+modified by the current umask.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr chmod 1 ,
+.Xr mkfifo 1 ,
+.Xr mknod 2 ,
+.Xr mkdev 3
