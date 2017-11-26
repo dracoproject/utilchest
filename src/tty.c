@@ -13,11 +13,8 @@ main(int argc, char *argv[])
 	setprogname(argv[0]);
 	argc--, argv++;
 
-	if (!(tty = ttyname(STDIN_FILENO))) {
-		warn("ttyname");
-		return 1;
-	}
-
+	if (!(tty = ttyname(STDIN_FILENO)))
+		err(1, "ttyname");
 	puts(tty);
 
 	exit(0);

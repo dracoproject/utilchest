@@ -15,11 +15,8 @@ main(int argc, char *argv[])
 	argc--, argv++;
 
 	if (argc) {
-		if (!(s = getenv(*argv))) {
-			warn("getenv %s", *argv);
-			return 1;
-		}
-
+		if (!(s = getenv(*argv)))
+			err(1, "getenv %s", *argv);
 		puts(s);
 	} else {
 		for (; *environ; environ++)

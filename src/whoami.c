@@ -16,7 +16,6 @@ main(int argc, char *argv[])
 
 	if (!(pw = getpwuid(geteuid())))
 		err(1, "gepwuid");
-
 	puts(pw->pw_name);
 
 	exit(0);
