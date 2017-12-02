@@ -45,6 +45,7 @@ BIN=\
 	src/rmdir\
 	src/sleep\
 	src/sync\
+	src/tee\
 	src/true\
 	src/tty\
 	src/uname\
