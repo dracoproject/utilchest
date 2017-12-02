@@ -16,19 +16,17 @@ static int Gguflag;
 static int nflag;
 
 static void
-printsup(const char *str, uid_t uid)
+printsup(int putch, const char *str, uid_t uid)
 {
-	static int putch;
-
 	if (Gguflag) {
-		if (putch++)
+		if (putch)
 			putchar(' ');
 		if (nflag)
 			printf("%s", str);
 		else
 			printf("%u", uid);
 	} else {
-		if (putch++)
+		if (putch)
 			putchar(',');
 		printf("%u(%s)", uid, str);
 	}
@@ -38,7 +36,7 @@ static void
 group(struct passwd *pw)
 {
 	struct group *grp;
-	unsigned int i;
+	unsigned int i, putch = 0;
 
 	setgrent();
 	while ((grp = getgrent()) != NULL) {
@@ -46,7 +44,7 @@ group(struct passwd *pw)
 			continue;
 		for (i = 0; grp->gr_mem[i]; i++)
 			if (strcmp(grp->gr_mem[i], pw->pw_name) == 0)
-				printsup(grp->gr_name, grp->gr_gid);
+				printsup(putch++, grp->gr_name, grp->gr_gid);
 	}
 	endgrent();
 }
