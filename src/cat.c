@@ -14,7 +14,7 @@ cat(int f, const char *name)
 
 	while ((n = read(f, buf, sizeof(buf))) > 0)
 		if (write(STDOUT_FILENO, buf, n) != n)
-			err(1, "write %s", name);
+			err(1, "write <stdout>");
 
 	if (n < 0)
 		err(1, "read %s", name);
