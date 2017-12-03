@@ -1,4 +1,4 @@
-.Dd November 2017
+.Dd December 2017
 .Dt NICE 1
 .Os
 .Sh NAME
@@ -7,12 +7,12 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl n Ar increment
-.Ar utility
+.Ar command
 .Op Ar arguments ...
 .Sh DESCRIPTION
 .Nm
 runs
-.Ar utility
+.Ar command
 with an altered nice value.
 .Sh OPTIONS
 .Bl -tag -width Ds
@@ -33,18 +33,18 @@ utility exits with one of the following values:
 An error occured.
 .It 126
 The
-.Ar utility
+.Ar command
 was found but could not be invoked.
 .It 127
 The
-.Ar utility
+.Ar command
 could not be found.
 .El
 .Pp
 Otherwise, the exit status of
 .Nm
 will be that of
-.Ar utility .
+.Ar command .
 .Sh SEE ALSO
 .Xr renice 1 ,
 .Xr nice 2

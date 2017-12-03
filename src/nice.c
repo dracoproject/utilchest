@@ -11,7 +11,7 @@
 static void
 usage(void)
 {
-	fprintf(stderr, "usage: %s [-n increment] utility [argument ...]\n",
+	fprintf(stderr, "usage: %s [-n increment] command [argument ...]\n",
 	    getprogname());
 	exit(1);
 }
