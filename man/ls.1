@@ -1,0 +1,109 @@
+.Dd November 2017
+.Dt LS 1
+.Os
+.Sh NAME
+.Nm ls
+.Nd list directory contents
+.Sh SYNOPSIS
+.Nm
+.Op Fl ikqrs
+.Op Fl ln
+.Op Fl A | a
+.Op Fl 1 | C | m | x
+.Op Fl F | p
+.Op Fl H | L
+.Op Fl R | d
+.Op Fl S | f | t
+.Op Fl c | u
+.Op Ar
+.Sh DESCRIPTION
+.Nm
+writes each given file, and the contents of each given directory to the
+standard output. If no
+.Ar file
+is given then the contents of the current directory are written
+on the standard output.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl 1
+Single column output.
+.It Fl A
+List all entries except for
+.Sq \&.
+and
+.Sq \&.. .
+.It Fl a
+Include directory entries whose name begin with a dot
+.Pq Sq \&. .
+.It Fl C
+Multi-column output, with entries sorted down the columns.
+.It Fl c
+Use time file's status was last changed for sorting or writing.
+.It Fl d
+Directories are treated as plain files.
+.It Fl F
+Append a file type indicator to all special files.
+.It Fl f
+Output is not sorted. This option implies
+.Fl a
+option.
+.It Fl H
+Symbolic links on the command line are followed.
+.It Fl i
+For each file, print its inode number.
+.It Fl k
+Set the block size to 1024 bytes.
+.It Fl L
+All symbolic links are followed.
+.It Fl l
+Long format output, for each file print its type, permissions, links,
+owner, group, size or major and minor numbers if the file is a
+character/block device, and last file status/modification time.
+.It Fl m
+Files are listed across the page, separated by commas.
+.It Fl n
+Long format output as in
+.Fl l ,
+but retain user and group IDs in a numeric format.
+.It Fl p
+Append a file type indicator to directories.
+.It Fl q
+Replace non-printable characters in filename with
+.Sq \&? .
+.It Fl R
+Descend recursively through its directory arguments.
+.It Fl r
+Reverse the sort order.
+.It Fl S
+Sort files by size, in decreasing order.
+.It Fl s
+Write the number of file system blocks actually used by each file.
+.It Fl t
+Sort files by last file status/modification time.
+.It Fl u
+Use file's last acess time for sorting or writing.
+.It Fl x
+Multi-column output, with entries sorted across the page.
+.El
+.Pp
+.Ss The Long Format
+.Sh ENVIRONMENT
+.Bl -tag -width BLOCKSIZE
+.It Ev BLOCKSIZE
+If this is set, and the
+.Fl k
+options is not specified, block size is set to the given value.
+.It Ev COLUMNS
+Output is formatted to the given width in columns. Otherwise it's formatted
+to the terminal size, or 80 columns if the output is not a terminal.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr stat 2
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.

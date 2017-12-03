@@ -10,13 +10,15 @@
 #include "util.h"
 
 static void
-usage(void) {
+usage(void)
+{
 	fprintf(stderr, "%s [-p] command [argument ...]\n", getprogname());
 	exit(1);
 }
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	int status;
 	long ticks;
 	pid_t pid;

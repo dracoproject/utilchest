@@ -1,0 +1,55 @@
+.Dd November 2017
+.Dt CHMOD 1
+.Os
+.Sh NAME
+.Nm chmod
+.Nd change the file modes
+.Sh SYNOPSIS
+.Nm
+.Oo
+.Fl R
+.Op Fl H | L | P
+.Oc
+.Ar mode
+.Ar
+.Sh DESCRIPTION
+.Nm
+sets the mode of each
+.Ar file
+to
+.Ar mode .
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl R
+Descend recursively through its directory arguments.
+.It Fl H
+Symbolic links on the command line are followed.
+.It Fl L
+All symbolic links are followed.
+.It Fl P
+No symbolic links are followed.
+.El
+.Pp
+The
+.Fl H ,
+.Fl L ,
+and
+.Fl P
+options are ignored, unless the
+.Fl R
+options is specified. In addition, these options override each other,
+so the last option will be the one determining the command behavior.
+The default is as if the
+.Fl P
+option had been specified.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr chgrp 1 ,
+.Xr umask 1
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
