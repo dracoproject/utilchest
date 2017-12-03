@@ -46,6 +46,7 @@ BIN=\
 	src/sleep\
 	src/sync\
 	src/tee\
+	src/time\
 	src/true\
 	src/tty\
 	src/uname\
