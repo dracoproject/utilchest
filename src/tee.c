@@ -7,8 +7,6 @@
 
 #include "util.h"
 
-#define MODE O_WRONLY|O_CREAT
-
 static void
 usage(void)
 {
@@ -20,32 +18,29 @@ int
 main(int argc, char *argv[])
 {
 	char buf[BUFSIZ];
-	int *fs, fslen, i;
-	int aflag = O_TRUNC, iflag = 0, rval = 0;
+	int *fs, fslen, i, rval = 0;
+	mode_t mode = O_WRONLY|O_CREAT|O_TRUNC;
 	ssize_t n;
 
 	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'a':
-		aflag = O_APPEND;
+		mode = O_WRONLY|O_CREAT|O_APPEND;
 		break;
 	case 'i':
-		iflag = 1;
+		signal(SIGINT, SIG_IGN);
 		break;
 	default:
 		usage();
 	} ARGEND
-
-	if (iflag && signal(SIGINT, SIG_IGN) == SIG_ERR)
-		err(1, "signal");
 
 	fslen = argc + 1;
 	if (!(fs = malloc(fslen * sizeof(*fs))))
 		err(1, "malloc");
 
 	for (i = 0; i < argc; i++)
-		if ((fs[i] = open(argv[i], MODE|aflag, DEFFILEMODE)) < 0)
+		if ((fs[i] = open(argv[i], mode, DEFFILEMODE)) < 0)
 			err(1, "open %s", argv[i]);
 
 	fs[i] = STDOUT_FILENO;
