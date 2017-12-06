@@ -70,7 +70,7 @@ main(int argc, char *argv[])
 		opts |= FOLLOW;
 		break;
 	case 'P':
-		opts |= ~FOLLOW;
+		opts &= ~FOLLOW;
 		break;
 	default:
 		usage();
