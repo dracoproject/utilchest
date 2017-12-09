@@ -42,6 +42,7 @@ BIN=\
 	src/printenv\
 	src/pwd\
 	src/readlink\
+	src/renice\
 	src/rm\
 	src/rmdir\
 	src/sleep\

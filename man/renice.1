@@ -1,0 +1,49 @@
+.Dd December 2017
+.Dt RENICE 1
+.Os
+.Sh NAME
+.Nm renice
+.Nd set nice values of running processes
+.Sh SYNOPSIS
+.Nm
+.Op Fl g | p | u
+.Fl n Ar increment
+.Ar ID ...
+.Sh DESCRIPTION
+.Nm
+modifies the niceness of each running process with the given
+.Ar ID .
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl g
+Interpret all the operands
+.Ar ID
+as group IDs.
+.It Fl n Ar increment
+Increment the priority by a specified number, ranging from -20 to +20.
+.It Fl p
+Interpret all the operands
+.Ar ID
+as process IDs.
+.Pq Default
+.It Fl u
+Interpret all the operands
+.Ar ID
+as user names or user IDs.
+.El
+.Pp
+If
+.Ar increment
+is omitted, it defaults to 10.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr nice 1 ,
+.Xr getpriority 2 ,
+.Xr setpriority 2
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.

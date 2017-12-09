@@ -34,6 +34,7 @@ It's a collection of Unix utilities written to be simple and small
 * printenv
 * pwd
 * readlink
+* renice
 * rm
 * rmdir
 * sleep
