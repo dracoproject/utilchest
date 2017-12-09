@@ -715,7 +715,7 @@ main(int argc, char *argv[])
 
 	if (lflag || sflag) {
 		if (!kflag && (temp = getenv("BLOCKSIZE")))
-			blocksize = stoll(temp, 0, LONG_MAX);
+			blocksize = stoll(temp, 1, LONG_MAX);
 		else if (kflag)
 			blocksize = 1024;
 
