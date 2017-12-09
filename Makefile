@@ -24,6 +24,7 @@ BIN=\
 	src/date\
 	src/dirname\
 	src/domainname\
+	src/du\
 	src/echo\
 	src/env\
 	src/false\

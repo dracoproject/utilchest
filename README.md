@@ -16,6 +16,7 @@ It's a collection of Unix utilities written to be simple and small
 * date
 * dirname
 * domainname
+* du
 * echo
 * env
 * false
