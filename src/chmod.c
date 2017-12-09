@@ -48,10 +48,10 @@ chmoddir(const char *s, int depth)
 		if (ISDOT(dir.name))
 			continue;
 
-		rval |= chmodfile(s, depth);
+		rval |= chmodfile(dir.path, depth);
 
 		if (S_ISDIR(dir.info.st_mode))
-			rval |= chmoddir(s, depth+1);
+			rval |= chmoddir(dir.path, depth+1);
 	}
 
 	if (rd < 0) {
