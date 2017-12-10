@@ -25,6 +25,7 @@ It's a collection of Unix utilities written to be simple and small
 * id
 * link
 * ln
+* logname
 * ls
 * mkdir
 * mkfifo

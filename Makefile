@@ -33,6 +33,7 @@ BIN=\
 	src/id\
 	src/link\
 	src/ln\
+	src/logname\
 	src/ls\
 	src/mkdir\
 	src/mkfifo\
