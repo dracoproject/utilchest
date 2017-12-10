@@ -40,6 +40,7 @@ BIN=\
 	src/mknod\
 	src/mv\
 	src/nice\
+	src/nohup\
 	src/printenv\
 	src/pwd\
 	src/readlink\

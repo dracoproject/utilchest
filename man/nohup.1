@@ -1,0 +1,61 @@
+.Dd December 2017
+.Dt NOHUP 1
+.Os
+.Sh NAME
+.Nm nohup
+.Nd invoke a utility immune to hangups
+.Sh SYNOPSIS
+.Nm
+.Ar command
+.Op Ar arguments ...
+.Sh DESCRIPTION
+.Nm
+runs
+.Ar command
+with the signal
+.Ar SIGHUP
+set to be ignored.
+.Pp
+If standard output is a terminal, it is appended to the file
+.Ar nohup.out
+in the current directory. If standard error is a terminal, it
+is directed to the standard output.
+.Pp
+If the output file
+.Ar nohup.out
+cannot be created in the current directory, then it will be
+created at the user's home directory.
+.Sh ENVIRONMENT
+.Bl -tag -width HOME
+.It HOME
+User's home directory.
+.El
+.Sh EXIT STATUS
+The
+.Nm
+utility exits with one of the following values:
+.Pp
+.Bl -tag -width indent -offset indent -compact
+.It 126
+The
+.Ar command
+was found but could not be invoked.
+.It 127
+The
+.Ar command
+could not be found or an error occurred in
+.Nm .
+.El
+.Pp
+Otherwise, the exit status of
+.Nm
+will be that of
+.Ar command .
+.Sh SEE ALSO
+.Xr signal 7
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
