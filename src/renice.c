@@ -57,7 +57,7 @@ main(int argc, char *argv[])
 			else if (!errno)
 				who = stoll(*argv, 0, INT_MAX);
 			else
-				warn("getpwnam %s", pw);
+				warn("getpwnam %s", *argv);
 			if (!who)
 				goto err;
 			break;
