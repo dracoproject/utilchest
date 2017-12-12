@@ -44,7 +44,10 @@ main(int argc, char *argv[])
 	if (!argc)
 		usage();
 
-	for (; *argv; argc--, argv++) {
+	for (errno = 0; *argv; argc--, argv++) {
+		if (errno)
+			rval = 1;
+
 		switch (which) {
 		case PRIO_PGRP:
 		case PRIO_PROCESS:
@@ -59,23 +62,22 @@ main(int argc, char *argv[])
 			else
 				warn("getpwnam %s", *argv);
 			if (!who)
-				goto err;
+				continue;
 			break;
 		}
+
 		errno = 0;
 		oldprio = getpriority(which, who);
+
 		if (errno) {
 			warn("getpriority");
-			goto err;
-		}
-		if (setpriority(which, who, prio + oldprio) < 0) {
-			warn("setpriority");
-			goto err;
+			continue;
 		}
 
-		continue;
-err:
-		rval = 1;
+		if (setpriority(which, who, prio + oldprio) < 0) {
+			warn("setpriority");
+			continue;
+		}
 	}
 
 	return rval;
