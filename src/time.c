@@ -25,6 +25,8 @@ main(int argc, char *argv[])
 	clock_t btm, etm;
 	struct tms tms;
 
+	setprogname(argv[0]);
+
 	ARGBEGIN {
 	case 'p':
 		break;

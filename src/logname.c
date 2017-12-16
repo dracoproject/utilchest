@@ -7,6 +7,8 @@ main(void)
 {
 	const char *logname;
 
+	setprogname(argv[0]);
+
 	if (!(logname = getlogin()))
 		err(1, "getlogin");
 	puts(logname);

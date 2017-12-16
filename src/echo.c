@@ -9,7 +9,6 @@ main(int argc, char *argv[])
 {
 	int nflag = 0;
 
-	setprogname(argv[0]);
 	argc--, argv++;
 
 	if (*argv && !strcmp(*argv, "-n"))

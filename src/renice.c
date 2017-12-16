@@ -24,6 +24,8 @@ main(int argc, char *argv[])
 	int prio = 10, oldprio = 0, rval = 0, who = 0, which = PRIO_PROCESS;
 	struct passwd *pw;
 
+	setprogname(argv[0]);
+
 	ARGBEGIN {
 	case 'g':
 		which = PRIO_PGRP;
