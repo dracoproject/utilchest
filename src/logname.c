@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "util.h"
+
 int
-main(void)
+main(int argc, char *argv[])
 {
 	const char *logname;
 
