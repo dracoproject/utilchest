@@ -1,9 +1,9 @@
 AR= ar
-CC= cc
+CC= ecc
 RANLIB= ranlib
 
 CPPFLAGS+= -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700 -D_FILE_OFFSET_BITS=64
-CFLAGS+=   -std=c99 -Wall -pedantic
-LDFLAGS+=  -Os
+CFLAGS+=   -Os -std=c99 -Wall -pedantic
+LDFLAGS+=  -static
 
 PREFIX= /usr/local
