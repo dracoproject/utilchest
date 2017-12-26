@@ -19,6 +19,7 @@ BIN=\
 	src/chmod\
 	src/chown\
 	src/chroot\
+	src/cksum\
 	src/clear\
 	src/cp\
 	src/date\
