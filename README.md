@@ -44,6 +44,7 @@ It's a collection of Unix utilities written to be simple and small
 * sync
 * tee
 * time
+* touch
 * true
 * tty
 * uname

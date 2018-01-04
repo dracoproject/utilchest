@@ -52,6 +52,7 @@ BIN=\
 	src/sync\
 	src/tee\
 	src/time\
+	src/touch\
 	src/true\
 	src/tty\
 	src/uname\

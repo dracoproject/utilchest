@@ -1,0 +1,58 @@
+.Dd January 2018
+.Dt TOUCH 1
+.Os
+.Sh NAME
+.Nm touch
+.Nd change file access and modification times
+.Sh SYNOPSIS
+.Nm
+.Op Fl acm
+.Op Fl r Ar file | Fl t Ar time | Fl d Ar date
+.Ar
+.Sh DESCRIPTION
+.Nm
+sets the access and modification times of each
+.Ar file
+to the current time of day. If
+.Ar file
+does not exit, it is created with default permissions.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl a
+Set the access time of file.
+.It Fl c
+Do not a create specified file if it does not exist,
+not affecting exit status.
+.It Fl d Ar date
+Change the access and modifications times to the specified time, with
+the following format
+.Sm off
+.Ar YYYY No - Ar MM No - Ar DD Cm T Ar hh : mm : SS Oo \&. Ar frac Oc Op Cm Z .
+.Sm on
+.It Fl m
+Set the modification time of file.
+.It Fl r Ar file
+Use the acess and modifications times from the specified file.
+.It Fl t Ar time
+Change the access and modifications times to the specified time, with
+the following format
+.Sm off
+.Oo Oo Ar CC Oc Ar YY Oc Ar MMDDhhmm Op . Ar SS .
+.Sm on
+.El
+.Pp
+If
+.Fl a
+and
+.Fl m
+options are omitted, then both are specified.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr date 1
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
