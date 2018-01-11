@@ -34,6 +34,7 @@ It's a collection of Unix utilities written to be simple and small
 * mv
 * nice
 * nohup
+* pathchk
 * printenv
 * pwd
 * readlink

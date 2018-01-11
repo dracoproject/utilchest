@@ -42,6 +42,7 @@ BIN=\
 	src/mv\
 	src/nice\
 	src/nohup\
+	src/pathchk\
 	src/printenv\
 	src/pwd\
 	src/readlink\
