@@ -84,6 +84,7 @@ parsetime(char *str, int type)
 		if (str[19] != 'Z')
 			goto invalid;
 		str[19] = '\0';
+		utc = 1;
 		/* fallthrough */
 	case 19:
 		strcpy(fmt, "%Y-%m-%dT%H:%M:%S");
