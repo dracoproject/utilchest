@@ -21,6 +21,7 @@ BIN=\
 	src/chroot\
 	src/cksum\
 	src/clear\
+	src/cmp\
 	src/cp\
 	src/date\
 	src/dirname\

@@ -1,0 +1,61 @@
+.Dd January 2018
+.Dt CMP 1
+.Os
+.Sh NAME
+.Nm cmp
+.Nd compare two files
+.Sh SYNOPSIS
+.Nm
+.Op Fl l | s
+.Ar file01 file02
+.Sh DESCRIPTION
+.Nm
+compares
+.Ar file1
+and
+.Ar file2 .
+If they differ,
+.Nm
+writes the first differing byte and line number to the
+standard output.
+If either
+.Ar file1
+or
+.Ar file2
+is a single dash
+.Pq Sq - ,
+.Nm
+reads from the standard input.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl l
+Write the byte number
+.Pq decimal
+and the differing bytes
+.Pq octal
+for each difference.
+.It Fl s
+Write nothing, but set the exit status.
+.El
+.Sh EXIT STATUS
+The
+.Nm
+utility exits with one of the following values:
+.Bl -tag -width Ds -offset indent
+.It 0
+The files are indentical.
+.It 1
+The files are different; this includes the case where
+one file is identical to the first part of the other.
+.It >1
+An error occurred.
+.El
+.Sh SEE ALSO
+.Xr comm 1 ,
+.Xr diff 1
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
