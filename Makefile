@@ -62,6 +62,47 @@ BIN=\
 	src/whoami\
 	src/yes
 
+MAN=\
+	man/basename.1\
+	man/cat.1\
+	man/chgrp.1\
+	man/chmod.1\
+	man/cksum.1\
+	man/cmp.1\
+	man/cp.1\
+	man/dirname.1\
+	man/domainname.1\
+	man/du.1\
+	man/echo.1\
+	man/env.1\
+	man/false.1\
+	man/head.1\
+	man/hostname.1\
+	man/link.1\
+	man/logname.1\
+	man/ls.1\
+	man/mkdir.1\
+	man/mkfifo.1\
+	man/mknod.1\
+	man/mv.1\
+	man/nice.1\
+	man/nohup.1\
+	man/pathchk.1\
+	man/printenv.1\
+	man/pwd.1\
+	man/renice.1\
+	man/rm.1\
+	man/rmdir.1\
+	man/sleep.1\
+	man/tee.1\
+	man/time.1\
+	man/touch.1\
+	man/true.1\
+	man/uname.1\
+	man/unlink.1\
+	man/whoami.1\
+	man/yes.1
+
 # LIB SOURCE
 LIBUTFSRC=\
 	lib/utf/chartorune.c\
@@ -139,6 +180,10 @@ utilchest-install: utilchest
 install: all
 	install -dm 755 $(DESTDIR)/$(PREFIX)/bin
 	install -csm 755 $(BIN) $(DESTDIR)/$(PREFIX)/bin
+
+install_man:
+	install -dm 755 $(DESTDIR)/$(MANPREFIX)/man1
+	install -cm 644 $(MAN) $(DESTDIR)/$(MANPREFIX)/man1
 
 clean:
 	rm -f $(BIN) $(OBJ) $(LIB) utilchest
