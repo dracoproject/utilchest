@@ -739,7 +739,7 @@ main(int argc, char *argv[])
 		lflag = 0;
 
 	if (lflag || sflag) {
-		if (!kflag && (temp = getenv("blksiz")))
+		if (!kflag && (temp = getenv("BLOCKSIZE")))
 			blksiz = stoll(temp, 1, LONG_MAX);
 		else if (kflag)
 			blksiz = 1024;
