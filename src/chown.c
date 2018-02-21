@@ -13,23 +13,26 @@ static void
 usage(void)
 {
 	fprintf(stderr,
-	    "usage: %s [-h] [-R [-H|-L|-P]] owner[:group] file ...\n"
-	    "       %s [-h] [-R [-H|-L|-P]] :group file ...\n",
-	    getprogname(), getprogname());
+	        "usage: %s [-h] [-R [-H|-L|-P]] owner[:group] file ...\n"
+	        "       %s [-h] [-R [-H|-L|-P]] :group file ...\n",
+	        getprogname(), getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	char *owner, *group;
-	gid_t gid = -1;
-	int (*chownf)(const char *, uid_t, gid_t, int) = chownfile;
-	int rval = 0;
-	struct group *grp;
 	struct passwd *pwd;
-	uid_t uid = -1;
+	struct group *grp;
+	gid_t gid;
+	uid_t uid;
+	int (*chownf)(const char *, uid_t, gid_t, int), rval;
+	char *owner, *group;
 
+	chownf = chownfile;
+	gid    = -1;
+	rval   =  0;
+	uid    = -1;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

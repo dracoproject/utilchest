@@ -12,8 +12,8 @@ static const char *modestr;
 static int
 chmodfile(const char *s, int depth)
 {
-	mode_t mode;
 	struct stat st;
+	mode_t mode;
 
 	if ((FS_FOLLOW(depth) ? stat : lstat)(s, &st) < 0) {
 		warn("(l)stat %s", s);
@@ -33,7 +33,9 @@ static int
 chmoddir(const char *s, int depth)
 {
 	FS_DIR dir;
-	int rd, rval = 0;
+	int rd, rval;
+
+	rval = 0;
 
 	if (open_dir(&dir, s) < 0) {
 		if (!(rval = errno != ENOTDIR))
@@ -66,16 +68,16 @@ static void
 usage(void)
 {
 	fprintf(stderr, "usage: %s [-R [-H|-L|-P]] mode file ...\n",
-	    getprogname());
+	        getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	int (*chmodf)(const char *, int) = chmodfile;
-	int rval = 0;
+	int (*chmodf)(const char *, int), rval;
 
+	rval = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

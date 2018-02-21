@@ -36,7 +36,9 @@ static void
 group(struct passwd *pw)
 {
 	struct group *grp;
-	unsigned int i, putch = 0;
+	unsigned int i, putch;
+
+	putch = 0;
 
 	setgrent();
 	while ((grp = getgrent()) != NULL) {
@@ -59,11 +61,13 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int rflag = 0;
-	uid_t uid = -1, euid;
-	struct group *grp;
 	struct passwd *pw;
+	struct group *grp;
+	uid_t euid, uid;
+	int rflag;
 
+	rflag =  0;
+	uid   = -1;
 	setprogname(argv[0]);
 
 	ARGBEGIN {
@@ -139,7 +143,7 @@ main(int argc, char *argv[])
 		break;
 	default:
 		printf("uid=%u(%s) gid=%u(%s) ",
-		    pw->pw_uid, pw->pw_name, pw->pw_gid, grp->gr_name);
+		       pw->pw_uid, pw->pw_name, pw->pw_gid, grp->gr_name);
 		if (!argc && pw->pw_uid != euid) {
 			if (!(pw = getpwuid(euid)))
 				err(1, "getpwuid");

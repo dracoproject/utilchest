@@ -11,20 +11,23 @@ static void
 usage(void)
 {
 	fprintf(stderr,
-	    "usage: %s [-fp] [-R [-H|-L|-P]] source target\n"
-	    "       %s [-fp] [-R [-H|-L|-P]] source ... dir\n",
-	    getprogname(), getprogname());
+	        "usage: %s [-fp] [-R [-H|-L|-P]] source target\n"
+	        "       %s [-fp] [-R [-H|-L|-P]] source ... dir\n",
+	        getprogname(), getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	char buf[PATH_MAX], *sourcedir;
-	int rval = 0, opts = 0;
-	int (*cp)(const char *, const char *, int, int) = cpfile;
 	struct stat st;
+	int (*cp)(const char *, const char *, int, int);
+	int opts, rval;
+	char *sourcedir, buf[PATH_MAX];
 
+	cp   = cpfile;
+	opts = 0;
+	rval = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

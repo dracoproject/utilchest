@@ -14,9 +14,11 @@
 static void
 dup2_nohup_out(void)
 {
-	const char *home;
-	char buf[PATH_MAX], *fn = "nohup.out";
 	int fd;
+	char *fn, buf[PATH_MAX];
+	const char *home;
+
+	fn = "nohup.out";
 
 	if ((fd = open(fn, FLAGS, MODE)) < 0) {
 		if (!(home = getenv("HOME")))

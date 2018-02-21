@@ -7,13 +7,13 @@
 
 #include "util.h"
 
-int chown_hflag = 0;
+int chown_hflag;
 
 int
 chownfile(const char *s, uid_t uid, gid_t gid, int depth)
 {
-	int (*chownf)(const char *, uid_t, gid_t);
 	struct stat st;
+	int (*chownf)(const char *, uid_t, gid_t);
 
 	if ((FS_FOLLOW(depth) ||
 	    (chown_hflag & !depth) ? stat : lstat)(s, &st) < 0) {
@@ -38,7 +38,9 @@ int
 chowndir(const char *s, uid_t uid, gid_t gid, int depth)
 {
 	FS_DIR dir;
-	int rd, rval = 0;
+	int rd, rval;
+
+	rval = 0;
 
 	if (open_dir(&dir, s) < 0) {
 		if (!(rval = errno != ENOTDIR))

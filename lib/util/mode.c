@@ -9,10 +9,13 @@
 mode_t
 strtomode(const char *str, mode_t mode)
 {
+	mode_t clear, octal, perm, who;
 	char *end, op;
-	mode_t octal, clear, who = 0, perm = 0;
 
 	octal = (mode_t)strtoul(str, &end, 8);
+	who   = 0;
+	perm  = 0;
+
 	if (*end == '\0') {
 		if (octal > 07777)
 			return 0775;

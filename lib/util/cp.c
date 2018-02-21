@@ -12,34 +12,38 @@
 #include "util.h"
 
 struct copy {
+	struct stat st;
+	int opts;
 	const char *src;
 	const char *dest;
-	int opts;
-	struct stat st;
 };
 
 /* internal functions */
 static int
 copy_reg(struct copy *cp)
 {
-	char buf[BUFSIZ];
-	int sf = -1, tf = -1, rval = 0;
-	ssize_t rf;
-	struct stat st1;
+	struct stat st;
 	struct timespec times[2];
+	ssize_t rf;
+	int rval, sf, tf;
+	char buf[BUFSIZ];
+
+	rval =  0;
+	sf   = -1;
+	tf   = -1;
 
 	if ((sf = open(cp->src, O_RDONLY, 0)) < 0) {
 		warn("open %s", cp->src);
 		goto failure;
 	}
 
-	if (fstat(sf, &st1) < 0) {
+	if (fstat(sf, &st) < 0) {
 		warn("fstat %s", cp->src);
 		goto failure;
 	}
 
-	if (cp->st.st_ino != st1.st_ino ||
-	    cp->st.st_dev != st1.st_dev) {
+	if (cp->st.st_ino != st.st_ino ||
+	    cp->st.st_dev != st.st_dev) {
 		warnx("%s: changed between calls\n", cp->src);
 		goto failure;
 	}
@@ -61,17 +65,17 @@ copy_reg(struct copy *cp)
 		goto failure;
 	}
 
-	fchmod(tf, st1.st_mode);
+	fchmod(tf, st.st_mode);
 	if (CP_PFLAG & cp->opts) {
-		times[0] = st1.st_atim;
-		times[1] = st1.st_mtim;
+		times[0] = st.st_atim;
+		times[1] = st.st_mtim;
 
 		if ((utimensat(AT_FDCWD, cp->dest, times, 0)) < 0) {
 			warn("utimensat %s", cp->dest);
 			goto failure;
 		}
 
-		if ((fchown(tf, st1.st_uid, st1.st_gid)) < 0) {
+		if ((fchown(tf, st.st_uid, st.st_gid)) < 0) {
 			warn("fchown %s", cp->dest);
 			goto failure;
 		}
@@ -92,8 +96,8 @@ done:
 static int
 copy_lnk(struct copy *cp)
 {
-	char path[PATH_MAX];
 	ssize_t rl;
+	char path[PATH_MAX];
 
 	if ((rl = readlink(cp->src, path, sizeof(path)-1)) < 0) {
 		warn("readlink %s", cp->src);
@@ -135,8 +139,12 @@ copy_spc(struct copy *cp)
 int
 cpfile(const char *src, const char *dest, int opts, int depth)
 {
+	struct copy cp;
 	int rval;
-	struct copy cp = {.src = src, .dest = dest, .opts = opts};
+
+	cp.src  = src;
+	cp.dest = dest;
+	cp.opts = opts;
 
 	if (CP_FFLAG & opts)
 		unlink(dest);
@@ -168,9 +176,11 @@ cpfile(const char *src, const char *dest, int opts, int depth)
 int
 cpdir(const char *src, const char *dest, int opts, int depth)
 {
-	char buf[PATH_MAX];
-	int rd, rval = 0;
 	FS_DIR dir;
+	int rd, rval;
+	char buf[PATH_MAX];
+
+	rval = 0;
 
 	if (open_dir(&dir, src) < 0) {
 		if (!(rval = errno != ENOTDIR))

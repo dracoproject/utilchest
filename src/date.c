@@ -15,9 +15,9 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	char *fmt, buf[BUFSIZ];
 	struct tm *tm;
 	time_t tval;
+	char *fmt, buf[BUFSIZ];
 
 	setprogname(argv[0]);
 

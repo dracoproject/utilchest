@@ -8,9 +8,13 @@
 static void
 head(const char *fname, FILE *f, size_t n)
 {
-	char *buf = NULL;
-	size_t i = 0, bsize = 0;
+	size_t i, bsize;
  	ssize_t len;
+	char *buf;
+
+	buf   = NULL;
+	bsize = 0;
+	i     = 0;
 
 	for (; i < n; i++) {
 		if ((len = getline(&buf, &bsize, f)) < 0)
@@ -37,9 +41,12 @@ int
 main(int argc, char *argv[])
 {
 	FILE *fp;
-	int first = 1, rval = 0;
-	size_t n = 10;
+	size_t n;
+	int first, rval;
 
+	first =  1;
+	n     = 10;
+	rval  =  0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

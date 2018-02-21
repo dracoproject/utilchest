@@ -25,9 +25,11 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int space = 0, print = 0;
 	struct utsname sys;
+	int print, space;
 
+	print = 0;
+	space = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

@@ -13,8 +13,8 @@ static int fflag;
 static int
 delfile(const char *f, int depth)
 {
-	int (*rm)(const char *);
 	struct stat st;
+	int (*rm)(const char *);
 
 	if (lstat(f, &st) < 0) {
 		if (!fflag && errno != ENOENT)
@@ -38,8 +38,10 @@ delfile(const char *f, int depth)
 static int
 deldir(const char *f, int depth)
 {
-	int rd, rval = 0;
+	int rd, rval;
 	FS_DIR dir;
+
+	rval = 0;
 
 	if (open_dir(&dir, f) < 0) {
 		if (!(rval = errno != ENOTDIR))
@@ -83,9 +85,10 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int (*rm)(const char *, int) = delfile;
-	int rval = 0;
+	int (*rm)(const char *, int), rval;
 
+	rm   = delfile;
+	rval = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

@@ -15,8 +15,8 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	char *p;
 	ssize_t off;
+	char *p;
 
 	setprogname(argv[0]);
 	argc--, argv++;

@@ -10,8 +10,8 @@
 #include "util.h"
 
 enum Flags {
-	P1FLAG  = 0x01,
-	P2FLAG =  0x02
+	P1FLAG = 0x01,
+	P2FLAG = 0x02
 };
 
 static const char *charset =
@@ -24,10 +24,14 @@ static int pathmax = PATH_MAX;
 static int
 pathchk(char *path, int opts)
 {
-	char *pathd = NULL, *pe, c;
-	int ch, rval = 0;
-	size_t len, tlen = 0;
 	struct stat st;
+	size_t len, tlen;
+	int ch, rval;
+	char *pathd, *pe, c;
+
+	pathd = NULL;
+	tlen  = 0;
+	rval  = 0;
 
 	if ((opts & P1FLAG) && !*path) {
 		warnx("empty pathname");
@@ -57,7 +61,7 @@ pathchk(char *path, int opts)
 
 		if ((opts & P1FLAG) && *path == '-') {
 			warnx("%s: component %s has leading '-'",
-			    pathd, path);
+			       pathd, path);
 			goto err;
 		}
 
@@ -65,8 +69,8 @@ pathchk(char *path, int opts)
 			ch = strspn(path, charset);
 			if (path[ch]) {
 				warnx("%s: component \"%s\" contains"
-				    " non-portable character '%c'",
-				    pathd, path, path[ch]);
+				      " non-portable character '%c'",
+				      pathd, path, path[ch]);
 				goto err;
 			}
 		}
@@ -85,10 +89,8 @@ pathchk(char *path, int opts)
 err:
 	rval = 1;
 done:
-	if (pathd) {
+	if (pathd)
 		free(pathd);
-		pathd = NULL;
-	}
 
 	return rval;
 }
@@ -103,7 +105,11 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int rval = 0, opts = 0;
+	int rval, opts;
+
+	opts = 0;
+	rval = 0;
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'P':

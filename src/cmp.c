@@ -16,7 +16,11 @@ main(int argc, char *argv[])
 {
 	FILE *fp[2];
 	size_t i, line;
-	int ch[2], lsflag = 0, rval = 0;
+	int ch[2], lsflag, rval;
+
+	lsflag = 0;
+	rval   = 0;
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'l':
@@ -53,7 +57,7 @@ main(int argc, char *argv[])
 				printf("%zu %o %o\n", i, ch[0], ch[1]);
 			else if (!lsflag)
 				printf("%s %s differ: char %zu, line %zu\n",
-				    argv[0], argv[1], i, line);
+				       argv[0], argv[1], i, line);
 		}
 		if (ch[1] == '\n')
 			line++;

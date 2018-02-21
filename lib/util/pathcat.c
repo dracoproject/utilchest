@@ -10,8 +10,8 @@
 void
 pathcat(char *buf, size_t bsize, const char *f1, const char *f2)
 {
-	size_t len;
 	struct stat st;
+	size_t len;
 
 	if (!(stat(f2, &st) == 0 && S_ISDIR(st.st_mode))) {
 		snprintf(buf, bsize, "%s", f2);

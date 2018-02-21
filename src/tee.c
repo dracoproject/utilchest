@@ -17,11 +17,13 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	char buf[BUFSIZ];
-	int *fs, fslen, i, rval = 0;
-	mode_t mode = O_WRONLY|O_CREAT|O_TRUNC;
 	ssize_t n;
+	mode_t mode;
+	int *fs, fslen, i, rval;
+	char buf[BUFSIZ];
 
+	mode = O_WRONLY|O_CREAT|O_TRUNC;
+	rval = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

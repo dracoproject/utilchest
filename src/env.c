@@ -13,7 +13,7 @@ static void
 usage(void)
 {
 	fprintf(stderr, "usage: %s [-i] [name=value ...] [command]\n",
-	    getprogname());
+	        getprogname());
 	exit(1);
 }
 

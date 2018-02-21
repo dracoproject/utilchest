@@ -14,16 +14,21 @@ static void
 usage(void)
 {
 	fprintf(stderr, "usage: %s [-g|-p|-u] -n increment ID ...\n",
-	    getprogname());
+	        getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	int prio = 10, oldprio = 0, rval = 0, who = 0, which = PRIO_PROCESS;
 	struct passwd *pw;
+	int oldprio, prio, rval, which, who;
 
+	oldprio =  0;
+	prio    = 10;
+	rval    =  0;
+	which   = PRIO_PROCESS;
+	who     =  0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

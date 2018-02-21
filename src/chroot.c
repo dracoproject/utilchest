@@ -16,7 +16,7 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	const char *shell, *cmd, *cmd_arg;
+	const char *cmd, *cmd_arg, *shell;
 
 	setprogname(argv[0]);
 	argc--, argv++;

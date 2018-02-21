@@ -11,7 +11,10 @@
 static int
 mkdirp(const char *path, mode_t dir_mode, mode_t mode)
 {
-	char *p = (char *)path, c = 0;
+	char *p, c;
+
+	c = 0;
+	p = (char *)path;
 
 	do {
 		p += strspn(p, "/");
@@ -20,7 +23,7 @@ mkdirp(const char *path, mode_t dir_mode, mode_t mode)
 		c = *p;
 		*p = '\0';
 
-		if (mkdir(path, (c == '\0') ? mode : dir_mode) < 0\
+		if (mkdir(path, (c == '\0') ? mode : dir_mode) < 0
 		    && errno != EEXIST)
 			return -1;
 	} while ((*p = c) != '\0');
@@ -38,9 +41,11 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int pflag = 0, rval = 0;
 	mode_t mode, dir_mode;
+	int pflag, rval;
 
+	pflag = 0;
+	rval  = 0;
 	setprogname(argv[0]);
 
 	mode     = (S_IRWXU|S_IRWXG|S_IRWXO) & ~umask(0);

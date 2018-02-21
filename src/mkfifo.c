@@ -16,9 +16,11 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int rval = 0;
-	mode_t mode = DEFFILEMODE;
+	mode_t mode;
+	int rval;
 
+	mode = DEFFILEMODE;
+	rval = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

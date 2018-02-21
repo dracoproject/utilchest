@@ -31,8 +31,10 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int rval = 0, (*rmdirf)(const char *) = rmdir;
+	int (*rmdirf)(const char *), rval;
 
+	rmdirf = rmdir;
+	rval   = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

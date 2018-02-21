@@ -64,9 +64,12 @@ static const unsigned long crctab[] = {
 static void
 cksum(int fd, const char *fname)
 {
+	ssize_t fsize, i, rf;
+	unsigned sum;
 	char buf[BUFSIZ];
-	unsigned sum = 0;
-	ssize_t fsize = 0, i, rf;
+
+	fsize = 0;
+	sum   = 0;
 
 	while ((rf = read(fd, buf, sizeof(buf))) > 0) {
 		fsize += rf;
@@ -89,8 +92,9 @@ cksum(int fd, const char *fname)
 int
 main(int argc, char *argv[])
 {
-	int fd, rval = 0;
+	int fd, rval;
 
+	rval = 0;
 	setprogname(argv[0]);
 	argc--, argv++;
 

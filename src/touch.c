@@ -22,8 +22,11 @@ static struct timespec tms[2] = {{.tv_nsec = UTIME_NOW}};
 static int
 touch(const char *path, int opts)
 {
-	int fd = -1, rval = 0;
 	struct stat st;
+	int fd, rval;
+
+	fd   = -1;
+	rval =  0;
 
 	if ((fd = open(path, O_RDONLY, 0)) < 0) {
 		if (errno != ENOENT) {
@@ -65,10 +68,14 @@ done:
 static time_t
 parsetime(char *str, int type)
 {
-	char *dot, fmt[32];
-	int utc = 0, yearset = 0;
-	struct tm lt = { 0 };
+	struct tm lt;
 	time_t now;
+	int utc, yearset;
+	char *dot, fmt[32];
+
+	utc     = 0;
+	yearset = 0;
+	memset(&lt, 0, sizeof(lt));
 
 	if ((now = time(NULL)) < 0)
 		err(1, "time");
@@ -126,16 +133,21 @@ static void
 usage(void)
 {
 	fprintf(stderr, "usage: %s [-acm] [-r file|-t time|-d date] file ...\n",
-	    getprogname());
+	        getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	char *ref = NULL;
-	int rval = 0, opts = 0;
 	struct stat st;
+	int rval, opts;
+	char *ref;
+
+	opts = 0;
+	ref  = NULL;
+	rval = 0;
+	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'a':

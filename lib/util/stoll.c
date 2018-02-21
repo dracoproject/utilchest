@@ -7,11 +7,11 @@
 long long
 stoll(const char *str, long long min, long long max)
 {
-	char *end;
 	long long ll;
+	char *end;
 
 	errno = 0;
-	ll = strtoll(str, &end, 10);
+	ll    = strtoll(str, &end, 10);
 
 	if (end == str || *end != '\0')
 		errno = EINVAL;

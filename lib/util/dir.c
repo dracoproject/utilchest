@@ -21,8 +21,8 @@ int fs_follow = 'P';
 int
 open_dir(FS_DIR *dir, const char *path)
 {
-	dir->dir=  (char *)path;
-	dir->dlen= strlen(dir->dir);
+	dir->dir  = (char *)path;
+	dir->dlen = strlen(dir->dir);
 
 	if (!(dir->dirp = opendir(dir->dir)))
 		return -1;
@@ -33,9 +33,10 @@ open_dir(FS_DIR *dir, const char *path)
 int
 read_dir(FS_DIR *dir, int rtime)
 {
-	int rval = EXE;
-	int (*statf)(const char *, struct stat *);
 	struct dirent *entry;
+	int (*statf)(const char *, struct stat *), rval;
+
+	rval = EXE;
 
 	if (FS_FOLLOW(rtime))
 		statf = stat;
@@ -47,7 +48,7 @@ read_dir(FS_DIR *dir, int rtime)
 		dir->nlen = strlen(dir->name);
 
 		snprintf(dir->path, sizeof(dir->path),
-		    "%s/%s", dir->dir, dir->name);
+		         "%s/%s", dir->dir, dir->name);
 
 		if (statf(dir->path, &dir->info) < 0) {
 			rval = ERR;

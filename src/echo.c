@@ -7,8 +7,9 @@
 int
 main(int argc, char *argv[])
 {
-	int nflag = 0;
+	int nflag;
 
+	nflag = 0;
 	argc--, argv++;
 
 	if (*argv && !strcmp(*argv, "-n"))

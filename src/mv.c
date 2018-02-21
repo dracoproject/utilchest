@@ -26,19 +26,20 @@ static void
 usage(void)
 {
 	fprintf(stderr,
-	    "usage: %s [-f] source target\n"
-	    "       %s [-f] source ... directory\n",
-	    getprogname(), getprogname());
+	        "usage: %s [-f] source target\n"
+	        "       %s [-f] source ... directory\n",
+	        getprogname(), getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	char buf[PATH_MAX], *sourcedir;
-	int rval = 0;
 	struct stat sb;
+	int rval;
+	char *sourcedir, buf[PATH_MAX];
 
+	rval = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

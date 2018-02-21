@@ -11,19 +11,22 @@ static int
 usage(void)
 {
 	fprintf(stderr,
-	    "usage: %s [-m mode] name b|c major minor\n"
-	    "       %s [-m mode] name p\n",
-	    getprogname(), getprogname());
+	        "usage: %s [-m mode] name b|c major minor\n"
+	        "       %s [-m mode] name p\n",
+	        getprogname(), getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	int ret = 0;
-	mode_t mode = DEFFILEMODE, type = 0;
+	mode_t mode, type;
 	unsigned long major, minor;
+	int ret;
 
+	mode = DEFFILEMODE;
+	type = 0;
+	ret  = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

@@ -16,7 +16,9 @@
 static int
 linkit(const char *src, const char *dest, int opts)
 {
-	int flags = 0;
+	int flags;
+
+	flags = 0;
 
 	if (opts & FORCE)
 		unlink(dest);
@@ -44,19 +46,21 @@ static void
 usage(void)
 {
 	fprintf(stderr,
-	    "usage: %s [-f] [-L|-P|-s] source [target]\n"
-	    "       %s [-f] [-L|-P|-s] source ... dir\n",
-	    getprogname(), getprogname());
+	        "usage: %s [-f] [-L|-P|-s] source [target]\n"
+	        "       %s [-f] [-L|-P|-s] source ... dir\n",
+	        getprogname(), getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	char buf[PATH_MAX], *sourcedir;
-	int opts = 0, rval = 0;
 	struct stat st;
+	int opts, rval;
+	char buf[PATH_MAX], *sourcedir;
 
+	opts = 0;
+	rval = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

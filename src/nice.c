@@ -12,15 +12,16 @@ static void
 usage(void)
 {
 	fprintf(stderr, "usage: %s [-n increment] command [argument ...]\n",
-	    getprogname());
+	        getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	int prio = 10;
+	int prio;
 
+	prio = 10;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

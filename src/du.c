@@ -26,8 +26,8 @@ display(const char *path, off_t size)
 static off_t
 dufile(const char *path, int depth)
 {
-	off_t size;
 	struct stat st;
+	off_t size;
 
 	if ((FS_FOLLOW(depth) ? stat : lstat)(path, &st) < 0) {
 		warn("(l)stat %s", path);
@@ -50,9 +50,11 @@ static off_t
 dudir(const char *path, int depth)
 {
 	FS_DIR dir;
-	int rd;
-	off_t subtotal = 0;
 	struct stat st;
+	off_t subtotal;
+	int rd;
+
+	subtotal = 0;
 
 	if (open_dir(&dir, path) < 0) {
 		if (errno != ENOTDIR) {
@@ -105,9 +107,10 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
+	int kflag;
 	const char *bsize;
-	int kflag = 0;
 
+	kflag = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

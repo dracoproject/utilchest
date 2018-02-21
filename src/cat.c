@@ -9,8 +9,8 @@
 static void
 cat(int f, const char *name)
 {
-	char buf[BUFSIZ];
 	ssize_t n;
+	char buf[BUFSIZ];
 
 	while ((n = read(f, buf, sizeof(buf))) > 0)
 		if (write(STDOUT_FILENO, buf, n) != n)
@@ -30,8 +30,9 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int f, rval = 0;
+	int f, rval;
 
+	rval = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

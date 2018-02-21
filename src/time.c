@@ -19,11 +19,11 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int status;
-	long ticks;
-	pid_t pid;
-	clock_t btm, etm;
 	struct tms tms;
+	long ticks;
+	clock_t btm, etm;
+	pid_t pid;
+	int status;
 
 	setprogname(argv[0]);
 
@@ -59,10 +59,10 @@ main(int argc, char *argv[])
 		err(1, "times");
 
 	fprintf(stderr,
-	    "real %f\nuser %f\nsys %f\n",
-	    (etm - btm)    / (double)ticks,
-	    tms.tms_cutime / (double)ticks,
-	    tms.tms_cstime / (double)ticks);
+	        "real %f\nuser %f\nsys %f\n",
+	        (etm - btm)    / (double)ticks,
+	        tms.tms_cutime / (double)ticks,
+	        tms.tms_cstime / (double)ticks);
 
 	return (WIFEXITED(status) ? WEXITSTATUS(status) : 1);
 }

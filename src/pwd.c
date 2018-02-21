@@ -10,8 +10,8 @@
 static char *
 getcwd_logical(void)
 {
-	char *pwd;
 	struct stat s_pwd, s_dot;
+	char *pwd;
 
 	if (!(pwd = getenv("PWD")) || *pwd != '/')
 		return NULL;
@@ -35,9 +35,10 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
+	int logical;
 	const char *cwd;
-	int logical = 1;
 
+	logical = 1;
 	setprogname(argv[0]);
 
 	ARGBEGIN {

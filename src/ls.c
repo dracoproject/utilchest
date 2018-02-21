@@ -70,7 +70,7 @@ static int Rdflag;
 static int Sftflag;
 
 static int first = 1;
-static long blocksize = 512;
+static long blksiz = 512;
 static unsigned int termwidth = 80;
 
 static void printc(struct file *, struct max *);
@@ -110,7 +110,9 @@ freefile(struct file *p)
 static struct file *
 mergelist(struct file *l1, struct file *l2)
 {
-	struct file *ret = NULL;
+	struct file *ret;
+
+	ret = NULL;
 
 	if (l1 == NULL)
 		return l2;
@@ -131,7 +133,7 @@ mergelist(struct file *l1, struct file *l2)
 static void
 _mergesort(struct file **flist)
 {
-	struct file *l1, *l2, *end;
+	struct file *end, *l1, *l2;
 
 	if (!(l1 = *flist) || !(end = (*flist)->next))
 		return;
@@ -185,13 +187,13 @@ mkmax(struct max *max, struct file *file)
 
 	if (!file) {
 		max->s_block = snprintf(buf, sizeof(buf), "%llu",
-		    (unsigned long long)max->block);
+		                        (unsigned long long)max->block);
 		max->s_ino   = snprintf(buf, sizeof(buf), "%llu",
-		    (unsigned long long)max->ino);
+		                        (unsigned long long)max->ino);
 		max->s_nlink = snprintf(buf, sizeof(buf), "%lu",
-		    (unsigned long)max->nlink);
+		                        (unsigned long)max->nlink);
 		max->s_size  = snprintf(buf, sizeof(buf), "%lld",
-		    (long long)max->size);
+		                        (long long)max->size);
 
 		return;
 	}
@@ -211,12 +213,12 @@ mkmax(struct max *max, struct file *file)
 struct file *
 newfile(const char *path, const char *str, struct stat *info)
 {
-	char user[32], group[32], lp[PATH_MAX];
-	ssize_t len;
 	struct file *new;
-	struct group *gr;
-	struct passwd *pw;
 	struct stat st;
+	struct passwd *pw;
+	struct group *gr;
+	ssize_t len;
+	char lp[PATH_MAX], group[32], user[32];
 
 	/* alloc/copy initial values */
 	new       = emalloc(1 * sizeof(*new));
@@ -323,7 +325,9 @@ ptype(mode_t mode)
 static void
 pmode(struct stat *st)
 {
-	char mode[]  = "?---------";
+	char mode[10];
+
+	memcpy(mode, "?---------", sizeof(mode));
 
 	switch (st->st_mode & S_IFMT) {
 	case S_IFBLK:
@@ -382,16 +386,19 @@ pmode(struct stat *st)
 static int
 pname(struct file *file, int ino, int size)
 {
-	const char *ch;
-	int chcnt = 0, len = 0;
 	Rune rune;
+	int chcnt, len;
+	const char *ch;
+
+	chcnt = 0;
+	len   = 0;
 
 	if (iflag && ino)
 		chcnt += printf("%*llu ", ino,
-		    (unsigned long long)file->st.st_ino);
+		                (unsigned long long)file->st.st_ino);
 	if (sflag && size)
 		chcnt += printf("%*lld ", size,
-		    howmany((long long)file->st.st_blocks, blocksize));
+		                howmany((long long)file->st.st_blocks, blksiz));
 
 	for (ch = file->name; *ch; ch += len) {
 		len = chartorune(&rune, ch);
@@ -411,8 +418,8 @@ pname(struct file *file, int ino, int size)
 static void
 ptime(struct timespec t)
 {
-	char *fmt, buf[DATELEN];
 	struct tm *tm;
+	char *fmt, buf[DATELEN];
 
 	if (NOW > (t.tv_sec + SIXMONTHS))
 		fmt = "%b %d %Y ";
@@ -441,21 +448,21 @@ print1(struct file *flist, struct max *max)
 
 		if (iflag)
 			printf("%*llu ", max->s_ino,
-			    (unsigned long long)p->st.st_ino);
+			       (unsigned long long)p->st.st_ino);
 		if (sflag)
 			printf("%*lld ", max->s_block,
-			    howmany((long long)p->st.st_blocks, blocksize));
+			       howmany((long long)p->st.st_blocks, blksiz));
 
 		pmode(&p->st);
 		printf("%*lu %-*s %-*s ", max->s_nlink, p->st.st_nlink,
-		    max->s_uid, p->user, max->s_gid, p->group);
+		       max->s_uid, p->user, max->s_gid, p->group);
 
 		if (S_ISBLK(p->st.st_mode) || S_ISCHR(p->st.st_mode))
 			printf("%3d, %3d ",
-			    major(p->st.st_rdev), minor(p->st.st_rdev));
+			       major(p->st.st_rdev), minor(p->st.st_rdev));
 		else
 			printf("%*s%*lld ", 8 - max->s_size, "",
-			    max->s_size, (long long)p->st.st_size);
+			       max->s_size, (long long)p->st.st_size);
 
 		ptime(p->tm);
 		pname(p, 0, 0);
@@ -472,10 +479,14 @@ next:
 static void
 printc(struct file *flist, struct max *max)
 {
-	int chcnt = 0, row = 0, num = 0;
-	int col, base, nrows;
+	struct file **pa, *p;
 	struct column cols;
-	struct file *p, **pa;
+	int chcnt, num, row;
+	int base, col, nrows;
+
+	chcnt = 0;
+	row   = 0;
+	num   = 0;
 
 	if (mkcol(&cols, max)) {
 		print1(flist, max);
@@ -511,8 +522,11 @@ printc(struct file *flist, struct max *max)
 static void
 printm(struct file *flist, struct max *max)
 {
-	int chcnt = 0, width = 0;
 	struct file *p;
+	int chcnt, width;
+
+	chcnt = 0;
+	width = 0;
 
 	if (iflag)
 		width += max->s_ino;
@@ -539,9 +553,12 @@ printm(struct file *flist, struct max *max)
 static void
 printx(struct file *flist, struct max *max)
 {
-	int chcnt = 0, col = 0;
-	struct column cols;
 	struct file *p;
+	struct column cols;
+	int chcnt, col;
+
+	chcnt = 0;
+	col   = 0;
 
 	if (mkcol(&cols, max)) {
 		print1(flist, max);
@@ -567,7 +584,7 @@ print_list(struct file **flist, struct max *max)
 {
 	if (sflag || iflag || lflag)
 		printf("total: %lu\n",
-		    howmany((long unsigned)max->btotal, blocksize));
+		       howmany((long unsigned)max->btotal, blksiz));
 
 	mkmax(max, NULL);
 	printfcn(*flist, max);
@@ -576,11 +593,14 @@ print_list(struct file **flist, struct max *max)
 static int
 lsdir(const char *path, int more)
 {
-	char npath[PATH_MAX];
 	FS_DIR dir;
+	struct file *flist, *p;
+	struct max max;
 	int rd;
-	struct file *p, *flist = NULL;
-	struct max max = {0};
+	char npath[PATH_MAX];
+
+	flist = NULL;
+	memset(&max, 0, sizeof(max));
 
 	if (open_dir(&dir, path) < 0)
 		err(1, "open_dir %s", path);
@@ -629,20 +649,25 @@ static void
 usage(void)
 {
 	fprintf(stderr, "usage: %s [-1AaCcFfiklmnpqrSstux] [file ...]\n",
-	    getprogname());
+	        getprogname());
 	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	char *temp;
-	int more, rval = 0, kflag = 0;
-	struct file *p, *dlist = NULL, *flist = NULL;
-	struct max max = {0};
+	struct file *dlist, *flist, *p;
 	struct stat st;
+	struct max max;
 	struct winsize w;
+	int kflag, more, rval;
+	char *temp;
 
+	dlist = NULL;
+	flist = NULL;
+	kflag = 0;
+	rval  = 0;
+	memset(&max, 0, sizeof(max));
 	setprogname(argv[0]);
 
 	ARGBEGIN {
@@ -714,12 +739,12 @@ main(int argc, char *argv[])
 		lflag = 0;
 
 	if (lflag || sflag) {
-		if (!kflag && (temp = getenv("BLOCKSIZE")))
-			blocksize = stoll(temp, 1, LONG_MAX);
+		if (!kflag && (temp = getenv("blksiz")))
+			blksiz = stoll(temp, 1, LONG_MAX);
 		else if (kflag)
-			blocksize = 1024;
+			blksiz = 1024;
 
-		blocksize /= 512;
+		blksiz /= 512;
 	}
 
 	if (printfcn != print1 && (temp = getenv("COLUMNS")))
