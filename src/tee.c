@@ -19,7 +19,7 @@ main(int argc, char *argv[])
 {
 	ssize_t n;
 	mode_t mode;
-	int *fs, fslen, i, rval;
+	int *fs, fdslen, i, rval;
 	char buf[BUFSIZ];
 
 	mode = O_WRONLY|O_CREAT|O_TRUNC;
@@ -37,34 +37,33 @@ main(int argc, char *argv[])
 		usage();
 	} ARGEND
 
-	fslen = argc + 1;
-	if (!(fs = malloc(fslen * sizeof(*fs))))
+	fdslen = argc + 1;
+	if (!(fds = malloc(fdslen * sizeof(*fds))))
 		err(1, "malloc");
 
 	for (i = 0; i < argc; i++)
-		if ((fs[i] = open(argv[i], mode, DEFFILEMODE)) < 0)
+		if ((fds[i] = open(argv[i], mode, DEFFILEMODE)) < 0)
 			err(1, "open %s", argv[i]);
 
-	fs[i] = STDOUT_FILENO;
+	fds[i] = STDOUT_FILENO;
 
 	while ((n = read(STDIN_FILENO, buf, sizeof(buf))) > 0) {
-		for (i = 0; i < fslen; i++)
-			if (write(fs[i], buf, n) != n)
+		for (i = 0; i < fdslen; i++)
+			if (write(fds[i], buf, n) != n)
 				err(1, "write %s",
-				    (i < fslen) ? argv[i] : "<stdout>");
+				    (i < fdslen) ? argv[i] : "<stdout>");
 	}
 
 	if (n < 0)
 		err(1, "read <stdin>");
 
-	for (i = 0; i < fslen; i++) {
-		if (close(fs[i]) < 0) {
+	for (i = 0; i < fdslen; i++) {
+		if (close(fds[i]) < 0) {
 			warn("close %s", argv[i]);
 			rval = 1;
 		}
 	}
-	free(fs);
-	fs = NULL;
+	free(fds);
 
 	return rval;
 }

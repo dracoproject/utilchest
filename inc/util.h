@@ -19,14 +19,14 @@ enum cp_flags {
 };
 
 typedef struct {
-	char *dir;
-	char *name;
-	char path[PATH_MAX];
-	DIR *dirp;
+	struct stat info;
 	size_t dlen;
 	size_t nlen;
 	size_t plen;
-	struct stat info;
+	DIR *dirp;
+	char *dir;
+	char *name;
+	char path[PATH_MAX];
 } FS_DIR;
 
 extern int fs_follow;
