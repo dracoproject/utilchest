@@ -19,7 +19,7 @@ main(int argc, char *argv[])
 {
 	ssize_t n;
 	mode_t mode;
-	int *fs, fdslen, i, rval;
+	int *fds, fdslen, i, rval;
 	char buf[BUFSIZ];
 
 	mode = O_WRONLY|O_CREAT|O_TRUNC;
