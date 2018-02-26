@@ -181,7 +181,7 @@ install: all
 	install -dm 755 $(DESTDIR)/$(PREFIX)/bin
 	install -csm 755 $(BIN) $(DESTDIR)/$(PREFIX)/bin
 
-install_man:
+install-man:
 	install -dm 755 $(DESTDIR)/$(MANPREFIX)/man1
 	install -cm 644 $(MAN) $(DESTDIR)/$(MANPREFIX)/man1
 

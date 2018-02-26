@@ -61,11 +61,11 @@ It's a collection of Unix utilities written to be simple and small
 	-- Multiple Binaries
 	$ make
 	# make install
-	# make install_man
+	# make install-man
 	-- Single Binary
 	$ make utilchest
 	# make utilchest-install
-	# make install_man
+	# make install-man
 ```
 
 #### Similar Software
