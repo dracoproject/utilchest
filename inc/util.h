@@ -51,6 +51,9 @@ int read_dir(FS_DIR *, int);
 void * emalloc(size_t);
 char * estrdup(const char *);
 
+/* fgetline */
+ssize_t fgetline(char *, size_t, FILE *);
+
 /* putstr.c */
 void putstr(const char *, FILE *);
 

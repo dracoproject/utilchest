@@ -1,0 +1,39 @@
+.Dd February 2018
+.Dt SETSID 1
+.Os
+.Sh NAME
+.Nm setsid
+.Nd run a program in a new session
+.Sh SYNOPSIS
+.Nm
+.Ar command
+.Op Ar argument ...
+.Sh DESCRIPTION
+.Nm
+runs
+.Ar command
+in a new session.
+.Sh EXIT STATUS
+The
+.Nm
+utility exits with one of the following values:
+.Pp
+.Bl -tag -width indent -offset indent -compact
+.It 1\-125
+An error occured.
+.It 126
+The
+.Ar command
+was found but could not be invoked.
+.It 127
+The
+.Ar command
+could not be found.
+.El
+.Pp
+Otherwise, the exit status of
+.Nm
+will be that of
+.Ar command .
+.Sh SEE ALSO
+.Xr setsid 2

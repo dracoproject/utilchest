@@ -1,0 +1,25 @@
+.Dd February 2018
+.Dt REV 1
+.Os
+.Sh NAME
+.Nm rev
+.Nd reverse lines of a file
+.Sh SYNOPSIS
+.Nm
+.Op Ar file ...
+.Sh DESCRIPTION
+.Nm
+reads each
+.Ar file
+sequentially and writes it on the standard output with all characters
+of each line reversed. If
+.Ar file
+is a single dash
+.Pq Sq -
+or absent,
+.Nm
+reads from the standard input.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr cat 1

@@ -40,8 +40,10 @@ It's a collection of Unix utilities written to be simple and small
 * pwd
 * readlink
 * renice
+* rev
 * rm
 * rmdir
+* setsid
 * sleep
 * sync
 * tee

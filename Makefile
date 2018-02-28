@@ -48,8 +48,10 @@ BIN=\
 	src/pwd\
 	src/readlink\
 	src/renice\
+	src/rev\
 	src/rm\
 	src/rmdir\
+	src/setsid\
 	src/sleep\
 	src/sync\
 	src/tee\
@@ -116,6 +118,7 @@ LIBUTILSRC=\
 	lib/util/cp.c\
 	lib/util/dir.c\
 	lib/util/ealloc.c\
+	lib/util/fgetline.c\
 	lib/util/mode.c\
 	lib/util/pathcat.c\
 	lib/util/stoll.c
