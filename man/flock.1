@@ -1,0 +1,60 @@
+.Dd March 03, 2018
+.Dt FLOCK 1
+.Os
+.Sh NAME
+.Nm flock
+.Nd manage locks on files
+.Sh SYNOPSIS
+.Nm
+.Op Fl nosux
+.Ar file command
+.Op Ar argument ...
+.Sh DESCRIPTION
+.Nm
+locks
+.Ar file
+while the
+.Ar command
+is executed.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl n
+Set non-blocking mode on the lock, failing immediately
+if not able to acquire the lock.
+.It Fl o
+Close the file before executing the command.
+.It Fl s
+Acquire a shared lock.
+.It Fl u
+Release the lock.
+.It Fl x
+Acquire an exclusive lock.
+.El
+.Pp
+The default is as if the
+.Fl x
+option had been specified.
+.Sh EXIT STATUS
+The
+.Nm
+utility exits with one of the following values:
+.Pp
+.Bl -tag -width indent -offset indent -compact
+.It 1\-125
+An error occured.
+.It 126
+The
+.Ar command
+was found but could not be invoked.
+.It 127
+The
+.Ar command
+could not be found.
+.El
+.Pp
+Otherwise, the exit status of
+.Nm
+will be that of
+.Ar command .
+.Sh SEE ALSO
+.Xr flock 2

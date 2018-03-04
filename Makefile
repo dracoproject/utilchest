@@ -30,6 +30,7 @@ BIN=\
 	src/echo\
 	src/env\
 	src/false\
+	src/flock\
 	src/head\
 	src/hostname\
 	src/id\
