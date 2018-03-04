@@ -1,5 +1,5 @@
 .\" TODO
-.Dd November 2017
+.Dd March 03, 2018
 .Dt LS 1
 .Os
 .Sh NAME
@@ -60,6 +60,53 @@ All symbolic links are followed.
 Long format output, for each file print its type, permissions, links,
 owner, group, size or major and minor numbers if the file is a
 character/block device, and last file status/modification time.
+.Pp
+The mode field consist of eleven characters.
+The first character describes the type entry:
+.Pp
+.Bl -tag -width 4n -offset indent -compact
+.It Sy \-
+Regular file.
+.It Sy b
+Block special file.
+.It Sy c
+Character special file.
+.It Sy d
+Directory.
+.It Sy l
+Symbolic link.
+.It Sy p
+FIFO.
+.El
+.Pp
+The last nine characters are interpreted as three sets of three bits each.
+The first set refers to the owner permissions; the next to group permissions;
+and the last to others permissions. Within each set, the three characters
+indicate permission to read, to write, and to execute, respectively.
+The permissions are indicated as follow:
+.Pp
+.Bl -tag -width 4n -offset indent
+.It Sy \-
+The indicated permission is not granted.
+.It Sy r
+The file is readable.
+.It Sy S
+The set-user-ID or set-group-ID is on, and execution is off.
+.It Sy s
+The set-user-ID or set-group-ID is on, and execution is on.
+.It Sy T
+The sticky bit is set
+.Pq mode Li 1000 ,
+and execution is off.
+.It Sy t
+The sticky bit is set
+.Pq mode 1000 ,
+and execution is on.
+.It Sy w
+The file is writable.
+.It Sy x
+The file is executable.
+.El
 .It Fl m
 Files are listed across the page, separated by commas.
 .It Fl n
@@ -87,7 +134,8 @@ Use file's last acess time for sorting or writing.
 Multi-column output, with entries sorted across the page.
 .El
 .Pp
-.Ss The Long Format
+Where more than one option is specified from the same mutually
+exclusive group, the last option given overrides the others.
 .Sh ENVIRONMENT
 .Bl -tag -width BLOCKSIZE
 .It Ev BLOCKSIZE
