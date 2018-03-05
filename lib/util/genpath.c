@@ -7,7 +7,6 @@
 int
 genpath(char *str, mode_t dmode, mode_t mode)
 {
-	int rval;
 	char *sp, ch;
 
 	ch   = 0;

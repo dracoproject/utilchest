@@ -11,7 +11,7 @@ strtobase(const char *str, long long min, long long max, int base)
 	char *end;
 
 	errno = 0;
-	ll    = strtoll(str, &end, 10);
+	ll    = strtoll(str, &end, base);
 
 	if (end == str || *end != '\0')
 		errno = EINVAL;

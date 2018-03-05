@@ -65,5 +65,5 @@ mode_t strtomode(const char *, mode_t);
 
 /* stoll.c
  * TODO: replace stoll */
-#define stoll(a, b, c) strtobase(a, b, c, 10);
+#define stoll(a, b, c) strtobase(a, b, c, 10)
 long long strtobase(const char *, long long, long long, int);
