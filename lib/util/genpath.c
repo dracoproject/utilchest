@@ -10,7 +10,6 @@ genpath(char *str, mode_t dmode, mode_t mode)
 	char *sp, ch;
 
 	ch   = 0;
-	rval = 0;
 	sp   = str;
 
 	if (*str == '.' || *str == '/')
