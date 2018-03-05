@@ -51,8 +51,11 @@ int read_dir(FS_DIR *, int);
 void * emalloc(size_t);
 char * estrdup(const char *);
 
-/* fgetline */
+/* fgetline.c */
 ssize_t fgetline(char *, size_t, FILE *);
+
+/* genpath.c */
+int genpath(char *, mode_t, mode_t);
 
 /* putstr.c */
 void putstr(const char *, FILE *);
@@ -60,5 +63,7 @@ void putstr(const char *, FILE *);
 /* mode.c */
 mode_t strtomode(const char *, mode_t);
 
-/* stoll.c */
-long long stoll(const char *, long long, long long);
+/* stoll.c
+ * TODO: replace stoll */
+#define stoll(a, b, c) strtobase(a, b, c, 10);
+long long strtobase(const char *, long long, long long, int);

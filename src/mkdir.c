@@ -1,35 +1,10 @@
 #include <sys/stat.h>
 
 #include <err.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "util.h"
-
-static int
-mkdirp(const char *path, mode_t dir_mode, mode_t mode)
-{
-	char *p, c;
-
-	c = 0;
-	p = (char *)path;
-
-	do {
-		p += strspn(p, "/");
-		p += strcspn(p, "/");
-
-		c = *p;
-		*p = '\0';
-
-		if (mkdir(path, (c == '\0') ? mode : dir_mode) < 0
-		    && errno != EEXIST)
-			return -1;
-	} while ((*p = c) != '\0');
-
-	return 0;
-}
 
 static void
 usage(void)
@@ -41,15 +16,14 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	mode_t mode, dir_mode;
+	mode_t dmode, mode;
 	int pflag, rval;
 
+	mode  = (S_IRWXU|S_IRWXG|S_IRWXO) & ~umask(0);
+	dmode = mode|S_IWUSR|S_IXUSR;
 	pflag = 0;
 	rval  = 0;
 	setprogname(argv[0]);
-
-	mode     = (S_IRWXU|S_IRWXG|S_IRWXO) & ~umask(0);
-	dir_mode = mode|S_IWUSR|S_IXUSR;
 
 	ARGBEGIN {
 	case 'p':
@@ -66,19 +40,14 @@ main(int argc, char *argv[])
 		usage();
 
 	for (; *argv; argc--, argv++) {
-		if (pflag)
-			rval |= mkdirp(*argv, dir_mode, mode);
-		else
-			rval |= mkdir(*argv, mode);
-
-		if (rval < 0) {
+		if (pflag) {
+			if (genpath(*argv, dmode, mode) < 0) {
+				warn("genpath %s", *argv);
+				rval = 1;
+			}
+		} else if (mkdir(*argv, mode)) {
 			warn("mkdir %s", *argv);
 			rval = 1;
-		}
-
-		if (!rval && mode > 0777 && chmod(*argv, mode) < 0) {
-			warn("chmod %s", *argv);
-			return 1;
 		}
 	}
 

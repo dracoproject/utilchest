@@ -120,9 +120,10 @@ LIBUTILSRC=\
 	lib/util/dir.c\
 	lib/util/ealloc.c\
 	lib/util/fgetline.c\
+	lib/util/genpath.c\
 	lib/util/mode.c\
 	lib/util/pathcat.c\
-	lib/util/stoll.c
+	lib/util/strtobase.c
 
 # LIB PATH
 LIBUTF=  lib/libutf.a

@@ -5,7 +5,7 @@
 #include "util.h"
 
 long long
-stoll(const char *str, long long min, long long max)
+strtobase(const char *str, long long min, long long max, int base)
 {
 	long long ll;
 	char *end;
@@ -20,7 +20,7 @@ stoll(const char *str, long long min, long long max)
 		errno = ERANGE;
 
 	if (errno)
-		err(1, "stoll %s", str);
+		err(1, "strtobase %s", str);
 
 	return ll;
 }
