@@ -1,5 +1,9 @@
 #include <limits.h>
 
+#ifndef ACCESSPERMS
+#define ACCESSPERMS (S_IRWXU|S_IRWXG|S_IRWXO)
+#endif
+
 #ifndef ALLPERMS
 #define ALLPERMS    (S_ISUID|S_ISGID|S_ISVTX|S_IRWXU|S_IRWXG|S_IRWXO)
 #endif
@@ -30,4 +34,8 @@ extern char *__progname;
 
 #ifndef setprogname
 #define setprogname(x) __progname = x
+#endif
+
+#ifndef MIN
+#define MIN(a, b) (((a) > (b)) ? (b) : (a))
 #endif

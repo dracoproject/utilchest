@@ -19,7 +19,7 @@ main(int argc, char *argv[])
 	mode_t dmode, mode;
 	int pflag, rval;
 
-	mode  = (S_IRWXU|S_IRWXG|S_IRWXO) & ~umask(0);
+	mode  = ACCESSPERMS & ~umask(0);
 	dmode = mode|S_IWUSR|S_IXUSR;
 	pflag = 0;
 	rval  = 0;
@@ -30,7 +30,7 @@ main(int argc, char *argv[])
 		pflag = 1;
 		break;
 	case 'm':
-		mode = strtomode(EARGF(usage()), S_IRWXU|S_IRWXG|S_IRWXO);
+		mode = strtomode(EARGF(usage()), ACCESSPERMS);
 		break;
 	default:
 		usage();

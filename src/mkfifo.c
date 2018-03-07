@@ -25,7 +25,7 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'm':
-		mode = strtomode(EARGF(usage()), DEFFILEMODE);
+		mode = strtomode(EARGF(usage()), ACCESSPERMS);
 		break;
 	default:
 		usage();
