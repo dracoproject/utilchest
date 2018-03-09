@@ -24,9 +24,7 @@ copy_reg(struct copy *cp)
 {
 	struct stat st;
 	struct timespec times[2];
-	ssize_t rf;
 	int rval, sf, tf;
-	char buf[BUFSIZ];
 
 	rval =  0;
 	sf   = -1;
@@ -53,17 +51,8 @@ copy_reg(struct copy *cp)
 		goto failure;
 	}
 
-	while ((rf = read(sf, buf, sizeof(buf))) > 0) {
-		if (write(tf, buf, rf) != rf) {
-			warn("write %s", cp->dest);
-			goto failure;
-		}
-	}
-
-	if (rf < 0) {
-		warn("read %s", cp->src);
+	if (concat(sf, cp->src, tf, cp->dest) < 0)
 		goto failure;
-	}
 
 	fchmod(tf, st.st_mode);
 	if (CP_PFLAG & cp->opts) {

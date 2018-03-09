@@ -32,12 +32,12 @@ typedef struct {
 extern int fs_follow;
 extern int chown_hflag;
 
-/* call.c */
-void pathcat(char *, size_t, const char *, const char *);
-
 /* chown.c */
 int chownfile(const char *, uid_t, gid_t, int);
 int chowndir(const char *, uid_t, gid_t, int);
+
+/* concat.c */
+int concat(int, const char *, int, const char *);
 
 /* cp.c */
 int cpfile(const char *, const char *, int, int);
@@ -62,6 +62,9 @@ void putstr(const char *, FILE *);
 
 /* mode.c */
 mode_t strtomode(const char *, mode_t);
+
+/* pathcat.c */
+void pathcat(char *, size_t, const char *, const char *);
 
 /* stoll.c
  * TODO: replace stoll */

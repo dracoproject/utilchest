@@ -7,20 +7,6 @@
 #include "util.h"
 
 static void
-cat(int f, const char *name)
-{
-	ssize_t n;
-	char buf[BUFSIZ];
-
-	while ((n = read(f, buf, sizeof(buf))) > 0)
-		if (write(STDOUT_FILENO, buf, n) != n)
-			err(1, "write <stdout>");
-
-	if (n < 0)
-		err(1, "read %s", name);
-}
-
-static void
 usage(void)
 {
 	fprintf(stderr, "usage: %s [-u] [file ...]\n", getprogname());
@@ -30,7 +16,7 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int f, rval;
+	int fd, rval;
 
 	rval = 0;
 	setprogname(argv[0]);
@@ -42,23 +28,29 @@ main(int argc, char *argv[])
 		usage();
 	} ARGEND
 
-	if (!argc)
-		cat(STDIN_FILENO, "<stdin>");
+	if (!argc &&
+	    concat(STDIN_FILENO, "<stdin>", STDOUT_FILENO, "<stdout>") < 0)
+		rval = 1;
 
-	for (; *argv; argv++) {
+	for (; *argv; argc--, argv++) {
 		if (ISDASH(*argv)) {
 			*argv = "<stdin>";
-			f = STDIN_FILENO;
-		} else if ((f = open(*argv, O_RDONLY, 0)) < 0) {
+			fd    = STDIN_FILENO;
+		} else if ((fd = open(*argv, O_RDONLY, 0)) < 0) {
 			warn("open %s", *argv);
 			rval = 1;
 			continue;
 		}
 
-		cat(f, *argv);
+		switch (concat(fd, *argv, STDOUT_FILENO, "<stdout>")) {
+		case -1:
+			rval = 1;
+		case -2:
+			exit(rval);
+		}
 
-		if (f != STDIN_FILENO)
-			close(f);
+		if (fd != STDIN_FILENO)
+			close(fd);
 	}
 
 	return rval;

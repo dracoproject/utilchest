@@ -116,6 +116,7 @@ LIBUTFSRC=\
 
 LIBUTILSRC=\
 	lib/util/chown.c\
+	lib/util/concat.c\
 	lib/util/cp.c\
 	lib/util/dir.c\
 	lib/util/ealloc.c\
