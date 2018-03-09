@@ -5,17 +5,15 @@
 ssize_t
 fgetline(char *buf, size_t bsize, FILE *stream)
 {
-	int c;
 	ssize_t n;
+	int c;
 
-	for (n = 0; n < bsize; n++) {
-		c = fgetc(stream);
+	c = 0;
+	n = 0;
 
-		if (c == '\n')
-			break;
-		if (c == EOF)
+	for (; n < bsize && c != '\n'; n++) {
+		if ((c = getc(stream)) == EOF)
 			return (n ? n : EOF);
-
 		buf[n] = c;
 	}
 

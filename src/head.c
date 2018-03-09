@@ -6,28 +6,20 @@
 #include "util.h"
 
 static void
-head(const char *fname, FILE *f, size_t n)
+head(const char *sname, FILE *stream, size_t n)
 {
-	size_t i, bsize;
  	ssize_t len;
-	char *buf;
+	char buf[LINE_MAX];
 
-	buf   = NULL;
-	bsize = 0;
-	i     = 0;
-
-	for (; i < n; i++) {
-		if ((len = getline(&buf, &bsize, f)) < 0)
+	for (; n; n--) {
+		if ((len = fgetline(buf, sizeof(buf), stream)) < 0)
 			break;
 
 		fwrite(buf, sizeof(char), len, stdout);
 	}
 
-	free(buf);
-	buf = NULL;
-
-	if (ferror(f))
-		err(1, "getline %s", fname);
+	if (ferror(stream))
+		err(1, "getline %s", sname);
 }
 
 static void
