@@ -1,26 +1,27 @@
 #include <err.h>
 #include <errno.h>
+#include <inttypes.h>
 #include <stdlib.h>
 
 #include "util.h"
 
-long long
-strtobase(const char *str, long long min, long long max, int base)
+intmax_t
+strtobase(const char *str, intmax_t min, intmax_t max, int base)
 {
-	long long ll;
+	intmax_t res;
 	char *end;
 
 	errno = 0;
-	ll    = strtoll(str, &end, base);
+	res   = strtoimax(str, &end, base);
 
 	if (end == str || *end != '\0')
 		errno = EINVAL;
 
-	if (ll > max || ll < min)
+	if (res > max || res < min)
 		errno = ERANGE;
 
 	if (errno)
 		err(1, "strtobase %s", str);
 
-	return ll;
+	return res;
 }

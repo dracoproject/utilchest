@@ -64,7 +64,7 @@ main(int argc, char *argv[])
 		if ((pwd = getpwnam(owner)))
 			uid = pwd->pw_uid;
 		else if (!errno)
-			uid = stoll(owner, 0, UINT_MAX);
+			uid = strtobase(owner, 0, UINT_MAX, 10);
 		else
 			err(1, "getpwnam %s", owner);
 	}
@@ -75,7 +75,7 @@ main(int argc, char *argv[])
 		if ((grp = getgrnam(group)))
 			gid = grp->gr_gid;
 		else if (!errno)
-			gid = stoll(group, 0, UINT_MAX);
+			gid = strtobase(group, 0, UINT_MAX, 10);
 		else
 			err(1, "getgrnam %s", group);
 	}

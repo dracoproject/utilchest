@@ -740,7 +740,7 @@ main(int argc, char *argv[])
 
 	if (lflag || sflag) {
 		if (!kflag && (temp = getenv("BLOCKSIZE")))
-			blksiz = stoll(temp, 1, LONG_MAX);
+			blksiz = strtobase(temp, 1, LONG_MAX, 10);
 		else if (kflag)
 			blksiz = 1024;
 
@@ -748,7 +748,7 @@ main(int argc, char *argv[])
 	}
 
 	if (printfcn != print1 && (temp = getenv("COLUMNS")))
-		termwidth = stoll(temp, 0, UINT_MAX);
+		termwidth = strtobase(temp, 0, UINT_MAX, 10);
 
 	if (!argc) {
 		argv[0] = ".";

@@ -47,8 +47,8 @@ main(int argc, char *argv[])
 			usage();
 
 		type  = (argv[1][0] == 'b') ? S_IFBLK : S_IFCHR;
-		major = stoll(argv[2], 0, ULONG_MAX);
-		minor = stoll(argv[3], 0, ULONG_MAX);
+		major = strtobase(argv[2], 0, ULONG_MAX, 10);
+		minor = strtobase(argv[3], 0, ULONG_MAX, 10);
 
 		ret =  mknod(argv[0], type|mode, makedev(major, minor));
 		break;

@@ -51,7 +51,7 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'n':
-		n = stoll(EARGF(usage()), 0, LLONG_MAX);
+		n = strtobase(EARGF(usage()), 0, LLONG_MAX, 10);
 		break;
 	default:
 		usage();
@@ -63,7 +63,7 @@ main(int argc, char *argv[])
 	for (; *argv; argv++) {
 		if (ISDASH(*argv)) {
 			*argv = "<stdin>";
-			fp = stdin;
+			fp    = stdin;
 		} else if (!(fp = fopen(*argv, "r"))) {
 			warn("fopen %s", *argv);
 			rval = 1;

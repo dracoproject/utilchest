@@ -51,7 +51,7 @@ main(int argc, char *argv[])
 	if ((grp = getgrnam(argv[0])))
 		gid = grp->gr_gid;
 	else if (!errno)
-		gid = stoll(argv[0], 0, UINT_MAX);
+		gid = strtobase(argv[0], 0, UINT_MAX, 10);
 	else
 		err(1, "getgrnam %s", argv[0]);
 

@@ -23,7 +23,8 @@ main(int argc, char *argv[])
 	if (argc != 1)
 		usage();
 
-	for (secs = stoll(argv[0], 0, UINT_MAX); secs;)
+	secs = strtobase(argv[0], 0, UINT_MAX, 10);
+	for (; secs;)
 		secs = sleep(secs);
 
 	return 0;

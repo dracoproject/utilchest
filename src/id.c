@@ -99,7 +99,7 @@ main(int argc, char *argv[])
 		break;
 	case 1:
 		if (isdigit(argv[0][0]))
-			uid = stoll(argv[0], 0, UINT_MAX);
+			uid = strtobase(argv[0], 0, UINT_MAX, 10);
 		break;
 	default:
 		usage();

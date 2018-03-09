@@ -2,6 +2,7 @@
 #include <sys/types.h>
 
 #include <stdio.h>
+#include <inttypes.h>
 #include <dirent.h>
 #include <limits.h>
 
@@ -66,7 +67,5 @@ mode_t strtomode(const char *, mode_t);
 /* pathcat.c */
 void pathcat(char *, size_t, const char *, const char *);
 
-/* stoll.c
- * TODO: replace stoll */
-#define stoll(a, b, c) strtobase(a, b, c, 10)
-long long strtobase(const char *, long long, long long, int);
+/* stoll.c */
+intmax_t strtobase(const char *, intmax_t, intmax_t, int);

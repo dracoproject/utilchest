@@ -26,7 +26,7 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'n':
-		prio = stoll(EARGF(usage()), PRIO_MIN, PRIO_MAX);
+		prio = strtobase(EARGF(usage()), PRIO_MIN, PRIO_MAX, 10);
 		break;
 	default:
 		usage();

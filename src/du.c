@@ -100,7 +100,7 @@ static void
 usage(void)
 {
 	fprintf(stderr, "usage: %s [-kx] [-a|-s] [-H|-L] [file ...]\n",
-	    getprogname());
+	        getprogname());
 	exit(1);
 }
 
@@ -139,7 +139,7 @@ main(int argc, char *argv[])
 		usage();
 
 	if (!kflag && (bsize = getenv("BLOCKSIZE")))
-		blocksize = stoll(bsize, 1, LONG_MAX);
+		blocksize = strtobase(bsize, 1, LONG_MAX, 10);
 	blocksize /= 512;
 
 	if (!argc)

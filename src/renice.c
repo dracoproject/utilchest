@@ -42,7 +42,7 @@ main(int argc, char *argv[])
 		which = PRIO_USER;
 		break;
 	case 'n':
-		prio = stoll(EARGF(usage()), PRIO_MIN, PRIO_MAX);
+		prio = strtobase(EARGF(usage()), PRIO_MIN, PRIO_MAX, 10);
 		break;
 	default:
 		usage();
@@ -55,14 +55,14 @@ main(int argc, char *argv[])
 		switch (which) {
 		case PRIO_PGRP:
 		case PRIO_PROCESS:
-			who = stoll(*argv, 0, INT_MAX);
+			who = strtobase(*argv, 0, INT_MAX, 10);
 			break;
 		case PRIO_USER:
 			errno = 0;
 			if ((pw = getpwnam(*argv)))
 				who = pw->pw_uid;
 			else if (!errno)
-				who = stoll(*argv, 0, INT_MAX);
+				who = strtobase(*argv, 0, INT_MAX, 10);
 			else
 				warn("getpwnam %s", *argv);
 			if (!who) {
