@@ -36,11 +36,13 @@ BIN=\
 	src/id\
 	src/link\
 	src/ln\
+	src/logger\
 	src/logname\
 	src/ls\
 	src/mkdir\
 	src/mkfifo\
 	src/mknod\
+	src/mktemp\
 	src/mv\
 	src/nice\
 	src/nohup\
@@ -85,9 +87,11 @@ MAN=\
 	man/logname.1\
 	man/ls.1\
 	man/ln.1\
+	man/logger.1\
 	man/mkdir.1\
 	man/mkfifo.1\
 	man/mknod.1\
+	man/mktemp.1\
 	man/mv.1\
 	man/nice.1\
 	man/nohup.1\

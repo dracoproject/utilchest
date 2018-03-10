@@ -28,11 +28,13 @@ It's a collection of Unix utilities written to be simple and small
 * id
 * link
 * ln
+* logger
 * logname
 * ls
 * mkdir
 * mkfifo
 * mknod
+* mktemp
 * mv
 * nice
 * nohup

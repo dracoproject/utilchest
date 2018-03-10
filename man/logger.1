@@ -1,0 +1,28 @@
+.Dd March 10, 2018
+.Dt LOGGER 1
+.Os
+.Sh NAME
+.Nm logger
+.Nd log messages
+.Sh SYNOPSIS
+.Nm
+.Op Ar message ...
+.Sh DESCRIPTION
+.Nm
+writes each
+.Ar message
+to the log. If
+.Ar message
+is absent,
+.Nm
+reads from the standard input.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr syslog 3
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.
