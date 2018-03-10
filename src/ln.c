@@ -47,7 +47,7 @@ usage(void)
 {
 	fprintf(stderr,
 	        "usage: %s [-f] [-L|-P|-s] source [target]\n"
-	        "       %s [-f] [-L|-P|-s] source ... dir\n",
+	        "       %s [-f] [-L|-P|-s] source ... directory\n",
 	        getprogname(), getprogname());
 	exit(1);
 }

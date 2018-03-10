@@ -84,6 +84,7 @@ MAN=\
 	man/link.1\
 	man/logname.1\
 	man/ls.1\
+	man/ln.1\
 	man/mkdir.1\
 	man/mkfifo.1\
 	man/mknod.1\
