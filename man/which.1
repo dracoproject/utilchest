@@ -1,0 +1,45 @@
+.Dd March 15, 2018
+.Dt WHICH 1
+.Os
+.Sh NAME
+.Nm which
+.Nd locate programs in the path
+.Sh SYNOPSIS
+.Nm
+.Op Fl a
+.Ar name ...
+.Sh DESCRIPTION
+.Nm
+looks for each
+.Ar name
+in the
+.Ev PATH
+directories, and prints an absolute path of
+the first match to the standard output.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl a
+Print all matching names.
+.El
+.Sh ENVIRONMENT
+.Bl -tag -width PATH
+.It Ev PATH
+A colon-separated list of directories in which to find executables.
+.El
+.Sh EXIT STATUS
+The
+.Nm
+utility exits with one of the following values:
+.Pp
+.Bl -tag -width indent -offset indent -compact
+.It 0
+All names were found.
+.It 1
+At least one name was not found.
+.It 2
+No names were found.
+.It 3
+An error occured.
+.El
+.Sh SEE ALSO
+.Xr environ 7

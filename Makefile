@@ -64,6 +64,7 @@ BIN=\
 	src/tty\
 	src/uname\
 	src/unlink\
+	src/which\
 	src/whoami\
 	src/yes
 
