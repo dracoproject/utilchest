@@ -1,0 +1,54 @@
+.Dd March 16, 2018
+.Dt CHROOT 1
+.Os
+.Sh NAME
+.Nm chroot
+.Nd change root directory
+.Sh SYNOPSIS
+.Nm
+.Ar newroot
+.Op Ar command ...
+.Sh DESCRIPTION
+.Nm
+changes its root directory to the
+.Ar newroot
+directory and executes
+.Ar command ,
+if specified, or an interactive shell.
+.Pp
+If the environment variable
+.Ev SHELL
+is not set,
+.Dq /bin/sh
+is used.
+.Sh ENVIRONMENT
+.Bl -tag -width SHELL
+.It Ev SHELL
+If set, the specified string is interpreted as
+the name of the shell to execute.
+.El
+.Sh EXIT STATUS
+The
+.Nm
+utility exits with one of the following values:
+.Pp
+.Bl -tag -width indent -offset indent -compact
+.It 1\-125
+An error occured.
+.It 126
+The
+.Ar command
+was found but could not be invoked.
+.It 127
+The
+.Ar command
+could not be found.
+.El
+.Pp
+Otherwise, the exit status of
+.Nm
+will be that of
+.Ar command .
+.Sh SEE ALSO
+.Xr chdir 2 ,
+.Xr chroot 2
