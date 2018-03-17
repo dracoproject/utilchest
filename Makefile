@@ -73,22 +73,28 @@ MAN=\
 	man/cat.1\
 	man/chgrp.1\
 	man/chmod.1\
+	man/chown.1\
+	man/chroot.1\
 	man/cksum.1\
+	man/clear.1\
 	man/cmp.1\
 	man/cp.1\
+	man/date.1\
 	man/dirname.1\
 	man/domainname.1\
 	man/du.1\
 	man/echo.1\
 	man/env.1\
 	man/false.1\
+	man/flock.1\
 	man/head.1\
 	man/hostname.1\
+	man/id.1\
 	man/link.1\
-	man/logname.1\
-	man/ls.1\
 	man/ln.1\
 	man/logger.1\
+	man/logname.1\
+	man/ls.1\
 	man/mkdir.1\
 	man/mkfifo.1\
 	man/mknod.1\
@@ -99,16 +105,22 @@ MAN=\
 	man/pathchk.1\
 	man/printenv.1\
 	man/pwd.1\
+	man/readlink.1\
 	man/renice.1\
+	man/rev.1\
 	man/rm.1\
 	man/rmdir.1\
+	man/setsid.1\
 	man/sleep.1\
+	man/sync.1\
 	man/tee.1\
 	man/time.1\
 	man/touch.1\
 	man/true.1\
+	man/tty.1\
 	man/uname.1\
 	man/unlink.1\
+	man/which.1\
 	man/whoami.1\
 	man/yes.1
 
