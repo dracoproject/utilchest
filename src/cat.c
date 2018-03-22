@@ -45,6 +45,7 @@ main(int argc, char *argv[])
 		switch (concat(fd, *argv, STDOUT_FILENO, "<stdout>")) {
 		case -1:
 			rval = 1;
+			/* fallthrough */
 		case -2:
 			exit(rval);
 		}

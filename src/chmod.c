@@ -77,7 +77,8 @@ main(int argc, char *argv[])
 {
 	int (*chmodf)(const char *, int), rval;
 
-	rval = 0;
+	chmodf = chmodfile;
+	rval   = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {
