@@ -4,18 +4,16 @@
 int
 fshut(FILE *s, const char *sn)
 {
-	int rval;
-
-	rval = 0;
-
 	fflush(s);
 	rval |= ferror(s);
 	rval |= fclose(s);
 
-	if (rval)
+	if (rval < 0) {
 		warn("fshut %s", sn);
+		return 1;
+	}
 
-	return rval;
+	return 0;
 }
 
 int
