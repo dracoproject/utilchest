@@ -15,5 +15,5 @@ main(int argc, char *argv[])
 		err(1, "getlogin");
 	puts(logname);
 
-	return 0;
+	return (ioshut());
 }

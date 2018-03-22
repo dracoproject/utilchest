@@ -68,10 +68,9 @@ main(int argc, char *argv[])
 		}
 
 		head(*argv, fp, n);
-
 		if (fp != stdin)
-			fclose(fp);
+			rval |= fshut(fp, *argv);
 	}
 
-	exit(rval);
+	return (rval | ioshut());
 }

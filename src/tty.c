@@ -17,5 +17,5 @@ main(int argc, char *argv[])
 		err(1, "ttyname");
 	puts(tty);
 
-	exit(0);
+	return (ioshut());
 }

@@ -55,6 +55,10 @@ char * estrdup(const char *);
 /* fgetline.c */
 ssize_t fgetline(char *, size_t, FILE *);
 
+/* fshut.c */
+int fshut(FILE *, const char *);
+int ioshut(void);
+
 /* genpath.c */
 int genpath(char *, mode_t, mode_t);
 

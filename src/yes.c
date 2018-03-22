@@ -10,5 +10,6 @@ main(int argc, char *argv[])
 	while (puts(s) >= 0)
 		continue;
 
+	/* NOTREACHED */
 	return 1;
 }

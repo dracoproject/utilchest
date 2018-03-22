@@ -23,5 +23,5 @@ main(int argc, char *argv[])
 			puts(*environ);
 	}
 
-	exit(0);
+	return (ioshut());
 }

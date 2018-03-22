@@ -57,8 +57,7 @@ main(int argc, char *argv[])
 
 	if (!(cwd = logical ? getcwd(NULL, 0) : getcwd_logical()))
 		err(1, "getcwd");
-
 	puts(cwd);
 
-	exit(0);
+	return (ioshut());
 }

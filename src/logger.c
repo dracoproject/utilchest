@@ -19,7 +19,7 @@ main(int argc, char *argv[])
 	if (!argc) {
 		while (fgetline(buf, sizeof(buf), stdin) > 0)
 			syslog(0, "%s", buf);
-		exit(0);
+		exit(ioshut());
 	}
 
 	for (; *argv; argc--, argv++) {

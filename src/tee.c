@@ -38,8 +38,7 @@ main(int argc, char *argv[])
 	} ARGEND
 
 	fdslen = argc + 1;
-	if (!(fds = malloc(fdslen * sizeof(*fds))))
-		err(1, "malloc");
+	fds    = emalloc(fdslen * sizeof(*fds));
 
 	for (i = 0; i < argc; i++)
 		if ((fds[i] = open(argv[i], mode, DEFFILEMODE)) < 0)
@@ -50,19 +49,15 @@ main(int argc, char *argv[])
 	while ((n = read(STDIN_FILENO, buf, sizeof(buf))) > 0) {
 		for (i = 0; i < fdslen; i++)
 			if (write(fds[i], buf, n) != n)
-				err(1, "write %s",
-				    (i < fdslen) ? argv[i] : "<stdout>");
+				err(1, "write %s", (i < fdslen)
+				    ? argv[i] : "<stdout>");
 	}
 
 	if (n < 0)
 		err(1, "read <stdin>");
 
-	for (i = 0; i < fdslen; i++) {
-		if (close(fds[i]) < 0) {
-			warn("close %s", argv[i]);
-			rval = 1;
-		}
-	}
+	for (i = 0; i < fdslen; i++)
+		close(fds[i]);
 	free(fds);
 
 	return rval;

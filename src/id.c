@@ -157,5 +157,5 @@ main(int argc, char *argv[])
 		group(pw);
 	putchar('\n');
 
-	return 0;
+	return (ioshut());
 }

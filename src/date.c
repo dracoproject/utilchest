@@ -32,17 +32,13 @@ main(int argc, char *argv[])
 	if (time(&tval) < 0)
 		err(1, "time");
 
-	if (*argv && **argv == '+')
-		fmt = *argv++;
-	else
-		fmt = "+%a %b %e %H:%M:%S %Z %Y";
+	fmt = (*argv && **argv == '+') ? *argv++ : "+%a %b %e %H:%M:%S %Z %Y";
 
-	if ((tm = localtime(&tval)))
-		strftime(buf, sizeof(buf), ++fmt, tm);
-	else
+	if (!(tm = localtime(&tval)))
 		err(1, "localtime");
 
+	strftime(buf, sizeof(buf), ++fmt, tm);
 	puts(buf);
 
-	exit(0);
+	return (ioshut());
 }

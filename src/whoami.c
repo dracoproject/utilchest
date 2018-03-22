@@ -18,5 +18,5 @@ main(int argc, char *argv[])
 		err(1, "gepwuid");
 	puts(pw->pw_name);
 
-	exit(0);
+	return (ioshut());
 }

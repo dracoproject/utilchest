@@ -22,5 +22,5 @@ main(int argc, char *argv[])
 
 	puts(dirname(*argv));
 
-	exit(0);
+	return (ioshut());
 }

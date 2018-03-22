@@ -32,5 +32,5 @@ main(int argc, char *argv[])
 	}
 	puts(p);
 
-	exit(0);
+	return (ioshut());
 }

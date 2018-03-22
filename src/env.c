@@ -41,5 +41,5 @@ main(int argc, char *argv[])
 	for (; *environ; environ++)
 		puts(*environ);
 
-	exit(0);
+	return (ioshut());
 }

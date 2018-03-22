@@ -24,5 +24,5 @@ main(int argc, char *argv[])
 	if (!nflag)
 		putchar('\n');
 
-	exit(0);
+	return (ioshut());
 }

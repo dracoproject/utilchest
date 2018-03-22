@@ -788,5 +788,6 @@ main(int argc, char *argv[])
 	while (dlist)
 		freefile(popfile(&dlist));
 
-	exit(rval);
+	return (rval | ioshut());
 }
+

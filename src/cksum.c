@@ -112,10 +112,9 @@ main(int argc, char *argv[])
 		}
 
 		cksum(fd, *argv);
-
 		if (fd != STDIN_FILENO)
 			close(fd);
 	}
 
-	return rval;
+	return (rval | ioshut());
 }

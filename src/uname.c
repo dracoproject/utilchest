@@ -7,13 +7,21 @@
 #include "util.h"
 
 enum Flags {
-	MAC = 0x01,
-	NOD = 0x02,
-	REL = 0x04,
-	SYS = 0x08,
-	VER = 0x10,
-	ALL = 0x1f
+	MFLAG = 0x01,
+	NFLAG = 0x02,
+	RFLAG = 0x04,
+	SFLAG = 0x08,
+	VFLAG = 0x10,
+	AFLAG = 0x1f
 };
+
+static void
+printsp(const char *s, int *space)
+{
+	if (space++)
+		putchar(' ');
+	fputs(s, stdout);
+}
 
 static void
 usage(void)
@@ -34,22 +42,22 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'a':
-		print |= ALL;
+		print |= AFLAG;
 		break;
 	case 'm':
-		print |= MAC;
+		print |= MFLAG;
 		break;
 	case 'n':
-		print |= NOD;
+		print |= NFLAG;
 		break;
 	case 'r':
-		print |= REL;
+		print |= RFLAG;
 		break;
 	case 's':
-		print |= SYS;
+		print |= SFLAG;
 		break;
 	case 'v':
-		print |= VER;
+		print |= VFLAG;
 		break;
 	default:
 		usage();
@@ -61,31 +69,17 @@ main(int argc, char *argv[])
 	if (uname(&sys) < 0)
 		err(1, "uname");
 
-	if (!print || (print & SYS)) {
-		space++;
-		fputs(sys.sysname, stdout);
-	}
-	if (print & NOD) {
-		if (space++)
-			putchar(' ');
-		fputs(sys.nodename, stdout);
-	}
-	if (print & REL) {
-		if (space++)
-			putchar(' ');
-		fputs(sys.release, stdout);
-	}
-	if (print & VER) {
-		if (space++)
-			putchar(' ');
-		fputs(sys.version, stdout);
-	}
-	if (print & MAC) {
-		if (space++)
-			putchar(' ');
-		fputs(sys.machine, stdout);
-	}
+	if (!print || (print & SFLAG))
+		printsp(sys.sysname, &space);
+	if (print & NFLAG)
+		printsp(sys.nodename, &space);
+	if (print & RFLAG)
+		printsp(sys.release, &space);
+	if (print & VFLAG)
+		printsp(sys.version, &space);
+	if (print & MFLAG)
+		printsp(sys.machine, &space);
 	putchar('\n');
 
-	exit(0);
+	return (ioshut());
 }

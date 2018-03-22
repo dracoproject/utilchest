@@ -35,5 +35,5 @@ main(int argc, char *argv[])
 		puts(domain);
 	}
 
-	exit(0);
+	return (ioshut());
 }

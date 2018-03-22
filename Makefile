@@ -138,6 +138,7 @@ LIBUTILSRC=\
 	lib/util/cp.c\
 	lib/util/dir.c\
 	lib/util/ealloc.c\
+	lib/util/fshut.c\
 	lib/util/fgetline.c\
 	lib/util/genpath.c\
 	lib/util/mode.c\

@@ -29,9 +29,9 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
+	int aflag, i, rval;
 	char *path, *p;
 	char buf[PATH_MAX];
-	int aflag, i, rval;
 
 	aflag = 0;
 	rval  = 0;
@@ -72,6 +72,9 @@ main(int argc, char *argv[])
 			}
 		}
 	}
+
+	if (ioshut())
+		exit(3);
 
 	return (rval == 0) ? 2 : (rval >= argc) ? 0 : 1;
 }
