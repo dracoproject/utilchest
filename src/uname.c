@@ -16,9 +16,9 @@ enum Flags {
 };
 
 static void
-printsp(const char *s, int *space)
+printsp(const char *s, int *sp)
 {
-	if (space++)
+	if ((*sp)++)
 		putchar(' ');
 	fputs(s, stdout);
 }
@@ -34,30 +34,30 @@ int
 main(int argc, char *argv[])
 {
 	struct utsname sys;
-	int print, space;
+	int opts, space;
 
-	print = 0;
+	opts  = 0;
 	space = 0;
 	setprogname(argv[0]);
 
 	ARGBEGIN {
 	case 'a':
-		print |= AFLAG;
+		opts |= AFLAG;
 		break;
 	case 'm':
-		print |= MFLAG;
+		opts |= MFLAG;
 		break;
 	case 'n':
-		print |= NFLAG;
+		opts |= NFLAG;
 		break;
 	case 'r':
-		print |= RFLAG;
+		opts |= RFLAG;
 		break;
 	case 's':
-		print |= SFLAG;
+		opts |= SFLAG;
 		break;
 	case 'v':
-		print |= VFLAG;
+		opts |= VFLAG;
 		break;
 	default:
 		usage();
@@ -69,15 +69,15 @@ main(int argc, char *argv[])
 	if (uname(&sys) < 0)
 		err(1, "uname");
 
-	if (!print || (print & SFLAG))
+	if (!opts || (opts & SFLAG))
 		printsp(sys.sysname, &space);
-	if (print & NFLAG)
+	if (opts & NFLAG)
 		printsp(sys.nodename, &space);
-	if (print & RFLAG)
+	if (opts & RFLAG)
 		printsp(sys.release, &space);
-	if (print & VFLAG)
+	if (opts & VFLAG)
 		printsp(sys.version, &space);
-	if (print & MFLAG)
+	if (opts & MFLAG)
 		printsp(sys.machine, &space);
 	putchar('\n');
 
