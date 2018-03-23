@@ -28,8 +28,8 @@ main(int argc, char *argv[])
 		usage();
 	} ARGEND
 
-	if (!argc &&
-	    concat(STDIN_FILENO, "<stdin>", STDOUT_FILENO, "<stdout>") < 0)
+	if (!argc && concat(STDIN_FILENO, "<stdin>",
+	                    STDOUT_FILENO, "<stdout>") < 0)
 		rval = 1;
 
 	for (; *argv; argc--, argv++) {
