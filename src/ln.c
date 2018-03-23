@@ -9,9 +9,11 @@
 
 #include "util.h"
 
-#define FORCE  0x1 /* force */
-#define FOLLOW 0x2 /* follow symlink */
-#define SYMLNK 0x4 /* create symlink */
+enum Flags {
+	FFLAG = 0x1 /* force */
+	LFLAG = 0x2 /* follow symlink */
+	SFLAG = 0x4 /* create symlink */
+};
 
 static int
 linkit(const char *src, const char *dest, int opts)
@@ -20,13 +22,13 @@ linkit(const char *src, const char *dest, int opts)
 
 	flags = 0;
 
-	if (opts & FORCE)
+	if (opts & FFLAG)
 		unlink(dest);
 
-	if (opts & FOLLOW)
+	if (opts & LFLAG)
 		flags |= AT_SYMLINK_FOLLOW;
 
-	if (opts & SYMLNK) {
+	if (opts & SFLAG) {
 		if (symlink(src, dest) < 0) {
 			warn("symlink %s -> %s", src, dest);
 			return 1;
@@ -65,16 +67,16 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'f':
-		opts |= FORCE;
+		opts |= FFLAG;
 		break;
 	case 's':
-		opts |= SYMLNK;
+		opts |= SFLAG;
 		break;
 	case 'L':
-		opts |= FOLLOW;
+		opts |= LFLAG;
 		break;
 	case 'P':
-		opts &= ~FOLLOW;
+		opts &= ~LFLAG;
 		break;
 	default:
 		usage();

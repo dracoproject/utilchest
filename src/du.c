@@ -9,9 +9,11 @@
 
 #include "util.h"
 
-#define AFLAG 0x01
-#define SFLAG 0x02
-#define XFLAG 0x04
+enum Flags {
+	AFLAG = 0x01
+	SFLAG = 0x02
+	XFLAG = 0x04
+}
 
 static int  rval;
 static int  opts;
@@ -148,5 +150,5 @@ main(int argc, char *argv[])
 	for (; *argv; argc--, argv++)
 		dudir(*argv, 0);
 
-	return rval;
+	return (rval | ioshut());
 }
