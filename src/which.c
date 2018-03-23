@@ -59,7 +59,7 @@ main(int argc, char *argv[])
 			if (strchr(argv[i], '/')) {
 				if (progaccess(argv[i]))
 					puts(argv[i]);
-				argv[i] = NULL;
+				rval++, argv[i] = NULL;
 				continue;
 			}
 
@@ -67,8 +67,7 @@ main(int argc, char *argv[])
 			if (progaccess(buf)) {
 				puts(buf);
 				if (i < argc-1 && !aflag)
-					argv[i] = NULL;
-				rval++;
+					rval++, argv[i] = NULL;
 			}
 		}
 	}
