@@ -10,8 +10,8 @@
 #include "util.h"
 
 enum Flags {
-	FFLAG = 0x1 /* force */
-	LFLAG = 0x2 /* follow symlink */
+	FFLAG = 0x1, /* force */
+	LFLAG = 0x2, /* follow symlink */
 	SFLAG = 0x4 /* create symlink */
 };
 

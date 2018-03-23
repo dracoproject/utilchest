@@ -10,10 +10,10 @@
 #include "util.h"
 
 enum Flags {
-	AFLAG = 0x01
-	SFLAG = 0x02
+	AFLAG = 0x01,
+	SFLAG = 0x02,
 	XFLAG = 0x04
-}
+};
 
 static int  rval;
 static int  opts;
