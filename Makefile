@@ -217,4 +217,4 @@ clean:
 	rm -f $(BIN) $(OBJ) $(LIB) utilchest
 
 .PHONY:
-	all install clean
+	all utilchest-install install install-man clean
