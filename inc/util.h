@@ -33,6 +33,10 @@ typedef struct {
 extern int fs_follow;
 extern int chown_hflag;
 
+/* chmod.c */
+int chmodfile(const char *, mode_t, int);
+int chmoddir(const char *, mode_t, int);
+
 /* chown.c */
 int chownfile(const char *, uid_t, gid_t, int);
 int chowndir(const char *, uid_t, gid_t, int);

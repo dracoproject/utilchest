@@ -34,6 +34,7 @@ BIN=\
 	src/head\
 	src/hostname\
 	src/id\
+	src/install\
 	src/link\
 	src/ln\
 	src/logger\
@@ -133,6 +134,7 @@ LIBUTFSRC=\
 	lib/utf/runetype.c
 
 LIBUTILSRC=\
+	lib/util/chmod.c\
 	lib/util/chown.c\
 	lib/util/concat.c\
 	lib/util/cp.c\
