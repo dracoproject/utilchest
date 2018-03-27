@@ -99,7 +99,7 @@ main(int argc, char *argv[])
 		exit(rval);
 	}
 
-	if (argc < 2)
+	if (argc == 2)
 		exit(install(argv[0], argv[1], gid, mode, uid));
 
 	sourcedir = argv[argc - 1];
