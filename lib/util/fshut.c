@@ -4,7 +4,7 @@
 int
 fshut(FILE *s, const char *sn)
 {
-	int rval = 0;
+	int rval;
 
 	rval = 0;
 
