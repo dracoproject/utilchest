@@ -13,6 +13,7 @@
 #define FS_FOLLOW(a) ((fs_follow == 'L') || ((fs_follow == 'H') && !(a)))
 #define ISDOT(a)     ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
 #define ISDASH(a)    ((a)[0]=='-' && (a)[1]=='\0')
+#define LEN(a)       (sizeof((a))/sizeof((a)[0]))
 
 enum cp_flags {
 	CP_FFLAG = 0x1, /* force copy */

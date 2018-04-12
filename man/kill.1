@@ -1,0 +1,49 @@
+.Dd April 11, 2018
+.Dt KILL 1
+.Os
+.Sh NAME
+.Nm kill
+.Nd terminate or signal a process
+.Sh SYNOPSIS
+.Nm
+.Op Fl s Ar signal_name
+.Ar pid ...
+.Nm
+.Fl l
+.Op Ar exit_status
+.Sh DESCRIPTION
+.Nm
+sends a signal to each process or process group specified by each
+.Ar pid .
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl l Op Ar exit_status
+Print the name of the signal corresponding to
+.Ar exit_status .
+.It Fl s Ar signal_name
+Send signal corresponding to
+.Ar signal_name .
+.El
+.Pp
+If
+.Fl l
+option is specified, and
+.Ar exit_status
+is ommited, a list of all the signals is written to the standard output.
+.Pp
+If
+.Fl s
+option is specified, and
+.Ar signal_name
+is ommited, it defaults to SIGTERM.
+.Sh EXIT STATUS
+.Ex -std
+.Sh SEE ALSO
+.Xr kill 2 ,
+.Xr signal 7
+.Sh STANDARDS
+The
+.Nm
+utility is compliant with the
+.St -p1003.1-2008
+specification.

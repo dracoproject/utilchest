@@ -35,6 +35,7 @@ BIN=\
 	src/hostname\
 	src/id\
 	src/install\
+	src/kill\
 	src/link\
 	src/ln\
 	src/logger\
@@ -92,6 +93,7 @@ MAN=\
 	man/hostname.1\
 	man/id.1\
 	man/install.1\
+	man/kill.1\
 	man/link.1\
 	man/ln.1\
 	man/logger.1\
