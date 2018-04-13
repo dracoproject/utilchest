@@ -325,7 +325,7 @@ ptype(mode_t mode)
 static void
 pmode(struct stat *st)
 {
-	char mode[10];
+	char mode[11];
 
 	memcpy(mode, "?---------", sizeof(mode));
 
