@@ -249,8 +249,11 @@ newfile(const char *path, const char *str, struct stat *info)
 		else
 			new->tmode = 0;
 
-		if ((len = readlink(path, lp, sizeof(lp) - 1)) < 0)
-			err(1, "readlink %s", path);
+		if ((len = readlink(path, lp, sizeof(lp) - 1)) < 0) {
+			warn("readlink %s", path);
+			freefile(new);
+			return NULL;
+		}
 
 		lp[len] = '\0';
 		new->link = estrdup(lp);
@@ -620,12 +623,14 @@ lsdir(const char *path, int more, int depth)
 		if (!Aaflag && dir.name[0] == '.')
 			continue;
 
-		pushfile(&flist, newfile(dir.path, dir.name, &dir.info));
+		if (!(p = newfile(dir.path, dir.name, &dir.info)))
+			continue;
+		pushfile(&flist, p);
 		mkmax(&max, flist);
 	}
 
 	if (rd == FS_ERR)
-		err(1, "read_dir %s", dir.path);
+		warn("read_dir %s", dir.path);
 
 	if (flist && flist->next && Sftflag != 'f')
 		_mergesort(&flist);
@@ -767,10 +772,12 @@ main(int argc, char *argv[])
 			continue;
 		}
 
+		if (!(p = newfile(*argv, *argv, &st)))
+			continue;
 		if (Rdflag != 'd' && S_ISDIR(st.st_mode)) {
-			pushfile(&dlist, newfile(*argv, *argv, &st));
+			pushfile(&dlist, p);
 		} else {
-			pushfile(&flist, newfile(*argv, *argv, &st));
+			pushfile(&flist, p);
 			mkmax(&max, flist);
 		}
 	}

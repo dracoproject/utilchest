@@ -43,6 +43,7 @@ typedef struct {
 	char path[PATH_MAX];
 } FS_DIR;
 
+extern struct histnode *fs_hist;
 extern int fs_follow;
 extern int chown_hflag;
 

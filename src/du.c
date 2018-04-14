@@ -65,6 +65,7 @@ dudir(const char *path, int depth)
 			return 1;
 		}
 		rval = dufile(path, depth);
+		/* fallthrough */
 	case FS_CONT:
 		return rval;
 	}

@@ -38,6 +38,7 @@ chmoddir(const char *s, mode_t mode, int depth)
 			return 1;
 		}
 		rval = chmodfile(s, mode, depth);
+		/* fallthrough */
 	case FS_CONT:
 		return rval;
 	}

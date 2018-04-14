@@ -36,12 +36,17 @@ open_dir(FS_DIR *dir, const char *path)
 	if (!(dir->dirp = opendir(dir->dir)))
 		return FS_ERR;
 
-	if (fstat(dirfd(dir->dirp), &st) < 0)
+	if (fstat(dirfd(dir->dirp), &st) < 0) {
+		closedir(dir->dirp);
 		return FS_ERR;
+	}
 
-	for (hp = fs_hist; hp; hp = hp->next)
-		if (st.st_dev == hp->dev && st.st_ino == hp->ino)
+	for (hp = fs_hist; hp; hp = hp->next) {
+		if (st.st_dev == hp->dev && st.st_ino == hp->ino) {
+			closedir(dir->dirp);
 			return FS_CONT;
+		}
+	}
 
 	hp       = emalloc(sizeof(*hp));
 	hp->dev  = st.st_dev;

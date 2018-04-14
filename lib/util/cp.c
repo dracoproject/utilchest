@@ -178,6 +178,7 @@ cpdir(const char *src, const char *dest, int opts, int depth)
 			return 1;
 		}
 		rval = cpfile(src, dest, opts, depth);
+		/* fallthrough */
 	case FS_CONT:
 		return rval;
 	}

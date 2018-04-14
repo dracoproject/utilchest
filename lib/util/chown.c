@@ -49,6 +49,7 @@ chowndir(const char *s, uid_t uid, gid_t gid, int depth)
 			return 1;
 		}
 		rval = chownfile(s, uid, gid, depth);
+		/* fallthrough */
 	case FS_CONT:
 		return rval;
 	}
