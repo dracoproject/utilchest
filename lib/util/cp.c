@@ -171,12 +171,14 @@ cpdir(const char *src, const char *dest, int opts, int depth)
 
 	rval = 0;
 
-	if (open_dir(&dir, src) < 0) {
-		if (!(rval = errno != ENOTDIR))
-			rval = cpfile(src, dest, opts, depth);
-		else
+	switch (open_dir(&dir, src)) {
+	case FS_ERR:
+		if (errno != ENOTDIR) {
 			warn("open_dir %s", src);
-
+			return 1;
+		}
+		rval = cpfile(src, dest, opts, depth);
+	case FS_CONT:
 		return rval;
 	}
 
@@ -201,7 +203,7 @@ cpdir(const char *src, const char *dest, int opts, int depth)
 			rval |= cpfile(dir.path, buf, opts, depth);
 	}
 
-	if (rd < 0) {
+	if (rd == FS_ERR) {
 		warn("read_dir %s", dir.path);
 		return 1;
 	}

@@ -58,13 +58,15 @@ dudir(const char *path, int depth)
 
 	subtotal = 0;
 
-	if (open_dir(&dir, path) < 0) {
+	switch (open_dir(&dir, path)) {
+	case FS_ERR:
 		if (errno != ENOTDIR) {
 			warn("open_dir %s", path);
-			goto err;
+			return 1;
 		}
-
-		return dufile(path, depth);
+		rval = dufile(path, depth);
+	case FS_CONT:
+		return rval;
 	}
 
 	if ((FS_FOLLOW(depth) ? stat : lstat)(path, &st) < 0) {
@@ -85,7 +87,7 @@ dudir(const char *path, int depth)
 	if (!((opts & SFLAG) && depth))
 		display(path, subtotal);
 
-	if (rd < 0) {
+	if (rd == FS_ERR) {
 		warn("read_dir %s", dir.path);
 		goto err;
 	}

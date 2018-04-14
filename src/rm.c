@@ -43,12 +43,14 @@ deldir(const char *f, int depth)
 
 	rval = 0;
 
-	if (open_dir(&dir, f) < 0) {
-		if (!(rval = errno != ENOTDIR))
-			rval = delfile(f, depth);
-		else
+	switch (open_dir(&dir, f)) {
+	case FS_ERR:
+		if (errno != ENOTDIR) {
 			warn("open_dir %s", f);
-
+			return 1;
+		}
+		rval = delfile(f, depth);
+	case FS_CONT:
 		return rval;
 	}
 
@@ -62,7 +64,7 @@ deldir(const char *f, int depth)
 			rval |= delfile(dir.path, depth);
 	}
 
-	if (rd < 0) {
+	if (rd == FS_ERR) {
 		warn("read_dir %s", dir.path);
 		return 1;
 	}

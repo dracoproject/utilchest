@@ -591,7 +591,7 @@ print_list(struct file **flist, struct max *max)
 }
 
 static int
-lsdir(const char *path, int more)
+lsdir(const char *path, int more, int depth)
 {
 	FS_DIR dir;
 	struct file *flist, *p;
@@ -602,13 +602,18 @@ lsdir(const char *path, int more)
 	flist = NULL;
 	memset(&max, 0, sizeof(max));
 
-	if (open_dir(&dir, path) < 0)
-		err(1, "open_dir %s", path);
+	switch (open_dir(&dir, path)) {
+	case FS_ERR:
+		warn("open_dir %s", path);
+		return 1;
+	case FS_CONT:
+		return 0;
+	}
 
 	if (more || Rdflag == 'R')
 		printf((first-- == 1) ? "%s:\n" : "\n%s:\n", path);
 
-	while ((rd = read_dir(&dir, 0)) == FS_EXEC) {
+	while ((rd = read_dir(&dir, depth)) == FS_EXEC) {
 		if (Aaflag != 'a' && ISDOT(dir.name))
 			continue;
 
@@ -619,7 +624,7 @@ lsdir(const char *path, int more)
 		mkmax(&max, flist);
 	}
 
-	if (rd < 0)
+	if (rd == FS_ERR)
 		err(1, "read_dir %s", dir.path);
 
 	if (flist && flist->next && Sftflag != 'f')
@@ -635,7 +640,7 @@ lsdir(const char *path, int more)
 			if (!S_ISDIR(p->st.st_mode))
 				continue;
 			snprintf(npath, sizeof(npath), "%s/%s", path, p->name);
-			lsdir(npath, more);
+			lsdir(npath, more, depth+1);
 		}
 	}
 
@@ -781,7 +786,7 @@ main(int argc, char *argv[])
 	}
 
 	for (more = argc > 1, p = dlist; p; p = p->next)
-		rval |= lsdir(p->name, more);
+		rval |= lsdir(p->name, more, 0);
 
 	while (flist)
 		freefile(popfile(&flist));

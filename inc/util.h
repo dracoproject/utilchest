@@ -9,7 +9,6 @@
 #include "arg.h"
 #include "compat.h"
 
-#define FS_EXEC      1
 #define FS_FOLLOW(a) ((fs_follow == 'L') || ((fs_follow == 'H') && !(a)))
 #define ISDOT(a)     ((a)[0]=='.' && ((a)[1]==0 || ((a)[1]=='.' && (a)[2]==0)))
 #define ISDASH(a)    ((a)[0]=='-' && (a)[1]=='\0')
@@ -18,6 +17,19 @@
 enum cp_flags {
 	CP_FFLAG = 0x1, /* force copy */
 	CP_PFLAG = 0x2  /* preserve permissions */
+};
+
+enum fs_ret {
+	FS_ERR  = -1, /* an error ocurred */
+	FS_OK   =  0, /* end */
+	FS_EXEC =  1, /* still running */
+	FS_CONT =  1  /* dir already accessed */
+};
+
+struct histnode {
+	struct histnode *next;
+	dev_t dev;
+	ino_t ino;
 };
 
 typedef struct {

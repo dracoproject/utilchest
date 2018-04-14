@@ -10,24 +10,46 @@
 
 #include "util.h"
 
-enum RET {
-	EXE = 1,
-	END = 0,
-	ERR = -1
-};
-
 int fs_follow = 'P';
+struct histnode *fs_hist;
+
+static struct histnode *
+popnode(struct histnode **hp)
+{
+	struct histnode *op;
+
+	op  = *hp;
+	*hp = op->next;
+
+	return op;
+}
 
 int
 open_dir(FS_DIR *dir, const char *path)
 {
+	struct stat st;
+	struct histnode *hp;
+
 	dir->dir  = (char *)path;
 	dir->dlen = strlen(dir->dir);
 
 	if (!(dir->dirp = opendir(dir->dir)))
-		return -1;
+		return FS_ERR;
 
-	return 0;
+	if (fstat(dirfd(dir->dirp), &st) < 0)
+		return FS_ERR;
+
+	for (hp = fs_hist; hp; hp = hp->next)
+		if (st.st_dev == hp->dev && st.st_ino == hp->ino)
+			return FS_CONT;
+
+	hp       = emalloc(sizeof(*hp));
+	hp->dev  = st.st_dev;
+	hp->ino  = st.st_ino;
+	hp->next = fs_hist;
+	fs_hist  = hp;
+
+	return FS_OK;
 }
 
 int
@@ -36,12 +58,8 @@ read_dir(FS_DIR *dir, int rtime)
 	struct dirent *entry;
 	int (*statf)(const char *, struct stat *), rval;
 
-	rval = EXE;
-
-	if (FS_FOLLOW(rtime))
-		statf = stat;
-	else
-		statf = lstat;
+	rval  = FS_EXEC;
+	statf = FS_FOLLOW(rtime) ? stat : lstat;
 
 	if ((entry = readdir(dir->dirp))) {
 		dir->name = entry->d_name;
@@ -51,17 +69,20 @@ read_dir(FS_DIR *dir, int rtime)
 		         "%s/%s", dir->dir, dir->name);
 
 		if (statf(dir->path, &dir->info) < 0) {
-			rval = ERR;
+			rval = FS_ERR;
 			goto clean;
 		}
 	} else {
-		rval = END;
+		rval = FS_OK;
 		goto clean;
 	}
 
 	goto done;
 clean:
 	closedir(dir->dirp);
+	if (!rtime)
+		while (fs_hist)
+			free(popnode(&fs_hist));
 done:
 	return rval;
 }

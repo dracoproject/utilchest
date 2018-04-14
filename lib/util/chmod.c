@@ -31,12 +31,14 @@ chmoddir(const char *s, mode_t mode, int depth)
 
 	rval = 0;
 
-	if (open_dir(&dir, s) < 0) {
-		if (!(rval = errno != ENOTDIR))
-			rval = chmodfile(s, mode, depth);
-		else
+	switch (open_dir(&dir, s)) {
+	case FS_ERR:
+		if (errno != ENOTDIR) {
 			warn("open_dir %s", s);
-
+			return 1;
+		}
+		rval = chmodfile(s, mode, depth);
+	case FS_CONT:
 		return rval;
 	}
 
@@ -50,7 +52,7 @@ chmoddir(const char *s, mode_t mode, int depth)
 			rval |= chmoddir(dir.path, mode, depth+1);
 	}
 
-	if (rd < 0) {
+	if (rd == FS_ERR) {
 		warn("read_dir %s", dir.path);
 		return 1;
 	}
