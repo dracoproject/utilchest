@@ -8,6 +8,7 @@ INC= inc
 HDR=\
 	inc/arg.h\
 	inc/compat.h\
+	inc/crypto.h\
 	inc/utf.h\
 	inc/util.h
 
@@ -57,6 +58,10 @@ BIN=\
 	src/rm\
 	src/rmdir\
 	src/setsid\
+	src/sha1sum\
+	src/sha224sum\
+	src/sha256sum\
+	src/sha512sum\
 	src/sleep\
 	src/sync\
 	src/tee\
@@ -115,6 +120,10 @@ MAN=\
 	man/rm.1\
 	man/rmdir.1\
 	man/setsid.1\
+	man/sha1sum.1\
+	man/sha224sum.1\
+	man/sha256sum.1\
+	man/sha512sum.1\
 	man/sleep.1\
 	man/sync.1\
 	man/tee.1\
@@ -141,6 +150,7 @@ LIBUTILSRC=\
 	lib/util/chown.c\
 	lib/util/concat.c\
 	lib/util/cp.c\
+	lib/util/crypto.c\
 	lib/util/dir.c\
 	lib/util/ealloc.c\
 	lib/util/fshut.c\
@@ -148,19 +158,23 @@ LIBUTILSRC=\
 	lib/util/genpath.c\
 	lib/util/mode.c\
 	lib/util/pathcat.c\
+	lib/util/sha1.c\
+	lib/util/sha224.c\
+	lib/util/sha256.c\
+	lib/util/sha512.c\
 	lib/util/strtobase.c
 
 # LIB PATH
-LIBUTF=  lib/libutf.a
-LIBUTIL= lib/libutil.a
+LIBUTF=    lib/libutf.a
+LIBUTIL=   lib/libutil.a
 
 # LIB OBJS
-LIBUTFOBJ=  $(LIBUTFSRC:.c=.o)
-LIBUTILOBJ= $(LIBUTILSRC:.c=.o)
+LIBUTFOBJ=    $(LIBUTFSRC:.c=.o)
+LIBUTILOBJ=   $(LIBUTILSRC:.c=.o)
 
 # ALL
-LIB= $(LIBUTIL) $(LIBFS) $(LIBUTF)
-OBJ= $(BIN:=.o) $(LIBUTILOBJ) $(LIBFSOBJ) $(LIBUTFOBJ)
+LIB= $(LIBUTIL) $(LIBUTF)
+OBJ= $(BIN:=.o) $(LIBUTILOBJ) $(LIBUTFOBJ)
 SRC= $(BIN:=.c)
 
 # VAR RULES
@@ -202,7 +216,7 @@ utilchest: $(LIB) $(SRC)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -I $(INC) -o $@ build/*.c $(LIB)
 	rm -rf build
 
-utilchest-install: utilchest
+install-utilchest: utilchest
 	install -dm 755 $(DESTDIR)/$(PREFIX)/bin
 	install -csm 755 utilchest $(DESTDIR)/$(PREFIX)/bin
 	for f in $$(echo $(BIN) | sed 's/src\///g'); do ln -s utilchest $(DESTDIR)/$(PREFIX)/bin/$$f; done
@@ -219,4 +233,5 @@ clean:
 	rm -f $(BIN) $(OBJ) $(LIB) utilchest
 
 .PHONY:
-	all utilchest-install install install-man clean
+	all clean install install-man install-utilchest utilchest
+
