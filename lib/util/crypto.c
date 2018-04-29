@@ -129,4 +129,3 @@ crypto_print(struct crypto *p, FILE *fp, const char *fname) {
 	sumprint(p->buf, p->bsiz, fname);
 	return 0;
 }
-

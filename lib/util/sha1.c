@@ -120,4 +120,3 @@ sha1_done(union hash_state *md, uint8_t *out)
 	for (i = 0; i < 5; i++)
 		STORE32H(md->sha1.state[i], out + (4 * i));
 }
-

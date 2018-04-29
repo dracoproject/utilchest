@@ -132,4 +132,3 @@ sha256_done(union hash_state *md, uint8_t *out)
 	for (i = 0; i < 8; i++)
 		STORE32H(md->sha256.state[i], out + (4 * i));
 }
-

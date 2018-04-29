@@ -159,4 +159,3 @@ sha512_done(union hash_state *md, unsigned char *out)
 	for (i = 0; i < 8; i++)
 		STORE64H(md->sha512.state[i], out + (8 * i));
 }
-

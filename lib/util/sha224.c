@@ -26,4 +26,3 @@ sha224_done(union hash_state *md, uint8_t *out)
 	sha256_done(md, buf);
 	memcpy(out, buf, 28);
 }
-
