@@ -27,6 +27,7 @@ It's a collection of Unix utilities written to be simple and small
 * hostname
 * id
 * install
+* kill
 * link
 * ln
 * logger
@@ -48,6 +49,10 @@ It's a collection of Unix utilities written to be simple and small
 * rm
 * rmdir
 * setsid
+* sha1sum
+* sha224sum
+* sha256sum
+* sha512sum
 * sleep
 * sync
 * tee
