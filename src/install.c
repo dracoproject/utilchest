@@ -13,9 +13,11 @@
 static int
 install(const char *src, const char *dest, gid_t gid, mode_t mode, uid_t uid)
 {
-	if (cpfile(src, dest, CP_FFLAG|CP_PFLAG, 0) ||
-	    chownfile(dest, uid, gid, 0)            ||
-	    chmodfile(dest, mode, 0))
+	char buf[PATH_MAX];
+	pathcat(buf, sizeof(buf), src, dest);
+	if (cpfile(src, buf, CP_FFLAG|CP_PFLAG, 0) ||
+	    chownfile(buf, uid, gid, 0)            ||
+	    chmodfile(buf, mode, 0))
 		return 1;
 	return 0;
 }
