@@ -4,7 +4,7 @@
 
 #include "crypto.h"
 
-#define REV(a,b,c,d,e,f,g,h,t) t=h;h=g;g=f;f=e;e=d+t0;d=c;c=b;a=t
+#define REV(a,b,c,d,e,f,g,h) h=g;g=f;f=e;e=d+t0;d=c;c=b;b=a;a=t0+t1;
 #define Ch(a,b,c)  ((c ^ (a & (b ^ c))))
 #define Maj(a,b,c) ((a & b) | (c & (a | b)))
 #define R(a, b)    (((a)&0xFFFFFFFFFFFFFFFFULL)>>((uint64_t)b))
@@ -65,7 +65,7 @@ ror(uint64_t n, int k)
 void
 sha512_compress(union hash_state *md, unsigned char *buf)
 {
-	uint64_t W[80], a, b, c, d, e, f, g, h, t, t0, t1;
+	uint64_t W[80], a, b, c, d, e, f, g, h, t0, t1;
 	int i;
 
 	for (i = 0; i < 16; i++)
@@ -86,9 +86,7 @@ sha512_compress(union hash_state *md, unsigned char *buf)
 	for (i = 0; i < 80; i++) {
 		t0 = h + S1(e) + Ch(e, f, g) + K[i] + W[i];
 		t1 = S0(a) + Maj(a, b, c);
-		d += t0;
-		h  = t0 + t1;
-		REV(a,b,c,d,e,f,g,h,t);
+		REV(a,b,c,d,e,f,g,h);
 	}
 
 	md->sha512.state[0] += a;

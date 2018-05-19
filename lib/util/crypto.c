@@ -87,7 +87,8 @@ crypto_check(struct crypto *p, FILE *fp, const char *fname)
 		buf[n-1] = '\0';
 
 		if ((file = strchr(buf, ' ')))
-			*file++ = '\0';
+			while (*file == ' ')
+				*file++ = '\0';
 
 		if (!file || !(*file)) {
 			rval = 1;
