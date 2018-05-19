@@ -73,8 +73,7 @@ static int first = 1;
 static long blksiz = 512;
 static unsigned int termwidth = 80;
 
-static void printc(struct file *, struct max *);
-static void (*printfcn)(struct file *, struct max *) = printc;
+static void (*printfcn)(struct file *, struct max *);
 
 static int
 cmp(struct file *f1, struct file *f2)
@@ -669,14 +668,14 @@ main(int argc, char *argv[])
 	struct file *dlist, *flist, *p;
 	struct stat st;
 	struct max max;
-	struct winsize w;
 	int kflag, more, rval;
 	char *temp;
 
-	dlist = NULL;
-	flist = NULL;
-	kflag = 0;
-	rval  = 0;
+	dlist    = NULL;
+	flist    = NULL;
+	kflag    = 0;
+	printfcn = isatty(STDOUT_FILENO) ? printc : print1;
+	rval     = 0;
 	memset(&max, 0, sizeof(max));
 	setprogname(argv[0]);
 
@@ -741,9 +740,6 @@ main(int argc, char *argv[])
 	default:
 		usage();
 	} ARGEND
-
-	if (!(ioctl(fileno(stdout), TIOCGWINSZ, &w)) && w.ws_col > 0)
-		termwidth = w.ws_col;
 
 	if ((printfcn != print1) && lflag)
 		lflag = 0;
