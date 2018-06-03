@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "util.h"
+
 int
 concat(int f1, const char *s1, int f2, const char *s2)
 {

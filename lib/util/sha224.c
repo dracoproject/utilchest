@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "util.h"
 #include "crypto.h"
 
 void

@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include "util.h"
+
 ssize_t
 fgetline(char *buf, size_t bsize, FILE *stream)
 {

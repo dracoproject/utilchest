@@ -21,7 +21,8 @@ main(int argc, char *argv[])
 {
 	struct group *grp;
 	gid_t gid;
-	int (*chownf)(const char *, uid_t, gid_t, int), rval;
+	int (*chownf)(const char *, uid_t, gid_t, int);
+	int rval;
 
 	chownf = chownfile;
 	gid    = -1;

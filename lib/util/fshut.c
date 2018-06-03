@@ -1,6 +1,8 @@
 #include <err.h>
 #include <stdio.h>
 
+#include "util.h"
+
 int
 fshut(FILE *s, const char *sn)
 {

@@ -66,8 +66,9 @@ main(int argc, char *argv[])
 	if ((feof(fp[0]) && !feof(fp[1])) || (feof(fp[1]) && !feof(fp[0])))
 		errx(1, "EOF on %s\n", argv[ch[1] == EOF]);
 
-	if (fshut(fp[0], argv[0]) | (fp[0] != fp[1] &&
-	    fshut(fp[1], argv[1])) | ioshut())
+	if (fshut(fp[0], argv[0])
+	    | (fp[0] != fp[1] && fshut(fp[1], argv[1]))
+	    | ioshut())
 		rval = 2;
 
 	return rval;

@@ -14,7 +14,8 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int (*chmodf)(const char *, mode_t, int), rval;
+	int (*chmodf)(const char *, mode_t, int);
+	int rval;
 	mode_t mode;
 
 	chmodf = chmodfile;

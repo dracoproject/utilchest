@@ -21,7 +21,7 @@ main(int argc, char *argv[])
 	setprogname(argv[0]);
 	argc--, argv++;
 
-	if (argc != 1 && argc != 2)
+	if (argc < 1 || argc > 2)
 		usage();
 
 	p = basename(*argv++);

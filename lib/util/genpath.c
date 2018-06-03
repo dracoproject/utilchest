@@ -4,6 +4,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include "util.h"
+
 int
 genpath(char *str, mode_t dmode, mode_t mode)
 {

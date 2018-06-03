@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "util.h"
 #include "crypto.h"
 
 #define REV(a,b,c,d,e,f,g,h) h=g;g=f;f=e;e=d+t0;d=c;c=b;b=a;a=t0+t1;
