@@ -66,7 +66,7 @@ cksum(int fd, const char *fname)
 {
 	ssize_t fsize, i, rf;
 	unsigned sum;
-	char buf[BUFSIZ];
+	unsigned char buf[BUFSIZ];
 
 	fsize = 0;
 	sum   = 0;
@@ -81,7 +81,7 @@ cksum(int fd, const char *fname)
 		err(1, "read %s", fname);
 
 	for (i = fsize; i; i >>= 8)
-		sum = (sum << 8) ^ crctab[(sum >> 24) ^ (i & 0337)];
+		sum = (sum << 8) ^ crctab[(sum >> 24) ^ (i & 0xFF)];
 
 	printf("%u %zd", ~sum, fsize);
 	if (fd)
