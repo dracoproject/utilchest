@@ -70,6 +70,10 @@ main(int argc, char *argv[])
 			tmpdir = pdir ? pdir : "/tmp";
 		n = snprintf(tmp, sizeof(tmp), "%s", tmpdir);
 	}
+
+	if (tmp[n-1] != '/')
+		tmp[n++] = '/';
+
 	snprintf(tmp+n, sizeof(tmp)-n, "%s", template);
 
 	if (opts & DFLAG) {
