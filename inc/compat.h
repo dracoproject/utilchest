@@ -1,5 +1,9 @@
 #include <limits.h>
 
+#ifdef __GLIBC__
+#include <sys/sysmacros.h>
+#endif
+
 #ifndef ACCESSPERMS
 #define ACCESSPERMS (S_IRWXU|S_IRWXG|S_IRWXO)
 #endif
@@ -38,4 +42,8 @@ extern char *__progname;
 
 #ifndef MIN
 #define MIN(a, b) (((a) > (b)) ? (b) : (a))
+#endif
+
+#ifndef memmem
+#define memmem(a, b, c, d) strstr(a, c)
 #endif

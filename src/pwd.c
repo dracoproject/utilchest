@@ -3,26 +3,36 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "util.h"
 
 static char *
-getcwd_logical(void)
+getpwd(void)
 {
-	struct stat s_pwd, s_dot;
-	char *pwd;
+	struct stat pwd, dot;
+	size_t n;
+	char  *s;
 
-	if (!(pwd = getenv("PWD")) || *pwd != '/')
+	if (!(s = getenv("PWD")) || *s != '/')
 		return NULL;
 
-	if (stat(pwd, &s_pwd) < 0 || stat(".", &s_dot) < 0)
+	if ((n = strlen(s)) >= PATH_MAX)
 		return NULL;
 
-	if (s_pwd.st_dev != s_dot.st_dev || s_pwd.st_ino != s_dot.st_ino)
+	if (memmem(s, n, "/./",  sizeof("/./")-1) ||
+	    memmem(s, n, "/../", sizeof("/../")-1))
 		return NULL;
 
-	return pwd;
+	if (stat(s, &pwd) < 0 || stat(".", &dot) < 0)
+		return NULL;
+
+	if (pwd.st_dev != dot.st_dev ||
+	    pwd.st_ino != dot.st_ino)
+		return NULL;
+
+	return s;
 }
 
 static void
@@ -35,18 +45,18 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int logical;
-	const char *cwd;
+	int   lpflag;
+	char  buf[PATH_MAX];
+	char *cwd;
 
-	logical = 1;
 	setprogname(argv[0]);
+
+	lpflag = 'L';
 
 	ARGBEGIN {
 	case 'L':
-		logical = 1;
-		break;
 	case 'P':
-		logical = 0;
+		lpflag = ARGC();
 		break;
 	default:
 		usage();
@@ -55,8 +65,10 @@ main(int argc, char *argv[])
 	if (argc)
 		usage();
 
-	if (!(cwd = logical ? getcwd(NULL, 0) : getcwd_logical()))
+	cwd = lpflag == 'L' ? getpwd() : NULL;
+	if (!cwd && !(cwd = getcwd(buf, sizeof(buf))))
 		err(1, "getcwd");
+
 	puts(cwd);
 
 	return (ioshut());
