@@ -54,7 +54,7 @@ main(int argc, char *argv[])
 	case 1:
 		usage();
 	case 2:
-		pathcat(buf, sizeof(buf), argv[0], argv[1]);
+		pathcat(buf, argv[0], argv[1]);
 		exit(move(argv[0], buf));
 	}
 
@@ -66,7 +66,7 @@ main(int argc, char *argv[])
 		usage();
 
 	for (; *argv != sourcedir; argv++) {
-		pathcat(buf, sizeof(buf), *argv, sourcedir);
+		pathcatx(buf, *argv, sourcedir);
 		rval |= move(*argv, buf);
 	}
 

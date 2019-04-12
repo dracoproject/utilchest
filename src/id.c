@@ -95,7 +95,7 @@ main(int argc, char *argv[])
 
 	switch (argc) {
 	case 0:
-		uid  = getuid();
+		uid = getuid();
 		break;
 	case 1:
 		if (isdigit(argv[0][0]))

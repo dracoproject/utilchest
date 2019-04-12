@@ -83,10 +83,7 @@ cksum(int fd, const char *fname)
 	for (i = fsize; i; i >>= 8)
 		sum = (sum << 8) ^ crctab[(sum >> 24) ^ (i & 0xFF)];
 
-	printf("%u %zd", ~sum, fsize);
-	if (fd)
-		printf(" %s", fname);
-	putchar('\n');
+	printf("%u %zd %s\n", ~sum, fsize, fname);
 }
 
 int
@@ -99,11 +96,11 @@ main(int argc, char *argv[])
 	argc--, argv++;
 
 	if (!argc)
-		cksum(STDIN_FILENO, "<stdin>");
+		cksum(STDIN_FILENO, "");
 
 	for (; *argv; argc--, argv++) {
 		if (ISDASH(*argv)) {
-			*argv = "<stdin>";
+			*argv = "-";
 			fd = STDIN_FILENO;
 		} else if ((fd = open(*argv, O_RDONLY)) < 0) {
 			warn("open %s", *argv);

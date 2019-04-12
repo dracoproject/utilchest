@@ -43,15 +43,22 @@ chmoddir(const char *s, mode_t mode, int depth)
 		return rval;
 	}
 
-	while ((rd = read_dir(&dir, depth)) == FS_EXEC) {
+	depth++;
+	while ((rd = read_dir(&dir)) == FS_EXEC) {
 		if (ISDOT(dir.name))
 			continue;
 
-		rval |= chmodfile(dir.path, mode, depth);
+		if (chmod(s, mode ? mode : dir.info.st_mode) < 0) {
+			warn("chmod %s", s);
+			rval = 1;
+		}
 
 		if (S_ISDIR(dir.info.st_mode))
-			rval |= chmoddir(dir.path, mode, depth+1);
+			rval |= chmoddir(dir.path, mode, depth);
 	}
+	depth--;
+
+	close_dir(&dir);
 
 	if (rd == FS_ERR) {
 		warn("read_dir %s", dir.path);

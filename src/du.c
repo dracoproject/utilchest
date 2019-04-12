@@ -15,48 +15,19 @@ enum Flags {
 	XFLAG = 0x04
 };
 
-static int  rval;
 static int  opts;
 static long blocksize = 512;
 
-static void
-display(const char *path, off_t size)
-{
-	printf("%lld\t%s\n", howmany((long long)size, blocksize), path);
-}
+#define display(a, b) \
+printf("%jd\t%s\n", (b), (a));
 
-static off_t
-dufile(const char *path, int depth)
-{
-	struct stat st;
-	off_t size;
-
-	if ((FS_FOLLOW(depth) ? stat : lstat)(path, &st) < 0) {
-		warn("(l)stat %s", path);
-		goto err;
-	}
-
-	size = st.st_blocks;
-	if (!depth || (opts & AFLAG))
-		display(path, size);
-
-	goto done;
-err:
-	rval = 1;
-	size = 0;
-done:
-	return size;
-}
-
-static off_t
-dudir(const char *path, int depth)
+static int
+dudir(const char *path, int depth, off_t *n)
 {
 	FS_DIR dir;
 	struct stat st;
-	off_t subtotal;
+	off_t sbt;
 	int rd;
-
-	subtotal = 0;
 
 	switch (open_dir(&dir, path)) {
 	case FS_ERR:
@@ -64,41 +35,43 @@ dudir(const char *path, int depth)
 			warn("open_dir %s", path);
 			return 1;
 		}
-		rval = dufile(path, depth);
+		if ((FS_FOLLOW(depth) ? stat : lstat)(path, &st) < 0) {
+			warn("(l)stat %s", path);
+			return 1;
+		}
+		sbt = howmany(st.st_blocks, blocksize);
+		display(path, sbt);
 		/* fallthrough */
 	case FS_CONT:
-		return rval;
+		return 0;
 	}
 
-	if ((FS_FOLLOW(depth) ? stat : lstat)(path, &st) < 0) {
-		warn("(l)stat %s", path);
-		goto err;
-	}
-
-	while ((rd = read_dir(&dir, depth)) == FS_EXEC) {
-		if (ISDOT(dir.name) || ((opts & XFLAG) &&
-		    st.st_dev != dir.info.st_dev))
+	depth++;
+	while ((rd = read_dir(&dir)) == FS_EXEC) {
+		if (ISDOT(dir.name) ||
+		    ((opts & XFLAG) && st.st_dev != dir.info.st_dev))
 			continue;
-
-		subtotal += dufile(dir.path, depth+1);
-		if (S_ISDIR(dir.info.st_mode))
-			subtotal += dudir(dir.path, depth+1);
+		sbt = howmany(dir.info.st_blocks, blocksize);
+		if (S_ISDIR(dir.info.st_mode)) {
+			dudir(dir.path, depth, &sbt);
+		} else if (opts & AFLAG) {
+			display(dir.path, sbt);
+		}
+		*n += sbt;
 	}
+	depth--;
 
-	if (!((opts & SFLAG) && depth))
-		display(path, subtotal);
+	close_dir(&dir);
 
 	if (rd == FS_ERR) {
 		warn("read_dir %s", dir.path);
-		goto err;
+		return 1;
 	}
 
-	goto done;
-err:
-	rval     = 1;
-	subtotal = 0;
-done:
-	return subtotal;
+	if (!depth || !(opts & SFLAG))
+		display(path, *n);
+
+	return 0;
 }
 
 static void
@@ -112,7 +85,8 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int kflag;
+	off_t n;
+	int kflag, rval;
 	const char *bsize;
 
 	kflag = 0;
@@ -147,11 +121,16 @@ main(int argc, char *argv[])
 		blocksize = strtobase(bsize, 1, LONG_MAX, 10);
 	blocksize /= 512;
 
-	if (!argc)
-		dudir(".", 0);
+	n = 0;
+	rval = 0;
 
-	for (; *argv; argc--, argv++)
-		dudir(*argv, 0);
+	if (!argc)
+		rval = dudir(".", 0, &n);
+
+	for (; *argv; argc--, argv++) {
+		n = 0;
+		rval |= dudir(*argv, 0, &n);
+	}
 
 	return (rval | ioshut());
 }

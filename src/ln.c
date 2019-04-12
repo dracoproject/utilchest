@@ -86,10 +86,10 @@ main(int argc, char *argv[])
 	case 0:
 		usage();
 	case 1:
-		pathcat(buf, sizeof(buf), argv[0], ".");
+		pathcat(buf, argv[0], ".");
 		exit(linkit(argv[0], buf, opts));
 	case 2:
-		pathcat(buf, sizeof(buf), argv[0], argv[1]);
+		pathcat(buf, argv[0], argv[1]);
 		exit(linkit(argv[0], buf, opts));
 	}
 
@@ -101,7 +101,7 @@ main(int argc, char *argv[])
 		usage();
 
 	for (; *argv != sourcedir; argv++) {
-		pathcat(buf, sizeof(buf), *argv, sourcedir);
+		pathcatx(buf, *argv, sourcedir);
 		rval |= linkit(*argv, buf, opts);
 	}
 

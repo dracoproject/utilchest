@@ -63,8 +63,9 @@ int cpfile(const char *, const char *, int, int);
 int cpdir(const char *, const char *, int, int);
 
 /* dir.c */
-int open_dir(FS_DIR *, const char *);
-int read_dir(FS_DIR *, int);
+int  open_dir(FS_DIR *, const char *);
+int  read_dir(FS_DIR *);
+void close_dir(FS_DIR *);
 
 /* ealloc.c */
 void * emalloc(size_t);
@@ -87,7 +88,10 @@ void putstr(const char *, FILE *);
 mode_t strtomode(const char *, mode_t);
 
 /* pathcat.c */
-void pathcat(char *, size_t, const char *, const char *);
+#define pathcat(a, b, c) pathcat_((a), sizeof((a)), b, c)
+#define pathcatx(a, b, c) pathcat_((a), sizeof((a)), b, c)
+void pathcat_(char *, size_t, const char *, const char *);
+void pathcatx_(char *, size_t, const char *, const char *);
 
 /* stoll.c */
 intmax_t strtobase(const char *, intmax_t, intmax_t, int);

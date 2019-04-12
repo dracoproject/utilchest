@@ -614,7 +614,8 @@ lsdir(const char *path, int more, int depth)
 	if (more || Rdflag == 'R')
 		printf((first-- == 1) ? "%s:\n" : "\n%s:\n", path);
 
-	while ((rd = read_dir(&dir, depth)) == FS_EXEC) {
+	depth++;
+	while ((rd = read_dir(&dir)) == FS_EXEC) {
 		if (Aaflag != 'a' && ISDOT(dir.name))
 			continue;
 
@@ -626,6 +627,9 @@ lsdir(const char *path, int more, int depth)
 		pushfile(&flist, p);
 		mkmax(&max, flist);
 	}
+	depth--;
+
+	close_dir(&dir);
 
 	if (rd == FS_ERR)
 		warn("read_dir %s", dir.path);
@@ -797,4 +801,3 @@ main(int argc, char *argv[])
 
 	return (rval | ioshut());
 }
-

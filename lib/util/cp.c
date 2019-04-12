@@ -12,7 +12,7 @@
 #include "util.h"
 
 struct copy {
-	struct stat st;
+	struct stat *st;
 	int opts;
 	const char *src;
 	const char *dest;
@@ -40,8 +40,8 @@ copy_reg(struct copy *cp)
 		goto failure;
 	}
 
-	if (cp->st.st_ino != st.st_ino ||
-	    cp->st.st_dev != st.st_dev) {
+	if (cp->st->st_ino != st.st_ino ||
+	    cp->st->st_dev != st.st_dev) {
 		warnx("%s: changed between calls\n", cp->src);
 		goto failure;
 	}
@@ -94,7 +94,7 @@ copy_lnk(struct copy *cp)
 	}
 	path[rl] = '\0';
 
-	if (cp->st.st_size < rl) {
+	if (cp->st->st_size < rl) {
 		warnx("%s: symlink increased in size\n", cp->src);
 		return 1;
 	}
@@ -104,8 +104,8 @@ copy_lnk(struct copy *cp)
 		return 1;
 	}
 
-	if ((CP_PFLAG & cp->opts)
-	    && lchown(cp->dest, cp->st.st_uid, cp->st.st_gid) < 0) {
+	if ((CP_PFLAG & cp->opts) &&
+	    lchown(cp->dest, cp->st->st_uid, cp->st->st_gid) < 0) {
 		warn("lchown %s", cp->dest);
 		return 1;
 	}
@@ -116,7 +116,7 @@ copy_lnk(struct copy *cp)
 static int
 copy_spc(struct copy *cp)
 {
-	if (mknod(cp->dest, cp->st.st_mode, cp->st.st_dev) < 0) {
+	if (mknod(cp->dest, cp->st->st_mode, cp->st->st_dev) < 0) {
 		warn("mknod %s", cp->dest);
 		return 1;
 	}
@@ -124,9 +124,8 @@ copy_spc(struct copy *cp)
 	return 0;
 }
 
-/* external functions */
-int
-cpfile(const char *src, const char *dest, int opts, int depth)
+static int
+afile(const char *src, const char *dest, int opts, int depth, struct stat *st)
 {
 	struct copy cp;
 	int rval;
@@ -134,16 +133,14 @@ cpfile(const char *src, const char *dest, int opts, int depth)
 	cp.src  = src;
 	cp.dest = dest;
 	cp.opts = opts;
+	cp.st   = st;
 
 	if (CP_FFLAG & opts)
 		unlink(dest);
 
-	if ((FS_FOLLOW(depth) ? stat : lstat)(src, &cp.st) < 0) {
-		warn("lstat %s", src);
-		return 1;
-	}
+	rval = 0;
 
-	switch ((cp.st.st_mode & S_IFMT)) {
+	switch ((cp.st->st_mode & S_IFMT)) {
 	case S_IFDIR:
 		errno = EISDIR;
 		warn("cpfile %s", src);
@@ -160,6 +157,20 @@ cpfile(const char *src, const char *dest, int opts, int depth)
 	}
 
 	return rval;
+}
+
+/* external functions */
+int
+cpfile(const char *src, const char *dest, int opts, int depth)
+{
+	struct stat st;
+
+	if ((FS_FOLLOW(depth) ? stat : lstat)(src, &st) < 0) {
+		warn("lstat %s", src);
+		return 1;
+	}
+
+	return afile(src, dest, opts, depth, &st);
 }
 
 int
@@ -184,9 +195,10 @@ cpdir(const char *src, const char *dest, int opts, int depth)
 	}
 
 	if (!depth)
-		(void)mkdir(dest, 0777);
+		mkdir(dest, 0777);
 
-	while ((rd = read_dir(&dir, depth)) == FS_EXEC) {
+	depth++;
+	while ((rd = read_dir(&dir)) == FS_EXEC) {
 		if (ISDOT(dir.name))
 			continue;
 
@@ -199,10 +211,14 @@ cpdir(const char *src, const char *dest, int opts, int depth)
 				return 1;
 			}
 
-			rval |= cpdir(dir.path, buf, opts, depth+1);
-		} else
-			rval |= cpfile(dir.path, buf, opts, depth);
+			rval |= cpdir(dir.path, buf, opts, depth);
+		} else {
+			rval |= afile(dir.path, buf, opts, depth, &dir.info);
+		}
 	}
+	depth--;
+
+	close_dir(&dir);
 
 	if (rd == FS_ERR) {
 		warn("read_dir %s", dir.path);

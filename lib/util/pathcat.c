@@ -8,18 +8,26 @@
 #include "util.h"
 
 void
-pathcat(char *buf, size_t bsize, const char *f1, const char *f2)
+pathcat_(char *buf, size_t bsize, const char *f1, const char *f2)
 {
 	struct stat st;
-	size_t n, len;
+	size_t n;
+	char *s;
 
 	n = snprintf(buf, bsize, "%s", f2);
 	if (!(stat(f2, &st) == 0 && S_ISDIR(st.st_mode)))
 		return;
 
-	len = strlen(f2);
-	if (f2[len-1] != '/')
-		n += snprintf(buf+n, bsize-n, "/");
+	s = f2[n-1] == '/' ? "" : "/";
+	snprintf(buf+n, bsize-n, "%s%s", s, basename((char *)f1));
+}
 
-	snprintf(buf+n, bsize-n, "%s", basename((char *)f1));
+void
+pathcatx_(char *buf, size_t bsize, const char *f1, const char *f2)
+{
+	size_t n;
+	char *s;
+	n = strlen(f2);
+	s = f2[n-1] == '/' ? "" : "/";
+	snprintf(buf, bsize, "%s%s%s", f2, s, basename((char *)f1));
 }

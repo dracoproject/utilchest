@@ -21,7 +21,6 @@ BIN=\
 	src/chown\
 	src/chroot\
 	src/cksum\
-	src/clear\
 	src/cmp\
 	src/cp\
 	src/date\

@@ -58,13 +58,12 @@ open_dir(FS_DIR *dir, const char *path)
 }
 
 int
-read_dir(FS_DIR *dir, int rtime)
+read_dir(FS_DIR *dir)
 {
 	struct dirent *entry;
-	int (*statf)(const char *, struct stat *), rval;
+	int (*statf)(const char *, struct stat *);
 
-	rval  = FS_EXEC;
-	statf = FS_FOLLOW(rtime) ? stat : lstat;
+	statf = FS_FOLLOW(1) ? stat : lstat;
 
 	if ((entry = readdir(dir->dirp))) {
 		dir->name = entry->d_name;
@@ -73,21 +72,19 @@ read_dir(FS_DIR *dir, int rtime)
 		snprintf(dir->path, sizeof(dir->path),
 		         "%s/%s", dir->dir, dir->name);
 
-		if (statf(dir->path, &dir->info) < 0) {
-			rval = FS_ERR;
-			goto clean;
-		}
+		if (statf(dir->path, &dir->info) < 0)
+			return FS_ERR;
 	} else {
-		rval = FS_OK;
-		goto clean;
+		return FS_OK;
 	}
 
-	goto done;
-clean:
+	return FS_EXEC;
+}
+
+void
+close_dir(FS_DIR *dir)
+{
 	closedir(dir->dirp);
-	if (!rtime)
-		while (fs_hist)
-			free(popnode(&fs_hist));
-done:
-	return rval;
+	while (fs_hist)
+		free(popnode(&fs_hist));
 }

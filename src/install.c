@@ -15,11 +15,11 @@ install(const char *src, const char *dest, gid_t gid, mode_t mode, uid_t uid)
 {
 	char buf[PATH_MAX];
 
-	pathcat(buf, sizeof(buf), src, dest);
+	pathcatx(buf, src, dest);
 
-	if (cpfile(src, buf, CP_FFLAG | CP_PFLAG, 0)
-	    || chownfile(buf, uid, gid, 0)
-	    || chmodfile(buf, mode, 0))
+	if (cpfile(src, buf, CP_FFLAG | CP_PFLAG, 0) ||
+	    chownfile(buf, uid, gid, 0) ||
+	    chmodfile(buf, mode, 0))
 		return 1;
 
 	return 0;
@@ -115,7 +115,7 @@ main(int argc, char *argv[])
 		usage();
 
 	for (; *argv != sourcedir; argc--, argv++) {
-		pathcat(buf, sizeof(buf), *argv, sourcedir);
+		pathcatx(buf, *argv, sourcedir);
 		rval |= install(*argv, sourcedir, gid, mode, uid);
 	}
 

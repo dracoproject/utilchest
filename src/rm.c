@@ -11,18 +11,11 @@
 static int fflag;
 
 static int
-delfile(const char *f, int depth)
+afile(const char *f, int depth, struct stat *st)
 {
-	struct stat st;
 	int (*rm)(const char *);
 
-	if (lstat(f, &st) < 0) {
-		if (!fflag && errno != ENOENT)
-			warn("lstat %s", f);
-		return (!fflag);
-	}
-
-	if (S_ISDIR(st.st_mode))
+	if (S_ISDIR(st->st_mode))
 		rm = rmdir;
 	else
 		rm = unlink;
@@ -33,6 +26,20 @@ delfile(const char *f, int depth)
 	}
 
 	return 0;
+}
+
+static int
+delfile(const char *f, int depth)
+{
+	struct stat st;
+
+	if (lstat(f, &st) < 0) {
+		if (!fflag && errno != ENOENT)
+			warn("lstat %s", f);
+		return (!fflag);
+	}
+
+	return afile(f, depth, &st);
 }
 
 static int
@@ -54,15 +61,19 @@ deldir(const char *f, int depth)
 		return rval;
 	}
 
-	while ((rd = read_dir(&dir, depth)) == FS_EXEC) {
+	depth++;
+	while ((rd = read_dir(&dir)) == FS_EXEC) {
 		if (ISDOT(dir.name))
 			continue;
 
 		if (S_ISDIR(dir.info.st_mode))
 			rval |= deldir(dir.path, depth);
 		else
-			rval |= delfile(dir.path, depth);
+			rval |= afile(dir.path, depth, &dir.info);
 	}
+	depth--;
+
+	close_dir(&dir);
 
 	if (rd == FS_ERR) {
 		warn("read_dir %s", dir.path);
