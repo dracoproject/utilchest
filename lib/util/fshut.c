@@ -9,12 +9,11 @@ fshut(FILE *s, const char *sn)
 	int rval;
 	rval = 0;
 	fflush(s);
-	ferror(s);
-	fclose(s);
-	if (rval < 0) {
-		warn("fshut %s", sn);
-		rval = 1;
+	if (ferror(s)) {
+		warn("ferror %s", sn);
+		rval++;
 	}
+	fclose(s);
 	return rval;
 }
 
