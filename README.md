@@ -12,7 +12,6 @@ It's a collection of Unix utilities written to be simple and small
 * chown
 * chroot
 * cksum
-* clear
 * cmp
 * cp
 * date
