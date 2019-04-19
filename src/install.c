@@ -13,13 +13,9 @@
 static int
 install(const char *src, const char *dest, gid_t gid, mode_t mode, uid_t uid)
 {
-	char buf[PATH_MAX];
-
-	pathcatx(buf, src, dest);
-
-	if (cpfile(src, buf, CP_FFLAG | CP_PFLAG, 0) ||
-	    chownfile(buf, uid, gid, 0) ||
-	    chmodfile(buf, mode, 0))
+	if (cpfile(src, dest, CP_FFLAG | CP_PFLAG, 0) ||
+	    chownfile(dest, uid, gid, 0) ||
+	    chmodfile(dest, mode, 0))
 		return 1;
 
 	return 0;
@@ -104,8 +100,10 @@ main(int argc, char *argv[])
 		exit(rval);
 	}
 
-	if (argc == 2)
-		exit(install(argv[0], argv[1], gid, mode, uid));
+	if (argc == 2) {
+		pathcat(buf, argv[0], argv[1]);
+		exit(install(argv[0], buf, gid, mode, uid));
+	}
 
 	sourcedir = argv[argc - 1];
 	if (stat(sourcedir, &st) < 0)
@@ -116,7 +114,7 @@ main(int argc, char *argv[])
 
 	for (; *argv != sourcedir; argc--, argv++) {
 		pathcatx(buf, *argv, sourcedir);
-		rval |= install(*argv, sourcedir, gid, mode, uid);
+		rval |= install(*argv, buf, gid, mode, uid);
 	}
 
 	return rval;
