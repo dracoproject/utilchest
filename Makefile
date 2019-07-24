@@ -82,7 +82,6 @@ MAN=\
 	man/chown.1\
 	man/chroot.1\
 	man/cksum.1\
-	man/clear.1\
 	man/cmp.1\
 	man/cp.1\
 	man/date.1\
