@@ -94,4 +94,4 @@ void pathcat_(char *, size_t, const char *, const char *);
 void pathcatx_(char *, size_t, const char *, const char *);
 
 /* stoll.c */
-intmax_t strtobase(const char *, intmax_t, intmax_t, int);
+long long strtobase(const char *, long long, unsigned long, int);

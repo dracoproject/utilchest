@@ -5,14 +5,14 @@
 
 #include "util.h"
 
-intmax_t
-strtobase(const char *str, intmax_t min, intmax_t max, int base)
+long long
+strtobase(const char *str, long long min, ulong max, int base)
 {
-	intmax_t res;
+	long long res;
 	char *end;
 
 	errno = 0;
-	res   = strtoimax(str, &end, base);
+	res   = strtoll(str, &end, base);
 
 	if (end == str || *end != '\0')
 		errno = EINVAL;
